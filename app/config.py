@@ -27,7 +27,7 @@ PAN_LABEL = PAN_LABELS.get(PAN_TYPE, "网盘")
 CHANNELS = [
     {"id": "discover", "label": "发现", "hint": "AI 工具 · 效率软件"},
     {"id": "drama", "label": "短剧", "hint": "热门短剧 · 夸克直达"},
-    {"id": "k12", "label": "K12", "hint": "学习教育课程"},
+    {"id": "k12", "label": "K12", "hint": "学前至高中 · 学生教育"},
     {"id": "ai_video", "label": "AI 学习", "hint": "AI 视频教程"},
     {"id": "classics", "label": "古典藏书", "hint": "经史子集 · 摘录预览"},
 ]
