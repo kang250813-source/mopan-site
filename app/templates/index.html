@@ -3,8 +3,8 @@
 {% block title %}{% if category %}{{ category }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ base_path }}/" class="mp-nav-link is-active">资源库</a>
-<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>
+<a href="{{ channel_href('discover') if channel_href is defined else base_path ~ '/' }}" class="mp-nav-link is-active">资源库</a>
+{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -27,13 +27,13 @@
         {% if channel == 'classics' %}
         每本书展示<strong>开篇摘录</strong>；完整 txt 可在 <strong>GitHub（{{ classics_github_user }}）</strong> 查看或下载。
         {% elif channel == 'drama' %}
-        短剧索引（剧盘 · 第一个夸克盘），与工具内容分频道。
+        精选短剧合集，点击卡片即可跳转夸克网盘观看。
         {% elif channel == 'k12' %}
-        学前至高中、语言启蒙、TED、考研与职业考试等<strong>夸克网盘</strong>学习资料，持续收录。
+        学前至高中、语言启蒙、TED、考研与职业考试等学习资料，持续收录。
         {% elif channel == 'ai_video' %}
-        AI 通识、DeepSeek、ChatGPT、AIGC 绘画与视频、AI 办公变现等<strong>夸克网盘</strong>课程合集。
+        AI 通识、DeepSeek、ChatGPT、AIGC 绘画与视频、AI 办公变现等课程合集。
         {% else %}
-        正文在站内阅读；下载链来自<strong>第一个夸克网盘</strong>（main），不用第二个盘。
+        探索 AI 工具、效率软件与开发者项目，支持站内阅读与网盘下载。
         {% endif %}
       </p>
     </div>
@@ -91,15 +91,15 @@
     {% else %}
     <div class="mp-empty">
       {% if channel == 'classics' %}
-      暂无藏书。运行 <code>import_wenyuange.sh</code> 导入儒藏、诗藏。
+      暂无藏书内容。
       {% elif channel == 'discover' %}
-      运行 <code>import_articles.sh</code> 导入发现频道内容。
+      暂无文章。
       {% elif channel == 'k12' %}
-      暂无 K12 资源。运行 <code>import_k12_catalog.sh</code> 导入教育目录。
+      暂无 K12 资源。
       {% elif channel == 'ai_video' %}
-      暂无 AI 课程。运行 <code>import_ai_catalog.sh</code> 导入 AI 学习目录。
+      暂无 AI 课程。
       {% else %}
-      该频道内容待录入。
+      该频道暂无内容。
       {% endif %}
     </div>
     {% endfor %}

@@ -11,7 +11,7 @@ TEMPLATES_DIR = BASE_DIR / "app" / "templates"
 STATIC_DIR = BASE_DIR / "static"
 
 SITE_TITLE = os.getenv("SITE_TITLE", "魔盘")
-SITE_SLOGAN = os.getenv("SITE_SLOGAN", "夸克网盘 · 自用资源索引 · 本地整理")
+SITE_SLOGAN = os.getenv("SITE_SLOGAN", "AI 工具 · 学习资源 · 短剧索引")
 BASE_PATH = os.getenv("BASE_PATH", "").rstrip("/")
 
 PAN_TYPE = os.getenv("PAN_TYPE", "quark")
@@ -26,7 +26,7 @@ PAN_LABEL = PAN_LABELS.get(PAN_TYPE, "网盘")
 
 CHANNELS = [
     {"id": "discover", "label": "发现", "hint": "AI 工具 · 效率软件"},
-    {"id": "drama", "label": "短剧", "hint": "剧盘索引 · 网盘1直达"},
+    {"id": "drama", "label": "短剧", "hint": "热门短剧 · 夸克直达"},
     {"id": "k12", "label": "K12", "hint": "学习教育课程"},
     {"id": "ai_video", "label": "AI 学习", "hint": "AI 视频教程"},
     {"id": "classics", "label": "古典藏书", "hint": "经史子集 · 摘录预览"},

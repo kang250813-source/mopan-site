@@ -4,8 +4,8 @@
 
 {% block nav %}
 <a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-nav-link is-active">短剧</a>
-<a href="{{ base_path }}/" class="mp-nav-link">资源库</a>
-<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>
+<a href="{{ channel_href('discover') if channel_href is defined else base_path ~ '/' }}" class="mp-nav-link">资源库</a>
+{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -22,10 +22,10 @@
 
   <section class="mp-hero mp-hero--drama">
     <div class="mp-hero-copy">
-      <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }} · 网盘1</p>
+      <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }}</p>
       <h1>{{ channel_meta.hint }}</h1>
       <p class="mp-hero-desc">
-        短剧索引来自<strong>剧盘</strong>与 <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">夸克短剧</a>（qkduanju.com），优先使用自有夸克网盘链接，否则直达源站分享。
+        精选短剧合集，点击卡片即可跳转夸克网盘观看。
       </p>
     </div>
     <div class="mp-hero-stat">
@@ -108,7 +108,7 @@
       {% endfor %}
     </div>
     {% else %}
-    <div class="mp-empty">暂无短剧。请确认剧盘站点数据库存在：<code>~/duanjuku-site/data/site.db</code></div>
+    <div class="mp-empty">暂无短剧。</div>
     {% endif %}
   </section>
 
@@ -131,10 +131,10 @@
   {% endif %}
 
   <section class="mp-jupan-link">
-    <p>更多短剧源站</p>
-    <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">{{ qkduanju_public_url }} →</a>
+    <p>更多短剧</p>
+    <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">夸克短剧 →</a>
     <span class="mp-jupan-link-sep">·</span>
-    <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">{{ jupan_public_url }} →</a>
+    <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">剧盘 →</a>
   </section>
 </div>
 {% endblock %}
