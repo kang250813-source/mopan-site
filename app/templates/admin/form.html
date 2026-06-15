@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if action == 'edit' %}编辑{% else %}添加{% endif %} - {{ site_title }}{% endblock %}
+{% block content %}
+<h1>{% if action == 'edit' %}编辑资源{% else %}添加资源{% endif %}</h1>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form method="post" class="admin-form">
+  <label>标题<input name="title" value="{{ resource.title if resource else '' }}" required></label>
+  <label>{{ pan_label }}链接（自有分享，可留空）<input name="pan_url" value="{{ resource.pan_url if resource else '' }}" placeholder="https://pan.quark.cn/s/..."></label>
+  <label>分类
+    <select name="category">
+      <option value="">-</option>
+      {% for cat in categories %}
+      <option value="{{ cat }}" {% if resource and resource.category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>简介<textarea name="excerpt" rows="2">{{ resource.excerpt if resource else '' }}</textarea></label>
+  <label>正文 HTML<textarea name="content_html" rows="12">{{ resource.content_html if resource else '' }}</textarea></label>
+  <label>发布日期<input name="published_at" value="{{ resource.published_at if resource else '' }}" placeholder="2026-06-14"></label>
+  {% if action == 'edit' %}
+  <label>状态
+    <select name="link_status">
+      <option value="pending" {% if resource.link_status == 'pending' %}selected{% endif %}>pending（仅内容）</option>
+      <option value="own" {% if resource.link_status == 'own' %}selected{% endif %}>own（可下载）</option>
+    </select>
+  </label>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">保存</button>
+  <a href="{{ base_path }}/admin" class="btn btn-ghost">返回</a>
+</form>
+{% endblock %}

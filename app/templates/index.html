@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{% if category %}{{ category }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
+
+{% block nav %}
+<a href="{{ base_path }}/" class="mp-nav-link is-active">资源库</a>
+<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>
+{% endblock %}
+
+{% block content %}
+<div class="mp-container">
+  <nav class="mp-channels" aria-label="频道">
+    {% for ch in channels %}
+    <a href="{{ base_path }}/?channel={{ ch.id }}"
+       class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
+      <span class="mp-channel-label">{{ ch.label }}</span>
+      <span class="mp-channel-count">{{ channel_counts.get(ch.id, 0) }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+
+  <section class="mp-hero">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }}</p>
+      <h1>{{ channel_meta.hint }}</h1>
+      <p class="mp-hero-desc">
+        {% if channel == 'classics' %}
+        每本书展示<strong>开篇摘录</strong>；完整 txt 可在 <strong>GitHub（{{ classics_github_user }}）</strong> 查看或下载。
+        {% elif channel == 'drama' %}
+        短剧索引（剧盘 · 第一个夸克盘），与工具内容分频道。
+        {% elif channel == 'k12' %}
+        学前至高中、语言启蒙、TED、考研与职业考试等<strong>夸克网盘</strong>学习资料，持续收录。
+        {% elif channel == 'ai_video' %}
+        AI 通识、DeepSeek、ChatGPT、AIGC 绘画与视频、AI 办公变现等<strong>夸克网盘</strong>课程合集。
+        {% else %}
+        正文在站内阅读；下载链来自<strong>第一个夸克网盘</strong>（main），不用第二个盘。
+        {% endif %}
+      </p>
+    </div>
+    <div class="mp-hero-stat">
+      <span class="mp-hero-stat-num">{{ total_all }}</span>
+      <span class="mp-hero-stat-label">本频道</span>
+    </div>
+  </section>
+
+  <section class="mp-toolbar">
+    <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
+      <input type="hidden" name="channel" value="{{ channel }}">
+      <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="搜索标题、简介、正文…" autocomplete="off">
+      {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+      <button type="submit">搜索</button>
+      {% if q or category %}<a href="{{ base_path }}/?channel={{ channel }}" class="mp-search-clear">清除</a>{% endif %}
+    </form>
+  </section>
+
+  {% if category_counts %}
+  <section class="mp-categories" aria-label="{% if channel == 'classics' %}丛书筛选{% else %}分类筛选{% endif %}">
+    <a href="{{ base_path }}/?channel={{ channel }}" class="mp-cat{% if not category %} is-active{% endif %}">全部</a>
+    {% for cat, n in category_counts.items() %}
+    <a href="{{ base_path }}/?channel={{ channel }}&category={{ cat | urlencode }}"
+       class="mp-cat{% if category == cat %} is-active{% endif %}">{{ cat }}<span>{{ n }}</span></a>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if q or category %}
+  <p class="mp-result-hint">共 {{ total }} 条结果</p>
+  {% endif %}
+
+  <section class="mp-feed">
+    {% for item in resources %}
+    <article class="mp-card">
+      <a href="{{ base_path }}/resource/{{ item.id }}" class="mp-card-link">
+        <div class="mp-card-top">
+          {% if item.category %}
+          <span class="mp-tag">{% if channel == 'classics' %}{{ item.category | library_label }}{% else %}{{ item.category }}{% endif %}</span>
+          {% endif %}
+          {% if item.has_download %}<span class="mp-tag mp-tag--ok">网盘可下</span>
+          {% elif item.is_preview %}<span class="mp-tag mp-tag--github">GitHub</span>
+          {% elif item.link_status == 'on-site' %}<span class="mp-tag mp-tag--read">站内阅读</span>{% endif %}
+          {% if item.published_at %}<time class="mp-date">{{ item.published_at[:10] }}</time>{% endif %}
+        </div>
+        <h2 class="mp-card-title">{{ item.title }}</h2>
+        {% if item.excerpt %}
+        <p class="mp-card-excerpt">{{ item.excerpt[:140] }}{% if item.excerpt|length > 140 %}…{% endif %}</p>
+        {% endif %}
+        <span class="mp-card-more">{% if item.is_preview %}查看预览 →{% else %}阅读全文 →{% endif %}</span>
+      </a>
+    </article>
+    {% else %}
+    <div class="mp-empty">
+      {% if channel == 'classics' %}
+      暂无藏书。运行 <code>import_wenyuange.sh</code> 导入儒藏、诗藏。
+      {% elif channel == 'discover' %}
+      运行 <code>import_articles.sh</code> 导入发现频道内容。
+      {% elif channel == 'k12' %}
+      暂无 K12 资源。运行 <code>import_k12_catalog.sh</code> 导入教育目录。
+      {% elif channel == 'ai_video' %}
+      暂无 AI 课程。运行 <code>import_ai_catalog.sh</code> 导入 AI 学习目录。
+      {% else %}
+      该频道内容待录入。
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+
+  {% if total_pages > 1 %}
+  <nav class="mp-pagination" aria-label="分页">
+    {% if page > 1 %}
+    <a href="{{ page_url(page - 1, q, category, channel) }}" class="mp-page-btn">上一页</a>
+    {% endif %}
+    <div class="mp-page-nums">
+      {% for p in page_items %}
+        {% if p == '…' %}<span class="mp-page-gap">…</span>
+        {% elif p == page %}<span class="mp-page-current">{{ p }}</span>
+        {% else %}<a href="{{ page_url(p, q, category, channel) }}" class="mp-page-num">{{ p }}</a>{% endif %}
+      {% endfor %}
+    </div>
+    {% if page < total_pages %}
+    <a href="{{ page_url(page + 1, q, category, channel) }}" class="mp-page-btn">下一页</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

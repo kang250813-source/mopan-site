@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  {% if public_site_url %}<meta name="public-site-url" content="{{ public_site_url }}">{% endif %}
+  <meta name="site-title" content="{{ site_title }}">
+  <title>{% block title %}{{ site_title }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ base_path }}/static/mopan.css?v={{ static_version }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="{{ base_path }}/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>{{ site_title }}</strong>
+          <small>{{ site_slogan }}</small>
+        </span>
+      </a>
+      <nav class="mp-nav">{% block nav %}{% endblock %}</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>{{ site_title }} · 内容在站内 · 下载走自有{{ pan_label }}（主夸克盘）</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="{{ base_path }}/static/app.js?v={{ static_version }}"></script>
+</body>
+</html>

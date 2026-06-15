@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}管理 - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="admin-header">
+  <h1>资源管理</h1>
+  <div>
+    <a href="{{ base_path }}/admin/resource/new" class="btn btn-primary">添加资源</a>
+    <a href="{{ base_path }}/admin/logout" class="btn btn-ghost">退出</a>
+  </div>
+</div>
+{% if msg %}<p class="msg">{{ msg }}</p>{% endif %}
+<form class="search-bar" method="get"><input name="q" value="{{ q }}" placeholder="搜索"><button class="btn btn-primary">搜</button></form>
+<table class="admin-table">
+  <thead><tr><th>标题</th><th>分类</th><th>状态</th><th>日期</th><th></th></tr></thead>
+  <tbody>
+  {% for item in resources %}
+  <tr>
+    <td>{{ item.title[:50] }}</td>
+    <td>{{ item.category or '-' }}</td>
+    <td>{{ item.link_status }}{% if item.has_download %} ✓{% endif %}</td>
+    <td>{{ item.published_at[:10] if item.published_at else '-' }}</td>
+    <td>
+      <a href="{{ base_path }}/admin/resource/{{ item.id }}/edit">编辑</a>
+      <form method="post" action="{{ base_path }}/admin/resource/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('删除？')">
+        <button type="submit">删</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

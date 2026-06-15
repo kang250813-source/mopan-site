@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ resource.title }} - {{ site_title }}{% endblock %}
+
+{% block nav %}
+<a href="{{ base_path }}/" class="mp-nav-link">← 资源库</a>
+{% endblock %}
+
+{% block content %}
+{% set share_title = resource.title %}
+{% set share_quark = resource.pan_url if resource.has_download else '' %}
+{% set share_github = resource.github.blob if resource.has_github and resource.github else '' %}
+{% set share_kind = 'drama' if resource.channel == 'drama' else 'resource' %}
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      {% if resource.has_download %}
+      <span class="pill pill-own">{{ pan_label }} · 可下载</span>
+      {% elif resource.is_preview %}
+      <span class="pill pill-preview">摘录预览</span>
+      {% elif resource.link_status == 'on-site' %}
+      <span class="pill pill-read">站内阅读</span>
+      {% endif %}
+      {% if resource.category %}
+      <span class="pill">{% if resource.channel == 'classics' %}{{ resource.category | library_label }}{% else %}{{ resource.category }}{% endif %}</span>
+      {% endif %}
+      {% include "_share_pill.html" %}
+    </div>
+    <h1>{{ resource.title }}</h1>
+    {% if resource.channel == 'classics' and (resource.category | library_subtitle) %}
+    <p class="detail-meta detail-meta--sub">{{ resource.category | library_subtitle }}</p>
+    {% endif %}
+    {% if resource.published_at %}<p class="detail-meta">发布于 {{ resource.published_at[:10] }}</p>{% endif %}
+    {% if resource.excerpt and not resource.content_html %}<p class="detail-tip">{{ resource.excerpt }}</p>{% endif %}
+  </div>
+
+  {% if resource.content_html %}
+  <div class="article-body">
+    {% if resource.is_preview %}<p class="detail-tip detail-tip--preview">以下为开篇摘录，全文请从 GitHub 下载。</p>{% endif %}
+    {{ resource.content_html | highlight_pan | safe }}
+  </div>
+  {% endif %}
+
+  {% if resource.has_github and resource.github %}
+  <div class="cta-panel cta-panel--github">
+    <h2 class="cta-heading">完整文本 · GitHub</h2>
+    <p class="cta-desc">正文托管在 <strong>{{ classics_github_user }}/{{ resource.github.repo_label }}</strong>，本站仅展示摘录。</p>
+    <div class="cta-actions">
+      <a href="{{ resource.github.blob }}" class="btn btn-github btn-xl" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+      <a href="{{ resource.github.raw }}" class="btn btn-copy btn-xl" target="_blank" rel="noopener noreferrer" download>下载 txt</a>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.github.raw }}">复制直链</button>
+      {% include "_share_btn.html" %}
+    </div>
+    <p class="cta-link-preview"><a href="{{ resource.github.repo }}" target="_blank" rel="noopener noreferrer">{{ resource.github.repo }}</a></p>
+  </div>
+  {% endif %}
+
+  {% if resource.has_download %}
+  <div class="cta-panel" data-pan-url="{{ resource.pan_url }}">
+    <h2 class="cta-heading">下载资源</h2>
+    <div class="cta-actions">
+      <button type="button" class="btn btn-quark btn-xl js-open-pan">打开{{ pan_label }}</button>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.pan_url }}">复制链接</button>
+      {% include "_share_btn.html" %}
+    </div>
+    <p class="cta-link-preview">{{ resource.pan_url }}</p>
+    <div class="qr-block">
+      <img src="{{ resource.pan_url | qr_data_url }}" alt="二维码" width="160" height="160">
+      <p>扫码打开{{ pan_label }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not resource.has_download and not resource.has_github %}
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      {% include "_share_btn.html" %}
+    </div>
+  </div>
+  {% endif %}
+</article>
+
+{% if related %}
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    {% for item in related %}
+    <a href="{{ base_path }}/resource/{{ item.id }}" class="drama-card">{{ item.title }}</a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

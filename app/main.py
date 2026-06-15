@@ -1,0 +1,379 @@
+"""FastAPI application for 魔盘 resource site."""
+
+from __future__ import annotations
+
+from urllib.parse import quote
+
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
+
+from app import auth, database, jupan_bridge
+from app.config import (
+    BASE_PATH,
+    CATEGORIES,
+    CHANNELS,
+    CLASSICS_GITHUB_USER,
+    CONTACT_EMAIL,
+    DB_PATH,
+    DEFAULT_CHANNEL,
+    JUPAN_COVERS_DIR,
+    JUPAN_HOT_TAGS,
+    JUPAN_HOT_TAGS_VISIBLE,
+    JUPAN_PUBLIC_URL,
+    QKDUANJU_PUBLIC_URL,
+    PAGE_SIZE,
+    PAN_LABEL,
+    PUBLIC_SITE_URL,
+    SECRET_KEY,
+    SITE_SLOGAN,
+    SITE_TITLE,
+    SITE_VERSION,
+    STATIC_DIR,
+    STATIC_VERSION,
+    TEMPLATES_DIR,
+)
+from app.classics import library_label, library_subtitle
+from app.highlight import highlight_pan_words
+from app.pagination import build_page_url, clamp_page, page_window, total_pages as calc_total_pages
+from app.qr_util import quark_qr_data_url
+from app.urls import drama_share_url, resource_share_url
+
+app = FastAPI(title=SITE_TITLE)
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if JUPAN_COVERS_DIR.is_dir():
+    app.mount("/jupan-covers", StaticFiles(directory=JUPAN_COVERS_DIR), name="jupan-covers")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+templates.env.globals.update(
+    base_path=BASE_PATH,
+    site_title=SITE_TITLE,
+    site_slogan=SITE_SLOGAN,
+    site_version=SITE_VERSION,
+    static_version=STATIC_VERSION,
+    categories=CATEGORIES,
+    channels=CHANNELS,
+    default_channel=DEFAULT_CHANNEL,
+    contact_email=CONTACT_EMAIL,
+    public_site_url=PUBLIC_SITE_URL,
+    pan_label=PAN_LABEL,
+    jupan_public_url=JUPAN_PUBLIC_URL,
+    qkduanju_public_url=QKDUANJU_PUBLIC_URL,
+    hot_tags=JUPAN_HOT_TAGS,
+    hot_tags_visible=JUPAN_HOT_TAGS_VISIBLE,
+    classics_github_user=CLASSICS_GITHUB_USER,
+)
+templates.env.filters["library_label"] = library_label
+templates.env.filters["library_subtitle"] = library_subtitle
+templates.env.filters["qr_data_url"] = quark_qr_data_url
+templates.env.filters["highlight_pan"] = highlight_pan_words
+templates.env.filters["episode_count"] = jupan_bridge.episode_count
+templates.env.filters["clean_title"] = jupan_bridge.clean_title
+templates.env.filters["cover_src"] = jupan_bridge.cover_src
+templates.env.globals["page_url"] = lambda page, q="", category="", channel="", tag="": build_page_url(
+    BASE_PATH, page, q=q, category=category, channel=channel, tag=tag
+)
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    database.init_db(DB_PATH)
+    jupan_bridge.refresh_pan_cache()
+
+
+def _ctx(request: Request, **extra):
+    return {"request": request, **extra}
+
+
+def _request_base(request: Request) -> str:
+    return str(request.base_url).rstrip("/")
+
+
+def _channel_counts() -> dict[str, int]:
+    counts = database.list_channel_counts()
+    drama_total = jupan_bridge.count_dramas()
+    if drama_total:
+        counts["drama"] = drama_total
+    return counts
+
+
+@app.get("/", response_class=HTMLResponse)
+def index(
+    request: Request,
+    q: str | None = None,
+    category: str | None = None,
+    channel: str | None = None,
+    tag: str | None = None,
+    page: int = 1,
+):
+    active_channel = (channel or DEFAULT_CHANNEL).strip()
+    valid_ids = {c["id"] for c in CHANNELS}
+    if active_channel not in valid_ids:
+        active_channel = DEFAULT_CHANNEL
+    channel_meta = next((c for c in CHANNELS if c["id"] == active_channel), CHANNELS[0])
+    channel_counts = _channel_counts()
+
+    if active_channel == "drama":
+        active_tag = tag.strip() if tag else ""
+        total = jupan_bridge.count_dramas(q=q, tag=active_tag or None)
+        pages = calc_total_pages(total, PAGE_SIZE)
+        current_page = clamp_page(page, pages)
+        offset = (current_page - 1) * PAGE_SIZE
+        dramas = jupan_bridge.list_dramas(
+            q=q,
+            tag=active_tag or None,
+            limit=PAGE_SIZE,
+            offset=offset,
+        )
+        return templates.TemplateResponse(
+            "drama_channel.html",
+            _ctx(
+                request,
+                dramas=dramas,
+                q=q or "",
+                tag=active_tag,
+                channel=active_channel,
+                channel_meta=channel_meta,
+                channel_counts=channel_counts,
+                total=total,
+                total_all=channel_counts.get("drama", total),
+                page=current_page,
+                total_pages=pages,
+                page_items=page_window(current_page, pages),
+            ),
+        )
+
+    active_category = category.strip() if category else ""
+    classics_prefix = active_channel == "classics" and bool(active_category)
+    total = database.count_resources(
+        q=q,
+        category=active_category or None,
+        channel=active_channel,
+        category_prefix=classics_prefix,
+    )
+    pages = calc_total_pages(total, PAGE_SIZE)
+    current_page = clamp_page(page, pages)
+    offset = (current_page - 1) * PAGE_SIZE
+    resources = database.list_resources(
+        q=q,
+        category=active_category or None,
+        channel=active_channel,
+        category_prefix=classics_prefix,
+        limit=PAGE_SIZE,
+        offset=offset,
+    )
+    if active_channel == "classics":
+        category_counts = database.list_classics_library_counts()
+    else:
+        category_counts = database.list_category_counts(channel=active_channel)
+    total_all = channel_counts.get(active_channel, total)
+    return templates.TemplateResponse(
+        "index.html",
+        _ctx(
+            request,
+            resources=resources,
+            q=q or "",
+            category=active_category,
+            channel=active_channel,
+            channel_meta=channel_meta,
+            channel_counts=channel_counts,
+            category_counts=category_counts,
+            total=total,
+            total_all=total_all,
+            page=current_page,
+            total_pages=pages,
+            page_items=page_window(current_page, pages),
+        ),
+    )
+
+
+@app.get("/drama/{drama_id}", response_class=HTMLResponse)
+def drama_detail(request: Request, drama_id: int):
+    drama = jupan_bridge.get_drama(drama_id)
+    if not drama:
+        raise HTTPException(status_code=404, detail="短剧不存在")
+    related = jupan_bridge.list_dramas(limit=6)
+    related = [d for d in related if d.id != drama.id][:5]
+    return templates.TemplateResponse(
+        "drama_detail.html",
+        _ctx(
+            request,
+            drama=drama,
+            related=related,
+            share_page_url=drama_share_url(drama_id, request_base=_request_base(request)),
+        ),
+    )
+
+
+@app.get("/resource/{resource_id}", response_class=HTMLResponse)
+def resource_detail(request: Request, resource_id: int):
+    resource = database.get_resource(resource_id)
+    if not resource:
+        raise HTTPException(status_code=404, detail="资源不存在")
+    if resource.channel == "classics":
+        lib = library_label(resource.category)
+        related = database.list_resources(
+            category=lib or None,
+            channel="classics",
+            category_prefix=bool(lib),
+            limit=6,
+        )
+    else:
+        related = database.list_resources(
+            category=resource.category, channel=resource.channel, limit=6
+        )
+    related = [r for r in related if r.id != resource.id][:5]
+    return templates.TemplateResponse(
+        "detail.html",
+        _ctx(
+            request,
+            resource=resource,
+            related=related,
+            share_page_url=resource_share_url(resource_id, request_base=_request_base(request)),
+        ),
+    )
+
+
+@app.get("/admin/login", response_class=HTMLResponse)
+def admin_login_page(request: Request, error: str | None = None):
+    if auth.is_admin(request):
+        return RedirectResponse("/admin", status_code=303)
+    return templates.TemplateResponse("admin/login.html", _ctx(request, error=error))
+
+
+@app.post("/admin/login")
+def admin_login_submit(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+):
+    if auth.login(request, username, password):
+        return RedirectResponse("/admin", status_code=303)
+    return templates.TemplateResponse(
+        "admin/login.html",
+        _ctx(request, error="用户名或密码错误"),
+        status_code=401,
+    )
+
+
+@app.get("/admin/logout")
+def admin_logout(request: Request):
+    auth.logout(request)
+    return RedirectResponse("/", status_code=303)
+
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_dashboard(request: Request, q: str | None = None, msg: str | None = None):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    resources = database.list_resources(q=q, limit=500)
+    return templates.TemplateResponse(
+        "admin/list.html",
+        _ctx(request, resources=resources, q=q or "", msg=msg),
+    )
+
+
+@app.get("/admin/resource/new", response_class=HTMLResponse)
+def admin_new_page(request: Request):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    return templates.TemplateResponse(
+        "admin/form.html",
+        _ctx(request, resource=None, action="create"),
+    )
+
+
+@app.post("/admin/resource/new")
+def admin_create(
+    request: Request,
+    title: str = Form(...),
+    pan_url: str = Form(""),
+    category: str = Form(""),
+    excerpt: str = Form(""),
+    content_html: str = Form(""),
+    published_at: str = Form(""),
+):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    try:
+        database.create_resource(
+            title,
+            pan_url,
+            category or None,
+            excerpt or None,
+            content_html or None,
+            published_at or None,
+            link_status="own" if pan_url.strip() else "pending",
+        )
+    except Exception as exc:
+        return templates.TemplateResponse(
+            "admin/form.html",
+            _ctx(
+                request,
+                resource={
+                    "title": title,
+                    "pan_url": pan_url,
+                    "category": category,
+                    "excerpt": excerpt,
+                    "content_html": content_html,
+                    "published_at": published_at,
+                },
+                action="create",
+                error=str(exc),
+            ),
+            status_code=400,
+        )
+    return RedirectResponse(f"/admin?msg={quote('添加成功')}", status_code=303)
+
+
+@app.get("/admin/resource/{resource_id}/edit", response_class=HTMLResponse)
+def admin_edit_page(request: Request, resource_id: int):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    resource = database.get_resource(resource_id)
+    if not resource:
+        raise HTTPException(status_code=404, detail="资源不存在")
+    return templates.TemplateResponse(
+        "admin/form.html",
+        _ctx(request, resource=resource, action="edit"),
+    )
+
+
+@app.post("/admin/resource/{resource_id}/edit")
+def admin_update(
+    request: Request,
+    resource_id: int,
+    title: str = Form(...),
+    pan_url: str = Form(""),
+    category: str = Form(""),
+    excerpt: str = Form(""),
+    content_html: str = Form(""),
+    published_at: str = Form(""),
+    link_status: str = Form("pending"),
+):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    if pan_url.strip() and link_status == "pending":
+        link_status = "own"
+    database.update_resource(
+        resource_id,
+        title,
+        pan_url,
+        category or None,
+        excerpt or None,
+        content_html or None,
+        published_at or None,
+        link_status,
+    )
+    return RedirectResponse(f"/admin?msg={quote('已保存')}", status_code=303)
+
+
+@app.post("/admin/resource/{resource_id}/delete")
+def admin_delete(request: Request, resource_id: int):
+    if not auth.is_admin(request):
+        return RedirectResponse("/admin/login", status_code=303)
+    database.delete_resource(resource_id)
+    return RedirectResponse(f"/admin?msg={quote('已删除')}", status_code=303)

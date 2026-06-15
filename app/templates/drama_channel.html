@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{% if tag %}{{ tag }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
+
+{% block nav %}
+<a href="{{ base_path }}/?channel=drama" class="mp-nav-link is-active">短剧</a>
+<a href="{{ base_path }}/" class="mp-nav-link">资源库</a>
+<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>
+{% endblock %}
+
+{% block content %}
+<div class="mp-container">
+  <nav class="mp-channels" aria-label="频道">
+    {% for ch in channels %}
+    <a href="{{ base_path }}/?channel={{ ch.id }}"
+       class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
+      <span class="mp-channel-label">{{ ch.label }}</span>
+      <span class="mp-channel-count">{{ channel_counts.get(ch.id, 0) }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+
+  <section class="mp-hero mp-hero--drama">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }} · 网盘1</p>
+      <h1>{{ channel_meta.hint }}</h1>
+      <p class="mp-hero-desc">
+        短剧索引来自<strong>剧盘</strong>与 <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">夸克短剧</a>（qkduanju.com），优先使用自有夸克网盘链接，否则直达源站分享。
+      </p>
+    </div>
+    <div class="mp-hero-stat">
+      <span class="mp-hero-stat-num">{{ total_all }}</span>
+      <span class="mp-hero-stat-label">部短剧</span>
+    </div>
+  </section>
+
+  <section class="mp-toolbar">
+    <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
+      <input type="hidden" name="channel" value="drama">
+      <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="搜索短剧名称…" autocomplete="off">
+      {% if tag %}<input type="hidden" name="tag" value="{{ tag }}">{% endif %}
+      <button type="submit">搜索</button>
+      {% if q or tag %}<a href="{{ base_path }}/?channel=drama" class="mp-search-clear">清除</a>{% endif %}
+    </form>
+  </section>
+
+  {% if not q %}
+  <section class="mp-drama-tags" aria-label="热词筛选">
+    <span class="mp-drama-tags-label">癖好热词</span>
+    <div class="mp-drama-tags-list" id="drama-tags-list">
+      <a href="{{ base_path }}/?channel=drama" class="mp-drama-tag{% if not tag %} is-active{% endif %}">全部</a>
+      {% for kw in hot_tags[:hot_tags_visible] %}
+      <a href="{{ base_path }}/?channel=drama&tag={{ kw | urlencode }}"
+         class="mp-drama-tag{% if tag == kw %} is-active{% endif %}">{{ kw }}</a>
+      {% endfor %}
+      {% for kw in hot_tags[hot_tags_visible:] %}
+      <a href="{{ base_path }}/?channel=drama&tag={{ kw | urlencode }}"
+         class="mp-drama-tag mp-drama-tag--extra{% if tag == kw %} is-active{% endif %}" hidden>{{ kw }}</a>
+      {% endfor %}
+    </div>
+    {% if hot_tags|length > hot_tags_visible %}
+    <button type="button" class="mp-drama-tags-more" id="drama-tags-toggle" aria-expanded="false">
+      展开更多（{{ hot_tags|length - hot_tags_visible }}）
+    </button>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if q or tag %}
+  <p class="mp-result-hint">共 {{ total }} 部{% if tag %} · 标签「{{ tag }}」{% endif %}{% if q %} · 搜索「{{ q }}」{% endif %}</p>
+  {% endif %}
+
+  <section class="mp-drama-section">
+    <div class="mp-drama-section-head">
+      <h2>{% if tag or q %}筛选结果{% else %}最新短剧{% endif %}</h2>
+      <span>共 {{ total }} 部</span>
+    </div>
+
+    {% if dramas %}
+    <div class="mp-drama-grid">
+      {% for drama in dramas %}
+      {% set episodes = drama.title | episode_count %}
+      {% set cover = drama.cover_url | cover_src %}
+      <a href="{{ base_path }}/drama/{{ drama.id }}" class="mp-drama-card">
+        <div class="mp-drama-cover">
+          {% if cover %}
+          <img src="{{ base_path }}{{ cover }}" alt="" loading="lazy" decoding="async">
+          {% else %}
+          <div class="mp-drama-cover-fallback"></div>
+          {% endif %}
+          <span class="mp-drama-play" aria-hidden="true">▶</span>
+          {% if episodes %}<span class="mp-drama-ep">{{ episodes }}集</span>{% endif %}
+        </div>
+        <div class="mp-drama-body">
+          <h3>{{ drama.title | clean_title }}</h3>
+          {% if drama.tags %}
+          <div class="mp-drama-mini-tags">
+            {% for t in drama.tags[:3] %}<span>{{ t }}</span>{% endfor %}
+          </div>
+          {% endif %}
+          <p class="mp-drama-meta">
+            {% if drama.published_at %}<time>{{ drama.published_at[:10] }}</time>{% endif %}
+            <span>夸克观看 →</span>
+          </p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="mp-empty">暂无短剧。请确认剧盘站点数据库存在：<code>~/duanjuku-site/data/site.db</code></div>
+    {% endif %}
+  </section>
+
+  {% if total_pages > 1 %}
+  <nav class="mp-pagination" aria-label="分页">
+    {% if page > 1 %}
+    <a href="{{ page_url(page - 1, q, '', channel, tag) }}" class="mp-page-btn">上一页</a>
+    {% endif %}
+    <div class="mp-page-nums">
+      {% for p in page_items %}
+        {% if p == '…' %}<span class="mp-page-gap">…</span>
+        {% elif p == page %}<span class="mp-page-current">{{ p }}</span>
+        {% else %}<a href="{{ page_url(p, q, '', channel, tag) }}" class="mp-page-num">{{ p }}</a>{% endif %}
+      {% endfor %}
+    </div>
+    {% if page < total_pages %}
+    <a href="{{ page_url(page + 1, q, '', channel, tag) }}" class="mp-page-btn">下一页</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  <section class="mp-jupan-link">
+    <p>更多短剧源站</p>
+    <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">{{ qkduanju_public_url }} →</a>
+    <span class="mp-jupan-link-sep">·</span>
+    <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">{{ jupan_public_url }} →</a>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ drama.title | clean_title }} - 短剧 - {{ site_title }}{% endblock %}
+
+{% block nav %}
+<a href="{{ base_path }}/?channel=drama" class="mp-nav-link">← 短剧列表</a>
+{% endblock %}
+
+{% block body_class %}page-drama-detail{% endblock %}
+
+{% block content %}
+{% set episodes = drama.title | episode_count %}
+{% set cover = drama.cover_url | cover_src %}
+{% set share_title = drama.title | clean_title %}
+{% set share_quark = drama.pan_url %}
+{% set share_kind = 'drama' %}
+<article class="mp-drama-detail">
+  <div class="mp-drama-detail-hero">
+    <div class="mp-drama-detail-cover">
+      {% if cover %}
+      <img src="{{ base_path }}{{ cover }}" alt="{{ drama.title | clean_title }}" loading="eager">
+      {% else %}
+      <div class="mp-drama-cover-fallback mp-drama-cover-fallback--lg"></div>
+      {% endif %}
+      {% if episodes %}<span class="mp-drama-ep mp-drama-ep--lg">全 {{ episodes }} 集</span>{% endif %}
+    </div>
+    <div class="mp-drama-detail-info">
+      <div class="detail-resource-tags">
+        <span class="pill pill-own">{{ pan_label }} · 网盘1</span>
+        {% include "_share_pill.html" %}
+      </div>
+      <h1>{{ drama.title | clean_title }}</h1>
+      {% if drama.published_at %}
+      <p class="detail-meta">更新于 {{ drama.published_at[:10] }}</p>
+      {% endif %}
+      {% if drama.tags %}
+      <div class="mp-drama-mini-tags mp-drama-mini-tags--detail">
+        {% for t in drama.tags %}
+        <a href="{{ base_path }}/?channel=drama&tag={{ t | urlencode }}" class="mp-drama-tag">{{ t }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p class="detail-tip">点击下方打开夸克网盘（第一个夸克盘分享链），即可观看或保存。</p>
+    </div>
+  </div>
+
+  <div class="cta-panel" data-pan-url="{{ drama.pan_url }}">
+    <h2 class="cta-heading">打开夸克观看</h2>
+    <div class="cta-actions">
+      <button type="button" class="btn btn-quark btn-xl js-open-pan">打开{{ pan_label }}</button>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ drama.pan_url }}">复制网盘链接</button>
+      {% include "_share_btn.html" %}
+    </div>
+    <p class="cta-link-preview">{{ drama.pan_url }}</p>
+    <div class="qr-block">
+      <img src="{{ drama.pan_url | qr_data_url }}" alt="二维码" width="160" height="160">
+      <p>扫码打开{{ pan_label }}</p>
+    </div>
+  </div>
+</article>
+
+{% if related %}
+<section class="related-section">
+  <h2>更多短剧</h2>
+  <div class="mp-drama-grid mp-drama-grid--compact">
+    {% for item in related %}
+    <a href="{{ base_path }}/drama/{{ item.id }}" class="mp-drama-card mp-drama-card--compact">
+      <span class="mp-drama-card--compact-title">{{ item.title | clean_title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}
