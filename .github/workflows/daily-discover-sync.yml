@@ -1,0 +1,72 @@
+name: Daily Discover Sync
+
+on:
+  schedule:
+    # 每天北京时间 06:00（UTC 22:00 前一天）
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: mopan-site
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        with:
+          repository: kang250813-source/mopan-sync
+          path: mopan-sync
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -q -r mopan-sync/requirements.txt
+          pip install -q -r mopan-site/requirements.txt
+
+      - name: Run daily discover sync
+        env:
+          SITE_ROOT: ${{ github.workspace }}/mopan-site
+          PUSH_GITHUB: "0"
+          BASE_PATH: /mopan-site
+        run: |
+          cd mopan-sync
+          python3 -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+          chmod +x scripts/daily_discover_sync.sh
+          ./scripts/daily_discover_sync.sh
+
+      - name: Commit and push mopan-site
+        working-directory: mopan-site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs data/discover.json data/sync_meta.json
+          if git diff --staged --quiet; then
+            echo "mopan-site: no changes"
+          else
+            git commit -m "chore: daily discover sync $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Commit and push mopan-sync state
+        working-directory: mopan-sync
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/discover_sync_state.json
+          if git diff --staged --quiet; then
+            echo "mopan-sync: no changes"
+          else
+            git commit -m "chore: daily discover crawl $(date -u +%Y-%m-%d)"
+            git push
+          fi

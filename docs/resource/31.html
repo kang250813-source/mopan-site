@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  
+  <meta name="site-title" content="魔盘">
+  <title>OpenCyvis：在后台虚拟显示器运行的开源 AI 手机 Agent - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/mopan-site/static/mopan.css?v=1781498788">
+  
+</head>
+<body class="">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/mopan-site/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>夸克网盘 · 自用资源索引 · 本地整理</small>
+        </span>
+      </a>
+      <nav class="mp-nav">
+<a href="/mopan-site/" class="mp-nav-link">← 资源库</a>
+</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">AI 工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="OpenCyvis：在后台虚拟显示器运行的开源 AI 手机 Agent"
+  data-share-page="/mopan-site/resource/31.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="分享本页"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享</span>
+</button>
+    </div>
+    <h1>OpenCyvis：在后台虚拟显示器运行的开源 AI 手机 Agent</h1>
+    
+    <p class="detail-meta">发布于 2026-05-14</p>
+    
+  </div>
+
+  
+  <div class="article-body">
+    
+    <p><span style="color: #ff0000;">OpenCyvis（全称 Open Cyber Jarvis）是一个基于底层安卓系统的<strong>开源 AI 手机 Agent</strong> 实验项目</span>。</p>
+<p>这几年各家都在推 AI 手机和语音助理。但商业 AI 手机真正让技术用户在意的，不只是价格，而是模型选择、数据流向和权限边界往往不够透明。不仅如此，现阶段大多数基于无障碍服务（Accessibility）的手机自动化工具，在帮你跨应用操作（比如买杯咖啡或查日程）时，往往会死死霸占你的前台屏幕，这期间你什么都干不了。</p>
+<p></p>
+<p><span style="color: #ff0000;"><strong>OpenCyvis 的思路是这样的：别让 AI 在你的主屏幕上乱点，而是给它单独开一块后台屏幕去干活；至于用哪个模型、走云端还是本地，也尽量交给用户自己选</strong></span>。</p>
+<div style="background-color: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin-bottom: 20px;"><strong>大白话解释：</strong><br />
+传统的手机自动化脚本是直接在你的屏幕上模拟点击；而 OpenCyvis 相当于在手机系统里单独开了一块独立的“后台虚拟显示器”，AI 在那块屏幕里看界面、点 App 帮你跑流程，而你的主屏幕依然可以正常看视频或聊微信，互不干扰。</div>
+<h2>OpenCyvis 为什么能在后台跑？关键是虚拟显示器</h2>
+<p>OpenCyvis 的技术思路并不是传统的 ADB 连线控制。它作为系统级特权应用运行，直接调用了 Android 系统的虚拟显示器（VirtualDisplay）能力。</p>
+<p><a href="https://github.com/opencyvis/opencyvis-phone/blob/main/docs/demos/demo1_qwen_final_6x.gif" target="_blank" rel="noopener noreferrer" data-target="animated-image.originalLink"><img decoding="async" src="https://github.com/opencyvis/opencyvis-phone/raw/main/docs/demos/demo1_qwen_final_6x.gif" alt="AI 设闹钟、开勿扰、切暗色主题" data-target="animated-image.originalImage" title=""></a>    <a href="https://github.com/opencyvis/opencyvis-phone/blob/main/docs/demos/demo_airpods_controlpanel_6x.gif" target="_blank" rel="noopener noreferrer" data-target="animated-image.originalLink"><img decoding="async" src="https://github.com/opencyvis/opencyvis-phone/raw/main/docs/demos/demo_airpods_controlpanel_6x.gif" alt="AI 在 Amazon 和 Walmart 比价 AirPods" data-target="animated-image.originalImage" title=""></a></p>
+<p>为了让 AI 能真正理解界面，它同时读取两类信息：一类是后台虚拟屏幕的实时截图，用来理解当前画面的视觉布局；另一类是 Accessibility Tree（UI 元素结构树），用来精准获取按钮的坐标、文本内容和层级关系。而且官方说了，这种“双通道”方式比单纯的截图视觉识别更适合处理复杂的 App 交互。</p>
+<h2>模型可以自己选，但本地运行也有硬件门槛</h2>
+<p>OpenCyvis 不绑定单一模型厂商，这是它区别于不少商业 AI 手机方案的关键点。</p>
+<p>你可以选择接入 OpenAI-compatible API（如 Qwen、GPT），也可以原生支持 Anthropic (Claude)。更重要的是，如果你在意数据隐私，它支持通过 Ollama 跑纯本地的大模型（比如 Gemma、Llama）。在使用本地模型和本地推理的情况下，理论上可以大幅减少敏感数据离开设备的需求。</p>
+<p><a href="https://github.com/opencyvis/opencyvis-phone/blob/main/docs/demos/demo2_v3_cropped_4x.gif" target="_blank" rel="noopener noreferrer" data-target="animated-image.originalLink"><img decoding="async" src="https://github.com/opencyvis/opencyvis-phone/raw/main/docs/demos/demo2_v3_cropped_4x.gif" alt="观看模式 — 实时查看 AI 虚拟显示器" data-target="animated-image.originalImage" title=""></a>    <a href="https://github.com/opencyvis/opencyvis-phone/blob/main/docs/demos/demo_overlay_final_cn_2x.gif" target="_blank" rel="noopener noreferrer" data-target="animated-image.originalLink"><img decoding="async" src="https://github.com/opencyvis/opencyvis-phone/raw/main/docs/demos/demo_overlay_final_cn_2x.gif" alt="悬浮窗 — AI 在后台工作时桌面显示悬浮球" data-target="animated-image.originalImage" title=""></a></p>
+<p>但这也意味着，如果你希望尽量减少对云端 API 的依赖，设备算力和本地推理环境就会成为新的门槛，你手头设备的硬件算力必须能扛得住这些大模型。</p>
+<h2>最现实的门槛：这不是装个 APK 就能用</h2>
+<p>想法确实很有意思，但话也得说在前面：OpenCyvis 现在不是普通用户能直接上手的东西，门槛很高。</p>
+<div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;"><strong>开源部署提醒：</strong><br />
+千万别以为去应用商店下个 App 给点权限就能跑。它是一个特权系统应用（Privileged System Application），必须深度集成到 AOSP（Android 开放源代码项目）系统镜像中，并进行平台级签名。</div>
+<p>换句话说，目前版本需要懂底层编译和刷机。官方 Roadmap 虽然提到了未来可能探索不需要刷 ROM 的轻量级安装方式，但这还不是当下的现实。</p>
+<h2>开源更透明，但不等于没有权限风险</h2>
+<p>在移动端 AI Agent 领域，即便是开源项目，也需要正视底层权限带来的风险。</p>
+<p>为了完成跨应用任务，AI 拥有读取屏幕、点击 App、输入文字的全量权限，这属于手机上的最高级别控制权。虽然 OpenCyvis 承诺截图只存内存不写磁盘，且代码完全开源可审计，但这只代表它比闭源方案更容易被检查，并不等于“天然绝对安全”。</p>
+<div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;"><strong>避坑点：</strong><br />
+如果你为了响应速度接入了云端大模型 API，你的屏幕截图和 UI 数据依然会发送至对应的服务商。这套框架是否适合放进生产环境或主力机，还要看你使用的系统镜像是否干净、模型端点是否合规。</div>
+<h2>大家最关心的几个部署门槛问题（FAQ）</h2>
+<p><strong>Q：这套系统需要手机有 Root 权限吗？</strong><br />
+A：不需要常规意义的 Root，但它需要比 Root 更底层的系统集成权限。你必须把它编译进 AOSP 系统镜像并用 Platform Key 签名，这实际上比普通 Root 刷面具的门槛还要高。</p>
+<p><strong>Q：有没有真实设备支持列表？</strong><br />
+A：目前只要是能兼容 AOSP 的设备理论上都可以。对于没有专门测试机的开发者，项目官方提供了一套模拟器部署脚本（deploy-emu.sh），可以先在电脑模拟器里跑通流程。</p>
+<p><strong>Q：它能用来批量操控账号或者自动化薅羊毛吗？</strong><br />
+A：项目本身的定位是“本人设备上的合法自动化助理”。必须明确提醒：利用高权限 Agent 绕过平台规则、进行批量刷量等灰产操作，不仅面临账号被封禁的风险，也不符合合法合规的使用边界。</p>
+<h2>哪些人适合关注，哪些人可以先跳过</h2>
+<p>以后 AI 越来越多地替你操作手机，问题就不只是“好不好用”了，还包括用哪个模型、数据会发到哪里、AI 到底能碰哪些权限。OpenCyvis 现在还很早期，但它至少把这些问题摊开了，也给出了一个开源方向的参考。</p>
+<div style="background-color: #f5f5f5; border-left: 4px solid #9e9e9e; padding: 15px; margin-bottom: 20px;"><strong>结论：</strong><br />
+如果你是 Android 开发者、ROM 玩家，或是研究私有化 AI 工作流的团队，这是一个值得持续关注的技术参考项目；如果你只是个普通用户，想给自己的主力机找个好用的免费助理，现阶段请直接跳过，不要折腾。</div>
+<p>延伸阅读： 了解更多关于本地大模型与 AI 自动化的部署方案</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>项目主页与源码入口</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;">
+<p><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://github.com/opencyvis/opencyvis-phone" target="_blank" rel="nofollow noopener">🌐 GitHub 项目主页 <span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">直达 OpenCyvis 源码仓库与技术架构文档</span></a></p>
+<p><a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://github.com/OpenCyvis/opencyvis-phone#deploy-to-device" target="_blank" rel="nofollow noopener">🐙 AOSP 部署文档 <span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">查看开发者级别的 Android 系统集成说明</span></a></p>
+</div>
+<div style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 15px;">
+<p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;"><strong>免责声明：</strong>本文基于 GitHub 公开项目说明整理，旨在进行早期的技术样板观察，不构成生产环境部署的稳定性保证。该项目涉及 Android 底层系统（AOSP）集成与极高的控制权限赋予，盲目尝试可能导致主力设备损坏或数据异常。具体的数据处理边界与开源协议细节，请务必以仓库最新版的官方说明为准。</p>
+</div>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="OpenCyvis：在后台虚拟显示器运行的开源 AI 手机 Agent"
+  data-share-page="/mopan-site/resource/31.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给好友</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/mopan-site/resource/3.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
+    
+    <a href="/mopan-site/resource/6.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
+    
+    <a href="/mopan-site/resource/16.html" class="drama-card">Can I Run AI：检测电脑能不能运行本地大模型的网页工具</a>
+    
+    <a href="/mopan-site/resource/17.html" class="drama-card">MioSub：开源 AI 字幕工具，自动完成视频转录、翻译与压制</a>
+    
+    <a href="/mopan-site/resource/24.html" class="drama-card">AirTranslate：Mac系统音频翻译工具，外语视频与会议实时生成悬浮字幕</a>
+    
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · 内容在站内 · 下载走自有夸克网盘（主夸克盘）</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/mopan-site/static/app.js?v=1781498788"></script>
+</body>
+</html>

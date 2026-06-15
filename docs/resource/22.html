@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  
+  <meta name="site-title" content="魔盘">
+  <title>Shizuku 通话录音：ShizuCallRecorder 免 Root Android 录音工具 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/mopan-site/static/mopan.css?v=1781498788">
+  
+</head>
+<body class="">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/mopan-site/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>夸克网盘 · 自用资源索引 · 本地整理</small>
+        </span>
+      </a>
+      <nav class="mp-nav">
+<a href="/mopan-site/" class="mp-nav-link">← 资源库</a>
+</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">软件应用</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="Shizuku 通话录音：ShizuCallRecorder 免 Root Android 录音工具"
+  data-share-page="/mopan-site/resource/22.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="分享本页"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享</span>
+</button>
+    </div>
+    <h1>Shizuku 通话录音：ShizuCallRecorder 免 Root Android 录音工具</h1>
+    
+    <p class="detail-meta">发布于 2026-05-22</p>
+    
+  </div>
+
+  
+  <div class="article-body">
+    
+    <p><strong>ShizuCallRecorder 不是给普通用户准备的一键录音 App，而是一个面向外版安卓和类原生 ROM 用户的免 Root 通话录音方案。</strong>如果你用的是 Pixel、索尼、Moto、外版三星这类机型，又不想为了双向通话录音去折腾 Root / Magisk，这类工具的价值就比较明显。</p>
+<p></p>
+<p>这类机型的通话录音麻烦在于：普通录音 App 很多时候只能靠麦克风外部收声，在不少设备上，对方声音很弱，甚至接近不可用；Root / Magisk 方案虽然权限更高，但又可能带来 OTA 升级、金融类 App 可用性、Play Integrity 验证等一堆兼容成本。</p>
+<p><strong>ShizuCallRecorder</strong> 借助 Shizuku 获取 ADB shell 权限，尝试在免 Root 环境下处理通话音频采集问题。对正在找 <strong>Shizuku 通话录音</strong> 方案的安卓玩家来说，它更像是一个需要动手配置的开源选择，而不是装上就万事大吉的录音 App。</p>
+<p></p>
+<p>它主要面向 Android 12 及以上设备，Android 11 属于有限支持，需要保持屏幕解锁，实际体验还要看具体机型和系统环境。录音文件偏向本地保存，不以云同步作为卖点。真正需要注意的是 Shizuku 权限维护：未 Root 设备重启后，通常要重新激活 Shizuku 服务，所以它更适合熟悉 ADB、无线调试和 Shizuku 的高级用户。</p>
+<p></p>
+<div style="background-color: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin-bottom: 20px;">普通录音 App 像是用手机麦克风从外部收声，只能录到环境音和听筒漏出的杂音；Root 方案则是直接改动系统底层获取最高权限，但维护成本和兼容风险更高；而 ShizuCallRecorder 借助 Shizuku 获取 shell 权限，在不完整 Root 的情况下，用系统自带的“调试钥匙”临时开门读取通话音频流。</div>
+<h2>Shizuku 通话录音的实现逻辑：为什么普通 App 经常失效</h2>
+<p>很多人找 <strong>Shizuku 通话录音</strong>，不是为了多装一个录音 App，而是因为高版本 Android 上的普通录音 App 确实越来越不好用了。尤其是 Android 12 之后，第三方应用获取通话音频流的限制更严格，很多依赖 RECORD_AUDIO 权限的工具，在通话时要么录不到对方声音，要么只能录到很弱的环境音。</p>
+<p></p>
+<p>问题不在录音按钮，而在权限。普通 App 拿不到足够高的音频采集权限；Root / Magisk 又太重，维护起来麻烦。ShizuCallRecorder 选择借助 Shizuku，把 ADB shell 权限交给 App 调用，让它能访问一部分普通应用碰不到的系统能力。这样做不等于 Root 手机，但也不是普通 App 安装权限能做到的事情。</p>
+<h2>先看门槛：ShizuCallRecorder 不是所有安卓机都适合</h2>
+<p>ShizuCallRecorder 不需要 Root，但也不是装上就能稳定录音。系统版本、Shizuku 是否正常运行、机型对 ADB 权限的限制，都会直接影响它能不能用。</p>
+<p></p>
+<div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;"><strong>避坑提醒：</strong><br />
+1. <strong>重启必掉：</strong> 这是所有未 Root 设备使用 Shizuku 生态的共同硬伤。一旦你的手机重启或关机，Shizuku 的运行环境就会彻底失效。你必须重新在手机上通过无线调试，或者连接电脑敲 ADB 命令来再次激活，否则录音功能无法被调用。<br />
+2. <strong>机型兼容差异：</strong> 部分手机厂商（如国内深度魔改的系统 UI）对 ADB 权限有额外的系统级限制。虽然项目官方标注面向 Android 11–16，但由于 Android 生态碎片化严重，实际体验极度依赖具体机型的实机测试。<br />
+3. <strong>Android 11 有限支持：</strong> 项目主要面向 Android 12+，Android 11 设备需要保持屏幕解锁，否则可能无法稳定工作。旧系统用户不要把它当成完整兼容方案。</div>
+<p>如果你的手机平时极少重启，且熟悉开发者选项的基本操作，这个门槛完全可以接受；但如果你图的是一键安装、长效省心，那么它可能不太适合你。</p>
+<h2>它能录哪些通话，哪些场景还不稳定</h2>
+<p>ShizuCallRecorder 在理论上支持以下特性：</p>
+<ul>
+<li>支持来电和去电的双向通话录音</li>
+<li>支持蓝牙耳机和远程听筒场景下的音频捕获</li>
+<li>提供了自动录音模式，支持排除规则（如忽略匿名来电或特定联系人）</li>
+<li>无持久后台进程，仅在通话事件被系统触发时运行，节省电量</li>
+</ul>
+<p></p>
+<p>不过，当前 v1.0.0 版本在部分通话状态下仍有限制。例如，当通话中接入第二路来电，或者在多路通话间切换时，App 可能会因为无法正确识别状态切换，导致音频录入到同一个文件中。然后，受 Android 隐私限制，实时获取来电号码存在延迟，可能导致文件命名在通话结束后才能完成补全。由于它深度依赖 scrcpy-server 的底层接口，一旦未来的安卓大版本改动相关接口，应用可能需要等待新版本跟进升级。</p>
+<h2>通话录音这件事，不能只看工具能不能跑</h2>
+<p>ShizuCallRecorder 偏向本地录音和本地保存，不以云同步作为卖点。这个设计对隐私更友好一些，但它不能替用户解决法律问题。通话录音在不同地区的要求差异很大，有的地方只要求单方知情，有的地方则要求双方同意。</p>
+<p>使用前最好先确认所在地规则，尤其是涉及商务沟通、纠纷取证或长期归档的场景。本站只建议把它用于合法、合规、必要的记录需求；安装包也尽量从 GitHub 官方 Release 页面获取，不要随便安装第三方搬运版本。</p>
+<h2>它和 Root 方案、普通录音 App 有什么区别</h2>
+<p>我们在选择安卓通话录音方案时，可以参考以下维度：</p>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; text-align: left;">
+<thead>
+<tr style="background-color: #f4f6f8; border-bottom: 2px solid #cfd8dc;">
+<th style="padding: 10px; border: 1px solid #cfd8dc;">对比维度</th>
+<th style="padding: 10px; border: 1px solid #cfd8dc;">普通付费 App</th>
+<th style="padding: 10px; border: 1px solid #cfd8dc;">ShizuCallRecorder</th>
+<th style="padding: 10px; border: 1px solid #cfd8dc;">Root / Magisk 方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 10px; border: 1px solid #cfd8dc; font-weight: bold;">录音效果</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">兼容性不稳定，常见问题是只能录到单边或环境音</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">理论上可实现双向音频采集（走音频直采）</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">通常更稳定，但维护成本更高</td>
+</tr>
+<tr style="background-color: #f9f9f9;">
+<td style="padding: 10px; border: 1px solid #cfd8dc; font-weight: bold;">系统侵入</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">低，普通权限安装</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">中，无需 Root，依赖 ADB</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">高，需解锁 BL 修改分区</td>
+</tr>
+<tr>
+<td style="padding: 10px; border: 1px solid #cfd8dc; font-weight: bold;">兼容影响</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">通常影响较小，不直接修改系统完整性</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">通常影响较小，不直接修改系统完整性</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">可能影响 OTA、Play Integrity 与部分金融 App 可用性</td>
+</tr>
+<tr style="background-color: #f9f9f9;">
+<td style="padding: 10px; border: 1px solid #cfd8dc; font-weight: bold;">维护成本</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">极低</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">中，每次重启需重新激活</td>
+<td style="padding: 10px; border: 1px solid #cfd8dc;">高，需定期更新模块藏 Root</td>
+</tr>
+</tbody>
+</table>
+<h2>哪些人适合试，哪些人没必要折腾</h2>
+<p>如果你用的是自带系统级通话录音的国内定制版手机，千万别看，原厂的永远是最稳定、最好用的。同时，如果你完全不懂什么是 ADB、不喜欢折腾权限桥接，也建议直接绕道。</p>
+<p>但如果你是外版 Pixel 或索尼等类原生 ROM 的主力机用户，既有强烈的双向录音刚需，又不想破坏手机的支付环境与银行 App 兼容性，那么 ShizuCallRecorder 可以算是目前少有的、辨识度较高的 Shizuku 免 Root 通话录音方案之一。</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>ShizuCallRecorder 项目主页与源码入口</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;"><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://github.com/kitsumed/ShizuCallRecorder" target="_blank" rel="nofollow noopener">🌐 GitHub 项目主页 <span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">查看开源源码与详细配置文档说明</span></a><br />
+<a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://github.com/kitsumed/ShizuCallRecorder/releases" target="_blank" rel="nofollow noopener">🐙 查看 Release 与说明文档 <span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">由开发者发布的公开版本获取通道</span></a></div>
+<div style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 15px;">
+<p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;"><strong>免责声明：</strong>本文仅对 GitHub 开源公开仓库进行技术逻辑梳理与客观选型参考，本站不分发 APK 文件，不提供第三方搬运安装包，所有版本信息请以项目官方页面为准。通话录音涉及个人隐私及所在地法律法规，请使用者在确保合规、合法的场景下使用。本工具的兼容性与具体功能表现受 Android 系统版本、机型和权限环境影响，请以开发者页面实时说明和本地实机测试为准。</p>
+</div>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="Shizuku 通话录音：ShizuCallRecorder 免 Root Android 录音工具"
+  data-share-page="/mopan-site/resource/22.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给好友</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/mopan-site/resource/15177.html" class="drama-card">Mac Sai：CleanMyMac 免费替代，开源无订阅的 Mac 清理工具</a>
+    
+    <a href="/mopan-site/resource/2.html" class="drama-card">PlainApp：开源 AirDroid 替代，用浏览器管理安卓手机</a>
+    
+    <a href="/mopan-site/resource/10.html" class="drama-card">Pinkbin：开源 Windows 磁盘清理工具，让 AI 帮你看懂文件夹能不能删</a>
+    
+    <a href="/mopan-site/resource/11.html" class="drama-card">WinLens：开源 Windows 屏幕翻译工具，原位覆盖翻译 PDF 与软件文字</a>
+    
+    <a href="/mopan-site/resource/12.html" class="drama-card">票易合：开源发票PDF合并工具，支持批量排版、重命名与查重</a>
+    
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · 内容在站内 · 下载走自有夸克网盘（主夸克盘）</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/mopan-site/static/app.js?v=1781498788"></script>
+</body>
+</html>

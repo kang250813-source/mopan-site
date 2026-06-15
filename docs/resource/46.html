@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  
+  <meta name="site-title" content="魔盘">
+  <title>VisionCull Pro：本地AI选片工具，辅助筛出模糊与闭眼废片 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/mopan-site/static/mopan.css?v=1781498788">
+  
+</head>
+<body class="">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/mopan-site/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>夸克网盘 · 自用资源索引 · 本地整理</small>
+        </span>
+      </a>
+      <nav class="mp-nav">
+<a href="/mopan-site/" class="mp-nav-link">← 资源库</a>
+</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">AI 工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="VisionCull Pro：本地AI选片工具，辅助筛出模糊与闭眼废片"
+  data-share-page="/mopan-site/resource/46.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="分享本页"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享</span>
+</button>
+    </div>
+    <h1>VisionCull Pro：本地AI选片工具，辅助筛出模糊与闭眼废片</h1>
+    
+    <p class="detail-meta">发布于 2026-04-27</p>
+    
+  </div>
+
+  
+  <div class="article-body">
+    
+    <p>VisionCull Pro 是一个专门帮摄影师“初筛废片”的<strong>本地AI选片工具</strong>。</p>
+<p>凡是拍过活动跟拍、婚礼纪实或者批量人像约拍的朋友都懂：拍摄时快门按得很轻松，回到电脑前选片才是真正耗时间的一步。一次拍摄下来几百甚至上千张照片，最耗时间的不是后期调色，而是要一张张放大检查有没有跑焦、手抖模糊，或者人物是否刚好眨眼。</p>
+<p></p>
+<div style="background-color: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin-bottom: 20px;"><strong>快速了解 VisionCull Pro：</strong><br />
+它是一个开源的桌面辅助工具，最大特点是“本地运行”，利用视觉算法辅助识别并筛出失焦、模糊和闭眼的照片。它支持生成 Lightroom 可识别的 XMP 标记，方便接入现有修图流程。目前它更像是一个面向极客摄影师的效率脚本，需要一定的动手能力才能部署。</div>
+<h2>本地AI选片工具 VisionCull Pro 解决的是初筛问题</h2>
+<p>很多摄影师搜这类工具，本质上是为了给后期“减负”。VisionCull Pro 并不是要代替你做最终的美感判断，而是充当一道“安检门”。</p>
+<p>它通过扫描你指定的文件夹，把那些“硬伤”照片（如跑焦、严重模糊）找出来。合格的照片会被自动复制到一个带时间戳的新目录里，而你的原始图库完全不动。这种非破坏性的操作逻辑，对于商业摄影师来说非常稳妥，至少不用担心机器误删了重要的素材。</p>
+<p></p>
+<h2>VisionCull Pro 的两条核心检测路径</h2>
+<p>VisionCull Pro 的本地分析逻辑主要依赖 OpenCV 和 MediaPipe。前者负责图像清晰度计算，后者负责人脸关键点识别。</p>
+<ul>
+<li><strong>清晰度检测：</strong> 工具会使用 Laplacian 方差算法评估画面清晰度。检测到人脸时，它会优先分析人脸区域的清晰度；如果没有检测到人脸，则回退到全图清晰度检测，用于风景、静物或其他非人像照片的初筛。</li>
+<li><strong>人像闭眼识别：</strong> 在检测到人脸后，工具会基于 MediaPipe Face Mesh 获取眼部关键点，并通过 Eye Aspect Ratio 判断是否存在闭眼情况。这个逻辑更适合人像连拍、集体合照等容易出现闭眼废片的场景。</li>
+</ul>
+<p></p>
+<p>文件格式支持 JPG/JPEG 以及 CR2、CR3、NEF、ARW、RAF、DNG 等 RAW 扩展名。需要注意的是，RAW 文件会先尝试通过 ExifTool 提取预览图再参与分析，不同相机品牌和 RAW 文件结构可能影响实际效果，建议在正式处理前先用备份目录小规模测试。</p>
+<div style="background: #fff8e1; border-left: 4px solid #ffb300; border-radius: 4px; padding: 14px 18px; margin: 20px 0;"><strong>避坑提醒：</strong><br />
+项目目前处于非常早期阶段，启动命令 <code>node server.js</code> 可能会报错，因为仓库中并没有该文件。根据 <code>package.json</code> 实际配置，从 package.json 看，实际启动入口更接近基于 Electron 的 <code>electron .</code>。建议有一定命令行基础的用户参考源码中的脚本说明进行操作。</div>
+<h2>适合谁用，以及不可忽视的隐私边界</h2>
+<p>在本地分析路径下，VisionCull Pro 更适合那些需要谨慎处理客户照片、商业原片或未公开素材的摄影从业者。但在使用中有一个细节需要注意：代码中保留了一个可选的“外部 AI Vision API”路径。如果你在设置中自行启用了它，照片会被转为 base64 发送到外部接口。<strong>对于客户未公开素材或商业拍摄原片，建议优先使用本地分析路径，并在启用任何外部 API 前确认数据处理方式。</strong></p>
+<p><strong>这工具适合你吗？</strong></p>
+<ul>
+<li><strong>适合：</strong> 每次出片量大（如婚礼、活动）、熟悉 Node.js/Python 环境、注重数据隐私的摄影师。</li>
+<li><strong>不适合：</strong> 追求开箱即用、没有命令行基础的用户，或者需要靠氛围、构图等艺术感选片的场景。</li>
+</ul>
+<h2>使用前需要确认的几个问题</h2>
+<p><strong>1、它会误判吗？</strong><br />
+会。AI 只能识别“清晰度”和“睁眼状态”，无法识别“情绪”。它可能会把一些艺术化的动态模糊、特写焦外误判为废片，所以它只适合做第一道粗筛，最终选片仍需人工复核。</p>
+<p><strong>2、商用前需要确认许可状态吗？</strong><br />
+虽然 项目标注为 MIT 协议，如果你准备将其用于企业级或商业化流程，建议先关注项目仓库的后续更新，确认法律边界。</p>
+<div style="background-color: #f5f5f5; border-left: 4px solid #9e9e9e; padding: 15px; margin-bottom: 20px;"><strong>结论：</strong><br />
+一个思路很实用的本地 AI 辅助选片工具，适合帮摄影师减少一部分机械初筛工作；但目前仍处于早期阶段，部署和使用都有一定门槛，更适合愿意折腾开源工具的用户。</div>
+<p>更多 AI 效率工具汇总</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>项目主页与源码入口</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;"><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://github.com/YuChiHuaCheng/vision-cull-pro" target="_blank" rel="nofollow noopener">🌐 GitHub 项目主页 <span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">查看源码、依赖说明及最新的 Release 版本</span></a></div>
+<div style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 15px;">
+<p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;"><strong>免责声明：</strong>本文基于开源项目 GitHub 资料整理。由于该项目目前仍处于早期开发阶段，其稳定性及文件兼容性受本地环境影响较大。建议在处理重要拍摄素材前，先在备份目录中进行小规模测试。本站不提供该项目的安装维护服务，实际使用请以项目仓库最新说明为准。</p>
+</div>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="VisionCull Pro：本地AI选片工具，辅助筛出模糊与闭眼废片"
+  data-share-page="/mopan-site/resource/46.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给好友</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/mopan-site/resource/3.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
+    
+    <a href="/mopan-site/resource/6.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
+    
+    <a href="/mopan-site/resource/16.html" class="drama-card">Can I Run AI：检测电脑能不能运行本地大模型的网页工具</a>
+    
+    <a href="/mopan-site/resource/17.html" class="drama-card">MioSub：开源 AI 字幕工具，自动完成视频转录、翻译与压制</a>
+    
+    <a href="/mopan-site/resource/24.html" class="drama-card">AirTranslate：Mac系统音频翻译工具，外语视频与会议实时生成悬浮字幕</a>
+    
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · 内容在站内 · 下载走自有夸克网盘（主夸克盘）</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/mopan-site/static/app.js?v=1781498788"></script>
+</body>
+</html>

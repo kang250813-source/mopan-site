@@ -71,7 +71,7 @@
   <section class="mp-feed">
     {% for item in resources %}
     <article class="mp-card">
-      <a href="{{ base_path }}/resource/{{ item.id }}" class="mp-card-link">
+      <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}" class="mp-card-link">
         <div class="mp-card-top">
           {% if item.category %}
           <span class="mp-tag">{% if channel == 'classics' %}{{ item.category | library_label }}{% else %}{{ item.category }}{% endif %}</span>
