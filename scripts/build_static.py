@@ -79,6 +79,11 @@ def _resource_from_dict(raw: dict) -> Resource:
         content_html=raw.get("content_html"),
         source_ref=raw.get("source_ref"),
         pan_save_path=raw.get("pan_save_path"),
+        pan_branches_json=(
+            json.dumps(raw["pan_branches"], ensure_ascii=False)
+            if isinstance(raw.get("pan_branches"), list)
+            else raw.get("pan_branches_json")
+        ),
         published_at=raw.get("published_at"),
         link_status=raw.get("link_status", "pending"),
         created_at=raw.get("created_at"),

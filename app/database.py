@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -37,6 +38,7 @@ class Resource:
     content_html: str | None = None
     source_ref: str | None = None
     pan_save_path: str | None = None
+    pan_branches_json: str | None = None
     published_at: str | None = None
     link_status: str = "pending"
     created_at: str | None = None
@@ -70,6 +72,16 @@ class Resource:
             links["blob"] = self.pan_url.split("?")[0].strip()
         return links
 
+    @property
+    def pan_branches(self) -> list[str]:
+        if not self.pan_branches_json:
+            return []
+        try:
+            data = json.loads(self.pan_branches_json)
+        except json.JSONDecodeError:
+            return []
+        return [str(x).strip() for x in data if str(x).strip()]
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
@@ -99,6 +111,7 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         ("channel", "TEXT NOT NULL DEFAULT 'discover'"),
         ("source_ref", "TEXT"),
         ("pan_save_path", "TEXT"),
+        ("pan_branches", "TEXT"),
     ]
     for name, typedef in additions:
         if name not in cols:
@@ -150,6 +163,7 @@ def _row_to_resource(row: sqlite3.Row) -> Resource:
         content_html=row["content_html"] if "content_html" in keys else None,
         source_ref=row["source_ref"] if "source_ref" in keys else None,
         pan_save_path=row["pan_save_path"] if "pan_save_path" in keys else None,
+        pan_branches_json=row["pan_branches"] if "pan_branches" in keys else None,
         published_at=row["published_at"],
         link_status=row["link_status"],
         created_at=row["created_at"],
@@ -171,6 +185,7 @@ def upsert_resource(
     channel: str | None = None,
     source_ref: str | None = None,
     pan_save_path: str | None = None,
+    pan_branches: list[str] | None = None,
     replace_content: bool = False,
     db_path: Path | None = None,
 ) -> str:
@@ -179,6 +194,7 @@ def upsert_resource(
     ptype = pan_type or PAN_TYPE
     ch = channel or DEFAULT_CHANNEL
     now = _now()
+    branches_json = json.dumps(pan_branches, ensure_ascii=False) if pan_branches is not None else None
     with _connect(db_path) as conn:
         row = None
         if source_ref:
@@ -210,6 +226,7 @@ def upsert_resource(
                     link_status = ?, channel = ?,
                     source_ref = COALESCE(?, source_ref),
                     pan_save_path = COALESCE(?, pan_save_path),
+                    pan_branches = COALESCE(?, pan_branches),
                     wp_id = COALESCE(?, wp_id), updated_at = ?
                 WHERE id = ?
                 """,
@@ -226,6 +243,7 @@ def upsert_resource(
                     ch,
                     source_ref,
                     pan_save_path,
+                    branches_json,
                     wp_id,
                     now,
                     row["id"],
@@ -237,9 +255,9 @@ def upsert_resource(
             """
             INSERT INTO resources (
               wp_id, title, pan_url, pan_type, channel, category, excerpt,
-              content_html, source_ref, pan_save_path, published_at,
+              content_html, source_ref, pan_save_path, pan_branches, published_at,
               link_status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 wp_id,
@@ -252,6 +270,7 @@ def upsert_resource(
                 content_html,
                 source_ref,
                 pan_save_path,
+                branches_json,
                 published_at,
                 link_status,
                 now,
