@@ -117,8 +117,9 @@ def _load_payload_from_db() -> SitePayload:
             "category_counts": category_counts,
         }
         channel_counts[channel] = len(rows)
-    dramas = jupan_bridge.list_dramas(limit=10_000, offset=0)
-    channel_counts["drama"] = len(dramas)
+    drama_total = jupan_bridge.count_dramas()
+    dramas = jupan_bridge.list_dramas(limit=max(drama_total, 1), offset=0)
+    channel_counts["drama"] = drama_total
     return SitePayload(channel_counts=channel_counts, channels=channels, dramas=dramas)  # type: ignore[arg-type]
 
 
