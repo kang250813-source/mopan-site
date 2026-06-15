@@ -3,7 +3,7 @@
 {% block title %}{% if tag %}{{ tag }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ base_path }}/?channel=drama" class="mp-nav-link is-active">短剧</a>
+<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-nav-link is-active">短剧</a>
 <a href="{{ base_path }}/" class="mp-nav-link">资源库</a>
 <a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>
 {% endblock %}
@@ -12,7 +12,7 @@
 <div class="mp-container">
   <nav class="mp-channels" aria-label="频道">
     {% for ch in channels %}
-    <a href="{{ base_path }}/?channel={{ ch.id }}"
+    <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
        class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
       <span class="mp-channel-label">{{ ch.label }}</span>
       <span class="mp-channel-count">{{ channel_counts.get(ch.id, 0) }}</span>
@@ -82,7 +82,7 @@
       {% for drama in dramas %}
       {% set episodes = drama.title | episode_count %}
       {% set cover = drama.cover_url | cover_src %}
-      <a href="{{ base_path }}/drama/{{ drama.id }}" class="mp-drama-card">
+      <a href="{{ drama_href(drama.id) if drama_href is defined else base_path ~ '/drama/' ~ drama.id }}" class="mp-drama-card">
         <div class="mp-drama-cover">
           {% if cover %}
           <img src="{{ base_path }}{{ cover }}" alt="" loading="lazy" decoding="async">

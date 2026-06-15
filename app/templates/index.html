@@ -11,7 +11,7 @@
 <div class="mp-container">
   <nav class="mp-channels" aria-label="频道">
     {% for ch in channels %}
-    <a href="{{ base_path }}/?channel={{ ch.id }}"
+    <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
        class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
       <span class="mp-channel-label">{{ ch.label }}</span>
       <span class="mp-channel-count">{{ channel_counts.get(ch.id, 0) }}</span>
