@@ -370,29 +370,38 @@ a { color: inherit; text-decoration: none; }
 
 /* Categories */
 .mp-categories {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 20px;
 }
 
 .mp-cat {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 500;
+  justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
   color: var(--mp-muted);
   background: var(--mp-surface);
   border: 1px solid var(--mp-border);
   transition: all 0.15s;
+  word-break: keep-all;
 }
 
 .mp-cat span {
-  font-size: 0.72rem;
-  opacity: 0.65;
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
 }
 
 .mp-cat:hover {
@@ -679,8 +688,22 @@ a { color: inherit; text-decoration: none; }
 .cta-panel--github { border-color: #e5e7eb; }
 .cta-desc { margin: 0 0 12px; color: var(--mp-muted); font-size: 0.92rem; }
 .cta-desc strong { color: var(--mp-text); }
-.btn-copy { background: var(--mp-bg); border: 1px solid var(--mp-border); margin-left: 8px; }
-.cta-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.btn-xl {
+  min-height: 44px;
+  padding: 12px 18px;
+  font-size: 0.92rem;
+  border-radius: 12px;
+}
+.btn-copy { background: var(--mp-bg); border: 1px solid var(--mp-border); }
+.cta-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.cta-actions > * { margin: 0 !important; width: 100%; min-width: 0; }
+.cta-actions > :nth-child(n+3),
+.cta-actions > .btn-share { grid-column: 1 / -1; }
 .cta-link-preview { font-size: 0.82rem; color: var(--mp-muted); word-break: break-all; }
 .qr-block { margin-top: 16px; text-align: center; }
 .qr-block p { font-size: 0.82rem; color: var(--mp-muted); }
@@ -689,11 +712,18 @@ a { color: inherit; text-decoration: none; }
 /* Drama channel (剧盘索引) */
 .mp-hero--drama { border-color: #ddd6fe; background: linear-gradient(135deg, #faf5ff 0%, #fff 100%); }
 .mp-drama-tags { margin-bottom: 20px; }
-.mp-drama-tags-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--mp-muted); margin-bottom: 8px; }
-.mp-drama-tags-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 72px; overflow: hidden; transition: max-height 0.2s ease; }
+.mp-drama-tags-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--mp-muted); margin-bottom: 10px; }
+.mp-drama-tags-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 88px;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
 .mp-drama-tags-list.is-expanded { max-height: none; }
 .mp-drama-tags-more {
-  margin-top: 8px;
+  margin-top: 10px;
   padding: 0;
   border: none;
   background: none;
@@ -704,14 +734,21 @@ a { color: inherit; text-decoration: none; }
 }
 .mp-drama-tags-more:hover { text-decoration: underline; }
 .mp-drama-tag {
-  display: inline-flex;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   background: var(--mp-surface);
   border: 1px solid var(--mp-border);
   color: var(--mp-text);
   text-decoration: none;
+  word-break: keep-all;
 }
 .mp-drama-tag.is-active, .mp-drama-tag:hover { background: var(--mp-brand-soft); border-color: #c4b5fd; color: var(--mp-brand-deep); }
 .mp-drama-section { margin-top: 8px; }
@@ -790,8 +827,50 @@ a { color: inherit; text-decoration: none; }
 .msg { color: var(--mp-ok); }
 
 @media (max-width: 640px) {
-  .mp-hero { flex-direction: column; align-items: stretch; }
-  .mp-hero-stat { text-align: left; }
+  .mp-container { width: min(var(--mp-max), calc(100% - 24px)); }
+  .mp-main { padding: 20px 0 40px; }
+  .mp-hero { flex-direction: column; align-items: stretch; gap: 14px; margin-bottom: 18px; }
+  .mp-hero-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    text-align: left;
+    padding: 10px 14px;
+  }
+  .mp-hero-stat-num { display: inline; font-size: 1.35rem; }
+  .mp-hero-stat-label { display: inline; font-size: 0.78rem; }
+  .mp-channels {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .mp-channels::-webkit-scrollbar { display: none; }
+  .mp-channel { flex-shrink: 0; border-radius: 10px; margin-bottom: 0; }
+  .mp-categories { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .mp-cat { min-height: 48px; font-size: 0.74rem; }
+  .mp-drama-tags-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+  .mp-drama-tag { font-size: 0.72rem; min-height: 34px; }
   .mp-date { margin-left: 0; width: 100%; }
   .mp-brand-text small { display: none; }
+  .mp-search { padding: 5px 5px 5px 12px; }
+  .mp-search button { padding: 9px 14px; font-size: 0.82rem; }
+  .cta-actions { grid-template-columns: 1fr; }
+  .cta-actions > :nth-child(n+3),
+  .cta-actions > .btn-share { grid-column: auto; }
+  .detail-page { padding: 0; }
+  .classic-text--preview { max-height: 320px; }
+}
+
+@media (min-width: 480px) {
+  .mp-categories { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+  .mp-categories { grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); }
+  .mp-drama-tags-list { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
 }
