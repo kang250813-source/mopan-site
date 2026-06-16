@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 
+def _static_href(base_path: str, path: str) -> str:
+    """Root-relative URL for static export (always absolute from site root)."""
+    root = base_path.rstrip("/")
+    clean = path.lstrip("/")
+    if root:
+        return f"{root}/{clean}"
+    return f"/{clean}"
+
+
 def resource_href(base_path: str, resource_id: int, *, static_site: bool = False) -> str:
     root = base_path.rstrip("/")
     if static_site:
-        path = f"resource/{resource_id}.html"
-        return f"{root}/{path}" if root else path
+        return _static_href(base_path, f"resource/{resource_id}.html")
     path = f"/resource/{resource_id}"
     return f"{root}{path}" if root else path
 
@@ -15,8 +23,7 @@ def resource_href(base_path: str, resource_id: int, *, static_site: bool = False
 def drama_href(base_path: str, drama_id: int, *, static_site: bool = False) -> str:
     root = base_path.rstrip("/")
     if static_site:
-        path = f"drama/{drama_id}.html"
-        return f"{root}/{path}" if root else path
+        return _static_href(base_path, f"drama/{drama_id}.html")
     path = f"/drama/{drama_id}"
     return f"{root}{path}" if root else path
 
@@ -32,14 +39,11 @@ def channel_href(
     if static_site:
         if channel == "discover":
             if page <= 1:
-                return f"{root}/index.html" if root else "index.html"
-            path = f"page/{page}/index.html"
-            return f"{root}/{path}" if root else path
+                return _static_href(base_path, "index.html")
+            return _static_href(base_path, f"page/{page}/index.html")
         if page <= 1:
-            path = f"channel/{channel}/index.html"
-            return f"{root}/{path}" if root else path
-        path = f"channel/{channel}/page/{page}/index.html"
-        return f"{root}/{path}" if root else path
+            return _static_href(base_path, f"channel/{channel}/index.html")
+        return _static_href(base_path, f"channel/{channel}/page/{page}/index.html")
     params = f"?channel={channel}"
     if page > 1:
         params += f"&page={page}"
