@@ -3,7 +3,11 @@
 {% block title %}{{ resource.title }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ base_path }}/" class="mp-nav-link">← 资源库</a>
+{% for ch in channels %}
+{% if ch.id == resource.channel %}
+<a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}" class="mp-nav-link">← {{ ch.label }}</a>
+{% endif %}
+{% endfor %}
 {% endblock %}
 
 {% block content %}

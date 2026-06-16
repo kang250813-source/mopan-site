@@ -3,7 +3,12 @@
 {% block title %}{% if category %}{{ category }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ channel_href('discover') if channel_href is defined else base_path ~ '/' }}" class="mp-nav-link is-active">资源库</a>
+{% set list_href = channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel %}
+{% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
+{% if channel != 'discover' %}
+<a href="{{ home_href }}" class="mp-nav-link">← 资源库</a>
+{% endif %}
+<a href="{{ list_href }}" class="mp-nav-link is-active">{% if channel == 'discover' %}资源库{% else %}{{ channel_meta.label }}{% endif %}</a>
 {% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
 {% endblock %}
 

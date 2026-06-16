@@ -3,8 +3,15 @@
 {% block title %}{% if tag %}{{ tag }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-nav-link is-active">短剧</a>
-<a href="{{ channel_href('discover') if channel_href is defined else base_path ~ '/' }}" class="mp-nav-link">资源库</a>
+{% set drama_list = channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' %}
+{% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
+{% if tag or q %}
+<a href="{{ drama_list }}" class="mp-nav-link">← 短剧列表</a>
+<span class="mp-nav-current">{{ tag or ('搜索：' ~ q) }}</span>
+{% else %}
+<a href="{{ home_href }}" class="mp-nav-link">← 资源库</a>
+<a href="{{ drama_list }}" class="mp-nav-link is-active">短剧</a>
+{% endif %}
 {% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
 {% endblock %}
 
