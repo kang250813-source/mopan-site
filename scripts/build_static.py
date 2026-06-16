@@ -9,6 +9,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import quote
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -44,7 +45,7 @@ from app.highlight import highlight_pan_words  # noqa: E402
 from app.qr_util import quark_qr_data_url  # noqa: E402
 from app import jupan_bridge  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
-from app.static_urls import channel_href, drama_href, resource_href  # noqa: E402
+from app.static_urls import channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
 
 TEMPLATES_DIR = ROOT / "app" / "templates"
 DOCS_DIR = ROOT / "docs"
@@ -163,6 +164,35 @@ def _dramas(payload: SitePayload) -> list[jupan_bridge.JupanDrama]:
     return [_drama_from_dict(d) if isinstance(d, dict) else d for d in payload.dramas]
 
 
+def _filter_dramas_by_tag(dramas: list[jupan_bridge.JupanDrama], tag: str) -> list[jupan_bridge.JupanDrama]:
+    tag_name = tag.strip()
+    if not tag_name:
+        return dramas
+    tag_lower = tag_name.casefold()
+    out: list[jupan_bridge.JupanDrama] = []
+    for drama in dramas:
+        if any(t.casefold() == tag_lower for t in drama.tags):
+            out.append(drama)
+        elif tag_name in drama.title:
+            out.append(drama)
+    return out
+
+
+def _collect_drama_tags(dramas: list[jupan_bridge.JupanDrama]) -> list[str]:
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for tag in JUPAN_HOT_TAGS:
+        if tag not in seen:
+            seen.add(tag)
+            ordered.append(tag)
+    for drama in dramas:
+        for tag in drama.tags:
+            if tag not in seen:
+                seen.add(tag)
+                ordered.append(tag)
+    return ordered
+
+
 def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) -> list[Resource]:
     same = [r for r in pool if r.id != current.id and r.category == current.category][:limit]
     if len(same) >= limit:
@@ -241,9 +271,12 @@ def build(base_path: str = "") -> None:
         classics_github_user=CLASSICS_GITHUB_USER,
         resource_href=lambda rid: resource_href(base_path, rid, static_site=True),
         drama_href=lambda did: drama_href(base_path, did, static_site=True),
+        drama_tag_href=lambda tag, page=1: drama_tag_href(base_path, tag, static_site=True, page=page),
         channel_href=lambda ch, page=1: channel_href(base_path, ch, static_site=True, page=page),
-        page_url=lambda page, q="", category="", channel="discover", tag="": channel_href(
-            base_path, channel or "discover", static_site=True, page=page
+        page_url=lambda page, q="", category="", channel="drama", tag="": (
+            drama_tag_href(base_path, tag, static_site=True, page=page)
+            if tag and channel == "drama"
+            else channel_href(base_path, channel or "discover", static_site=True, page=page)
         ),
     )
 
@@ -346,6 +379,38 @@ def build(base_path: str = "") -> None:
                 share_page_url=drama_href(base_path, drama.id, static_site=True),
             )
             stats["dramas"] += 1
+
+        for tag_name in _collect_drama_tags(dramas):
+            tagged = _filter_dramas_by_tag(dramas, tag_name)
+            if not tagged:
+                continue
+            total = len(tagged)
+            pages = calc_total_pages(total, PAGE_SIZE)
+            for page_num in range(1, pages + 1):
+                offset = (page_num - 1) * PAGE_SIZE
+                page_items = tagged[offset : offset + PAGE_SIZE]
+                out = (
+                    DOCS_DIR / "channel" / "drama" / "tag" / quote(tag_name, safe="") / "index.html"
+                    if page_num == 1
+                    else DOCS_DIR / "channel" / "drama" / "tag" / quote(tag_name, safe="") / "page" / str(page_num) / "index.html"
+                )
+                write(
+                    "drama_channel.html",
+                    out,
+                    request=_fake_request("/"),
+                    dramas=page_items,
+                    q="",
+                    tag=tag_name,
+                    channel="drama",
+                    channel_meta=channel_meta,
+                    channel_counts=channel_counts,
+                    total=total,
+                    total_all=channel_counts.get("drama", len(dramas)),
+                    page=page_num,
+                    total_pages=pages,
+                    page_items=page_window(page_num, pages),
+                )
+                stats["list_pages"] += 1
 
     print(f"Built static site -> {DOCS_DIR}")
     print(f"  channels: {', '.join(f'{k}={v}' for k, v in channel_counts.items())}")

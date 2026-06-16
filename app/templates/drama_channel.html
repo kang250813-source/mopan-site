@@ -41,7 +41,7 @@
       <input type="search" name="q" value="{{ q }}" placeholder="搜索短剧名称…" autocomplete="off">
       {% if tag %}<input type="hidden" name="tag" value="{{ tag }}">{% endif %}
       <button type="submit">搜索</button>
-      {% if q or tag %}<a href="{{ base_path }}/?channel=drama" class="mp-search-clear">清除</a>{% endif %}
+      {% if q or tag %}<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-search-clear">清除</a>{% endif %}
     </form>
   </section>
 
@@ -49,13 +49,13 @@
   <section class="mp-drama-tags" aria-label="热词筛选">
     <span class="mp-drama-tags-label">癖好热词</span>
     <div class="mp-drama-tags-list" id="drama-tags-list">
-      <a href="{{ base_path }}/?channel=drama" class="mp-drama-tag{% if not tag %} is-active{% endif %}">全部</a>
+      <a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-drama-tag{% if not tag %} is-active{% endif %}">全部</a>
       {% for kw in hot_tags[:hot_tags_visible] %}
-      <a href="{{ base_path }}/?channel=drama&tag={{ kw | urlencode }}"
+      <a href="{{ drama_tag_href(kw) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (kw | urlencode) }}"
          class="mp-drama-tag{% if tag == kw %} is-active{% endif %}">{{ kw }}</a>
       {% endfor %}
       {% for kw in hot_tags[hot_tags_visible:] %}
-      <a href="{{ base_path }}/?channel=drama&tag={{ kw | urlencode }}"
+      <a href="{{ drama_tag_href(kw) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (kw | urlencode) }}"
          class="mp-drama-tag mp-drama-tag--extra{% if tag == kw %} is-active{% endif %}" hidden>{{ kw }}</a>
       {% endfor %}
     </div>

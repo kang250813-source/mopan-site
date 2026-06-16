@@ -36,7 +36,7 @@
       {% if drama.tags %}
       <div class="mp-drama-mini-tags mp-drama-mini-tags--detail">
         {% for t in drama.tags %}
-        <a href="{{ base_path }}/?channel=drama&tag={{ t | urlencode }}" class="mp-drama-tag">{{ t }}</a>
+        <a href="{{ drama_tag_href(t) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (t | urlencode) }}" class="mp-drama-tag">{{ t }}</a>
         {% endfor %}
       </div>
       {% endif %}

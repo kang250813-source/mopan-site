@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from urllib.parse import quote
+
 
 def _static_href(base_path: str, path: str) -> str:
     """Root-relative URL for static export (always absolute from site root)."""
@@ -52,3 +54,22 @@ def channel_href(
 
 def static_index_href(base_path: str, page: int, *, channel: str = "discover") -> str:
     return channel_href(base_path, channel, static_site=True, page=page)
+
+
+def drama_tag_href(
+    base_path: str,
+    tag: str,
+    *,
+    static_site: bool = False,
+    page: int = 1,
+) -> str:
+    root = base_path.rstrip("/")
+    encoded = quote(tag.strip(), safe="")
+    if static_site:
+        if page <= 1:
+            return _static_href(base_path, f"channel/drama/tag/{encoded}/index.html")
+        return _static_href(base_path, f"channel/drama/tag/{encoded}/page/{page}/index.html")
+    params = f"?channel=drama&tag={encoded}"
+    if page > 1:
+        params += f"&page={page}"
+    return f"{root}/{params}" if root else f"/{params}"
