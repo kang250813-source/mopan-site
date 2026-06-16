@@ -44,7 +44,7 @@ from app.highlight import highlight_pan_words  # noqa: E402
 from app.qr_util import quark_qr_data_url  # noqa: E402
 from app import jupan_bridge  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
-from app.static_urls import channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
+from app.static_urls import category_href, channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
 
 TEMPLATES_DIR = ROOT / "app" / "templates"
 DOCS_DIR = ROOT / "docs"
@@ -219,6 +219,32 @@ def _collect_drama_tags(dramas: list[jupan_bridge.JupanDrama]) -> list[str]:
     return ordered
 
 
+def _filter_resources_by_category(
+    resources: list[Resource],
+    channel: str,
+    category_name: str,
+) -> list[Resource]:
+    cat = category_name.strip()
+    if not cat:
+        return resources
+    if channel == "classics":
+        return [
+            r for r in resources
+            if r.category and (r.category == cat or r.category.startswith(f"{cat} >"))
+        ]
+    return [r for r in resources if (r.category or "其他") == cat]
+
+
+def _category_out_path(channel: str, category_name: str, page: int) -> Path:
+    if channel == "discover":
+        base = DOCS_DIR / "category" / category_name
+    else:
+        base = DOCS_DIR / "channel" / channel / "category" / category_name
+    if page <= 1:
+        return base / "index.html"
+    return base / "page" / str(page) / "index.html"
+
+
 def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) -> list[Resource]:
     same = [r for r in pool if r.id != current.id and r.category == current.category][:limit]
     if len(same) >= limit:
@@ -298,10 +324,13 @@ def build(base_path: str = "") -> None:
         resource_href=lambda rid: resource_href(base_path, rid, static_site=True),
         drama_href=lambda did: drama_href(base_path, did, static_site=True),
         drama_tag_href=lambda tag, page=1: drama_tag_href(base_path, tag, static_site=True, page=page),
+        category_href=lambda ch, cat, page=1: category_href(base_path, ch, cat, static_site=True, page=page),
         channel_href=lambda ch, page=1: channel_href(base_path, ch, static_site=True, page=page),
-        page_url=lambda page, q="", category="", channel="drama", tag="": (
+        page_url=lambda page, q="", category="", channel="discover", tag="": (
             drama_tag_href(base_path, tag, static_site=True, page=page)
             if tag and channel == "drama"
+            else category_href(base_path, channel or "discover", category, static_site=True, page=page)
+            if category
             else channel_href(base_path, channel or "discover", static_site=True, page=page)
         ),
     )
@@ -364,6 +393,34 @@ def build(base_path: str = "") -> None:
                 share_page_url=resource_href(base_path, resource.id, static_site=True),
             )
             stats["resources"] += 1
+
+        for cat_name in category_counts:
+            filtered = _filter_resources_by_category(resources, channel, cat_name)
+            if not filtered:
+                continue
+            cat_total = len(filtered)
+            cat_pages = calc_total_pages(cat_total, PAGE_SIZE)
+            for page_num in range(1, cat_pages + 1):
+                offset = (page_num - 1) * PAGE_SIZE
+                page_items = filtered[offset : offset + PAGE_SIZE]
+                write(
+                    "index.html",
+                    _category_out_path(channel, cat_name, page_num),
+                    request=_fake_request("/"),
+                    resources=page_items,
+                    q="",
+                    category=cat_name,
+                    channel=channel,
+                    channel_meta=channel_meta,
+                    channel_counts=channel_counts,
+                    category_counts=category_counts,
+                    total=cat_total,
+                    total_all=channel_counts.get(channel, total),
+                    page=page_num,
+                    total_pages=cat_pages,
+                    page_items=page_window(page_num, cat_pages),
+                )
+                stats["list_pages"] += 1
 
     dramas = _dramas(payload)
     if dramas:

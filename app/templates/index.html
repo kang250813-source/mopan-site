@@ -5,10 +5,15 @@
 {% block nav %}
 {% set list_href = channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel %}
 {% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
+{% if category %}
+<a href="{{ list_href }}" class="mp-nav-link">← {{ channel_meta.label }}</a>
+<span class="mp-nav-current">{{ category }}</span>
+{% else %}
 {% if channel != 'discover' %}
 <a href="{{ home_href }}" class="mp-nav-link">← 资源库</a>
 {% endif %}
 <a href="{{ list_href }}" class="mp-nav-link is-active">{% if channel == 'discover' %}资源库{% else %}{{ channel_meta.label }}{% endif %}</a>
+{% endif %}
 {% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
 {% endblock %}
 
@@ -55,15 +60,15 @@
       <input type="search" name="q" value="{{ q }}" placeholder="搜索标题、简介、正文…" autocomplete="off">
       {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
       <button type="submit">搜索</button>
-      {% if q or category %}<a href="{{ base_path }}/?channel={{ channel }}" class="mp-search-clear">清除</a>{% endif %}
+      {% if q or category %}<a href="{{ list_href }}" class="mp-search-clear">清除</a>{% endif %}
     </form>
   </section>
 
   {% if category_counts %}
   <section class="mp-categories" aria-label="{% if channel == 'classics' %}丛书筛选{% else %}分类筛选{% endif %}">
-    <a href="{{ base_path }}/?channel={{ channel }}" class="mp-cat{% if not category %} is-active{% endif %}">全部</a>
+    <a href="{{ channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel }}" class="mp-cat{% if not category %} is-active{% endif %}">全部</a>
     {% for cat, n in category_counts.items() %}
-    <a href="{{ base_path }}/?channel={{ channel }}&category={{ cat | urlencode }}"
+    <a href="{{ category_href(channel, cat) if category_href is defined else base_path ~ '/?channel=' ~ channel ~ '&category=' ~ (cat | urlencode) }}"
        class="mp-cat{% if category == cat %} is-active{% endif %}">{{ cat }}<span>{{ n }}</span></a>
     {% endfor %}
   </section>

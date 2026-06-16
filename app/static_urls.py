@@ -73,3 +73,27 @@ def drama_tag_href(
     if page > 1:
         params += f"&page={page}"
     return f"{root}/{params}" if root else f"/{params}"
+
+
+def category_href(
+    base_path: str,
+    channel: str,
+    category: str,
+    *,
+    static_site: bool = False,
+    page: int = 1,
+) -> str:
+    root = base_path.rstrip("/")
+    encoded = quote(category.strip(), safe="")
+    if static_site:
+        if channel == "discover":
+            if page <= 1:
+                return _static_href(base_path, f"category/{encoded}/index.html")
+            return _static_href(base_path, f"category/{encoded}/page/{page}/index.html")
+        if page <= 1:
+            return _static_href(base_path, f"channel/{channel}/category/{encoded}/index.html")
+        return _static_href(base_path, f"channel/{channel}/category/{encoded}/page/{page}/index.html")
+    params = f"?channel={channel}&category={encoded}"
+    if page > 1:
+        params += f"&page={page}"
+    return f"{root}/{params}" if root else f"/{params}"
