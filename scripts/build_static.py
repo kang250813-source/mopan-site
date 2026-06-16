@@ -49,6 +49,8 @@ from app.static_urls import channel_href, drama_href, drama_tag_href, resource_h
 TEMPLATES_DIR = ROOT / "app" / "templates"
 DOCS_DIR = ROOT / "docs"
 SITE_EXPORT_JSON = ROOT / "data" / "site_export.json"
+EXPORT_DIR = ROOT / "data" / "export"
+EXPORT_MANIFEST = EXPORT_DIR / "manifest.json"
 DISCOVER_JSON = ROOT / "data" / "discover.json"
 COVERS_DATA_DIR = ROOT / "data" / "jupan-covers"
 
@@ -123,7 +125,32 @@ def _load_payload_from_db() -> SitePayload:
     return SitePayload(channel_counts=channel_counts, channels=channels, dramas=dramas)  # type: ignore[arg-type]
 
 
+def _load_payload_from_export_dir() -> SitePayload | None:
+    if not EXPORT_MANIFEST.exists():
+        return None
+    manifest = json.loads(EXPORT_MANIFEST.read_text(encoding="utf-8"))
+    channel_counts = dict(manifest.get("channel_counts") or {})
+    channels: dict[str, dict] = {}
+    for channel in RESOURCE_CHANNELS:
+        path = EXPORT_DIR / f"{channel}.json"
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        channels[channel] = {
+            "resources": list(data.get("resources") or []),
+            "category_counts": dict(data.get("category_counts") or {}),
+        }
+    dramas: list[dict] = []
+    drama_path = EXPORT_DIR / "drama.json"
+    if drama_path.exists():
+        dramas = list(json.loads(drama_path.read_text(encoding="utf-8")).get("dramas") or [])
+    return SitePayload(channel_counts=channel_counts, channels=channels, dramas=dramas)
+
+
 def load_payload() -> SitePayload:
+    payload = _load_payload_from_export_dir()
+    if payload is not None:
+        return payload
     if SITE_EXPORT_JSON.exists():
         data = json.loads(SITE_EXPORT_JSON.read_text(encoding="utf-8"))
         return SitePayload(
@@ -145,7 +172,7 @@ def load_payload() -> SitePayload:
             },
             dramas=[],
         )
-    raise SystemExit(f"缺少数据源：{SITE_EXPORT_JSON} 或 {DB_PATH}")
+    raise SystemExit(f"缺少数据源：{EXPORT_DIR}/ 或 {SITE_EXPORT_JSON} 或 {DB_PATH}")
 
 
 def _resources_for_channel(payload: SitePayload, channel: str) -> list[Resource]:
