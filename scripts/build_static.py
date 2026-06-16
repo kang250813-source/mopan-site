@@ -9,7 +9,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
-from urllib.parse import quote
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -389,11 +388,8 @@ def build(base_path: str = "") -> None:
             for page_num in range(1, pages + 1):
                 offset = (page_num - 1) * PAGE_SIZE
                 page_items = tagged[offset : offset + PAGE_SIZE]
-                out = (
-                    DOCS_DIR / "channel" / "drama" / "tag" / quote(tag_name, safe="") / "index.html"
-                    if page_num == 1
-                    else DOCS_DIR / "channel" / "drama" / "tag" / quote(tag_name, safe="") / "page" / str(page_num) / "index.html"
-                )
+                tag_dir = DOCS_DIR / "channel" / "drama" / "tag" / tag_name
+                out = tag_dir / "index.html" if page_num == 1 else tag_dir / "page" / str(page_num) / "index.html"
                 write(
                     "drama_channel.html",
                     out,
