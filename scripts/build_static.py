@@ -198,7 +198,7 @@ def _copy_covers() -> None:
             return
 
 
-def build(base_path: str = "/mopan-site") -> None:
+def build(base_path: str = "") -> None:
     base_path = base_path.rstrip("/")
     payload = load_payload()
     channel_counts = dict(payload.channel_counts)
@@ -352,6 +352,10 @@ def build(base_path: str = "/mopan-site") -> None:
     print(f"  resource pages: {stats['resources']}")
     print(f"  drama pages: {stats['dramas']}")
     print(f"  list pages: {stats['list_pages']}")
+    domain = os.getenv("CUSTOM_DOMAIN", "").strip()
+    if domain:
+        (DOCS_DIR / "CNAME").write_text(domain + "\n", encoding="utf-8")
+        print(f"  CNAME: {domain}")
     if base_path:
         print(f"  preview: https://kang250813-source.github.io{base_path}/")
 
@@ -359,4 +363,4 @@ def build(base_path: str = "/mopan-site") -> None:
 if __name__ == "__main__":
     import os
 
-    build(os.getenv("BASE_PATH", "/mopan-site"))
+    build(os.getenv("BASE_PATH", ""))

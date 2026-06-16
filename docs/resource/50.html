@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  
+  <meta name="site-title" content="魔盘">
+  <title>OtterHub：基于 Cloudflare 与 Telegram 的 Serverless 私人文件存储工具 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1781582865">
+  
+</head>
+<body class="">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <nav class="mp-nav">
+<a href="/" class="mp-nav-link">← 资源库</a>
+</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">AI 工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="OtterHub：基于 Cloudflare 与 Telegram 的 Serverless 私人文件存储工具"
+  data-share-page="resource/50.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="分享本页"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享</span>
+</button>
+    </div>
+    <h1>OtterHub：基于 Cloudflare 与 Telegram 的 Serverless 私人文件存储工具</h1>
+    
+    <p class="detail-meta">发布于 2026-04-24</p>
+    
+  </div>
+
+  
+  <div class="article-body">
+    
+    <p>OtterHub 是一个基于 Cloudflare Pages 和 Telegram Bot API 拼装出来的 Serverless（无服务器）私人文件存储工具。</p>
+<p>平时如果想自己搭个文件管理平台，通常得买台 VPS，装个 Nextcloud 或 Alist。但很多人其实只是想有个地方存点临时文件、做个简单的素材归档。为了这点需求每年交几百块服务器费用，还要操心安全维护，显得太重了。用户搜这类工具，痛点就在于：<strong>有没有一种方案，既能拥有类似云盘的可视化界面，又不需要自己维护底层的服务器和硬盘？</strong></p>
+<p></p>
+<p>OtterHub 的做法非常巧妙，它把界面的托管和数据的存储，转嫁给了现成的云服务。</p>
+<div style="background-color: #f5f5f5; border-left: 4px solid #9e9e9e; padding: 15px; margin-bottom: 20px;"><strong>运行机制：</strong><br />
+它用 Telegram 的机器人（Bot API）当作实际存储文件的后端仓库，用 Cloudflare 的 KV 数据库来记录文件名、标签等元数据，最后用 Cloudflare Pages 跑一个前端网页。只需配置现有云服务账号，就能以较低维护成本跑起来。</div>
+<h2>Serverless 私人文件存储的核心亮点：它不只是个“发图机器人”</h2>
+<p>Cloudflare + Telegram 做文件存储这个玩法，在开发者圈子里不算新鲜事。但如果你只是把文件发给 TG 机器人，那叫备忘录；如果只能存图片，那叫图床。OtterHub 比较有技术含量的地方，是它在架构上解决了一些硬伤，将其做成了文件管理器的样子。</p>
+<p></p>
+<p><strong>1. 分片上传，处理 20MB 单文件限制</strong><br />
+了解 Telegram API 的人都知道，Bot 默认传文件有单文件 20MB 的规定。OtterHub 在前端实现了分片上传（Chunked Upload），将大文件切片处理，再由前端拼接。目前已实测 100MB 文件的稳定上传，理论上最大支持 1GB。</p>
+<p></p>
+<p><strong>2. 视频流播与精细化管理</strong><br />
+它支持了 <strong>HTTP Range 请求</strong>。这意味着存入的视频或音频可以像正规视频网站一样拖拽进度条、按需加载，不用等整个文件下载完。此外，它还配备了完整的 JWT 密码登录、30天回收站、基于 <code>nsfw.js</code> 的图片安全遮罩，甚至还可以绑定 Workers AI 进行图片自动描述与分析。</p>
+<h2>和传统轻量图床相比，区别在哪？</h2>
+<p>之前流传的 <code>Telegraph-Image</code> 或 <code>CloudFlare-ImgBed</code> 同样也是这套底层组合。但它们的定位截然不同，我们做了一个简单的对比：</p>
+<div style="background: #f4f6f8; border: 1px solid #cfd8dc; border-radius: 8px; padding: 16px; margin: 16px 0; overflow-x: auto;">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+<thead>
+<tr style="border-bottom: 2px solid #cfd8dc;">
+<th style="text-align: left; padding: 8px 12px;">对比项</th>
+<th style="text-align: left; padding: 8px 12px;">OtterHub</th>
+<th style="text-align: left; padding: 8px 12px;">传统 CF 图床项目</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom: 1px solid #e0e0e0;">
+<td style="padding: 8px 12px;"><strong>核心定位</strong></td>
+<td style="padding: 8px 12px;">私人文件存储（全格式支持）</td>
+<td style="padding: 8px 12px;">公开图床 / 轻量分享</td>
+</tr>
+<tr style="border-bottom: 1px solid #e0e0e0;">
+<td style="padding: 8px 12px;"><strong>大文件与流播</strong></td>
+<td style="padding: 8px 12px;">分片上传（最大1GB），支持拖拽进度条</td>
+<td style="padding: 8px 12px;">通常限于 20MB 以内，无流媒体优化</td>
+</tr>
+<tr style="border-bottom: 1px solid #e0e0e0;">
+<td style="padding: 8px 12px;"><strong>访问控制</strong></td>
+<td style="padding: 8px 12px;">密码登录 + 私有访问控制</td>
+<td style="padding: 8px 12px;">多为公开访问，贴图即走</td>
+</tr>
+<tr>
+<td style="padding: 8px 12px;"><strong>部署门槛</strong></td>
+<td style="padding: 8px 12px;">中等（需配置 KV、Bot Token 等）</td>
+<td style="padding: 8px 12px;">较低，一键部署为主</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p></p>
+<h2>门槛与代价：它替代不了正规商业云盘</h2>
+<p>这套方案看着很巧妙，但只要是依赖第三方 API 构建的服务，就一定有它的使用边界门槛。</p>
+<div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;"><strong>避坑提示：</strong><br />
+1. <strong>重要前置条件：</strong> 如果你在中国大陆，Telegram 需要科学上网才能访问，这是这套方案绕不过去的硬门槛。<br />
+2. <strong>别存关键生产资料：</strong> 你的数据握在 Telegram 和 Cloudflare 的风控规则手里。拿来做临时分享或不重要素材的备份可以，千万别把唯一的绝版商业数据存在这。<br />
+3. <strong>并发性能有限：</strong> 受到 Cloudflare 免费版 Workers/Pages Functions 的执行时间限制，传超大文件或多人同时高并发下载时，稳定性不如商业级对象存储。</div>
+<h2>谁适合折腾？</h2>
+<p>如果你手里刚好有闲置的域名，平时重度使用 Telegram，且受够了常规<mark class="mp-pan-hl">网盘</mark>的各种分享限制，那 OtterHub 值得作为一个轻量自用方案试试看。它是个架构非常漂亮的 Serverless 实验性项目。</p>
+<p>但如果你想要的是一个“稳定存十年、几十个 G 随取随用”的生产力工具，那建议还是老老实实买块本地硬盘，或者订阅 Google Drive 等正规商业云服务。</p>
+<p><em>延伸阅读：如果你确实需要挂载各大<mark class="mp-pan-hl">网盘</mark>并进行统一管理，且愿意投入一台小机器，可以看看这篇 Alist 部署与多<mark class="mp-pan-hl">网盘</mark>聚合指南。</em></p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>项目主页与源码入口</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;"><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://github.com/DJChanahCJD/OtterHub" target="_blank" rel="nofollow noopener"><br />
+🌐 GitHub 项目主页<br />
+<span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">开源代码、分片机制说明与完整部署文档</span><br />
+</a><a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://otterhub-demo.pages.dev/" target="_blank" rel="nofollow noopener"><br />
+🐙 在线演示页面<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">官方提供的 Demo（可能需要自行评估网络环境）</span><br />
+</a></div>
+<div style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 15px;">
+<p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;"><strong>免责声明：</strong>本项目作为一个 Serverless 架构学习案例，高度依赖 Cloudflare 与 Telegram 的第三方 API 接口。部署与使用时请务必遵守相关云厂商的服务条款（ToS），本站不建议将此类轻量化自托管方案用于存储机密或高价值的商业数据。</p>
+</div>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="OtterHub：基于 Cloudflare 与 Telegram 的 Serverless 私人文件存储工具"
+  data-share-page="resource/50.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给好友</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="resource/3.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
+    
+    <a href="resource/6.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
+    
+    <a href="resource/16.html" class="drama-card">Can I Run AI：检测电脑能不能运行本地大模型的网页工具</a>
+    
+    <a href="resource/17.html" class="drama-card">MioSub：开源 AI 字幕工具，自动完成视频转录、翻译与压制</a>
+    
+    <a href="resource/24.html" class="drama-card">AirTranslate：Mac系统音频翻译工具，外语视频与会议实时生成悬浮字幕</a>
+    
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1781582865"></script>
+</body>
+</html>

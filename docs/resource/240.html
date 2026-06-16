@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5b21b6">
+  
+  <meta name="site-title" content="魔盘">
+  <title>Opinion Whale Tracker：开源预测市场巨鲸监控与订单簿可视化工具 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1781582865">
+  
+</head>
+<body class="">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <nav class="mp-nav">
+<a href="/" class="mp-nav-link">← 资源库</a>
+</nav>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">AI 工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="Opinion Whale Tracker：开源预测市场巨鲸监控与订单簿可视化工具"
+  data-share-page="resource/240.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="分享本页"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享</span>
+</button>
+    </div>
+    <h1>Opinion Whale Tracker：开源预测市场巨鲸监控与订单簿可视化工具</h1>
+    
+    <p class="detail-meta">发布于 2025-12-10</p>
+    
+  </div>
+
+  
+  <div class="article-body">
+    
+    <div class="markdown-heading" dir="auto">
+<h2><strong>Opinion Whale Tracker 简介</strong></h2>
+<p>Opinion Whale Tracker 是一款专注预测市场监控的开源工具，以结构清晰的 FastAPI 后端为核心，通过访问 Opinion CLOB API 聚合市场列表、订单簿与价格信息，提炼买卖墙数据并识别潜在巨鲸行为。前端以静态页面方式呈现，可在浏览器中直接查看市场概览、订单簿深度与大额委托情况。</p>
+<p>项目保持极高安全性，不包含任何密钥或私人配置，用户需通过环境变量方式提供 OPINION_API_KEY。工具为个人 Web3 开发者打造，是记录灵感与探索数据可视化的一套轻量级监测方案，不承载任何投资建议。</p>
+<p></p>
+<hr />
+<h2><strong>技术架构与核心组件</strong></h2>
+<h3><strong>后端（FastAPI + pydantic）</strong></h3>
+<p>后端基于 FastAPI 构建，利用 pydantic 管理数据结构，性能稳定。项目使用 <code>opinion_clob_sdk</code> 访问 Opinion 的代理网关，实现：</p>
+<ul>
+<li>市场分页聚合</li>
+<li>订单簿数据拉取与买卖墙价值计算</li>
+<li>巨鲸委托识别（默认阈值 500 USD，可自定义）</li>
+<li>定时缓存刷新，减少上游 API 压力</li>
+</ul>
+<p>主要后端入口文件为 <code>backend/main.py</code>。</p>
+<p></p>
+<h3><strong>前端结构</strong></h3>
+<p>前端为 <code>frontend/</code> 与 <code>public/</code> 的静态页面，通过浏览器请求后端 API。<br />
+接口包含：</p>
+<ul>
+<li><code>/</code> 健康检查</li>
+<li><code>/api/markets</code> 市场列表与巨鲸监控结果</li>
+<li><code>/api/markets/{market_id}</code> 单市场详情</li>
+<li><code>/api/whales?threshold=</code> 按阈值筛选大额委托</li>
+<li><code>/api/orderbook/{token_id}</code> 订单簿数据</li>
+<li><code>/api/stats</code> 全局统计</li>
+</ul>
+<p>可通过 cURL 或浏览器直接访问。</p>
+<p></p>
+<hr />
+<h2><strong>安装与运行指南</strong></h2>
+<h3><strong>环境准备</strong></h3>
+<pre><code class="language-bash">python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+</code></pre>
+<h3><strong>环境变量设置</strong></h3>
+<pre><code class="language-bash">export OPINION_API_KEY="<your-key>"
+</code></pre>
+<h3><strong>启动后端</strong></h3>
+<pre><code class="language-bash">python backend/main.py
+# 或
+uvicorn backend.main:app --host 0.0.0.0 --port 8000
+</code></pre>
+<hr />
+<h2><strong>安全与合规设计</strong></h2>
+<ul>
+<li>项目不保存任何密钥，<code>.gitignore</code> 已排除本地配置与敏感文件</li>
+<li>若未配置 API Key，后端返回空数据，不抛出敏感信息</li>
+<li>建议在 Vercel / Render / Railway 等平台以环境变量方式部署</li>
+</ul>
+<hr />
+<h2><strong>可扩展性与开发提示</strong></h2>
+<h3><strong>可扩展方向</strong></h3>
+<ul>
+<li>添加更多数据源，丰富市场聚合逻辑</li>
+<li>接入 Prometheus / Grafana，建立实时告警</li>
+<li>将订单簿与巨鲸委托图形化展示</li>
+</ul>
+<h3><strong>适用人群</strong></h3>
+<ul>
+<li>Web3 开发者</li>
+<li>数据分析从业者</li>
+<li>对市场结构、流动性与大额委托感兴趣的研究者</li>
+<li>想要搭建交易数据可视化工具的个人开发者</li>
+</ul>
+<p>项目开源地址：</p>
+<p>GitHub：<a title="Opinion Whale Tracker 开源地址" href="https://github.com/duolaAmengweb3/opinionWhale" target="_blank" rel="nofollow noopener">https://github.com/duolaAmengweb3/opinionWhale</a></p>
+<p>在线体验：<a title="Opinion Whale Tracker在线体验地址" href="https://xmainstation.vercel.app/" target="_blank" rel="nofollow noopener">https://xmainstation.vercel.app/</a></p>
+</div>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="Opinion Whale Tracker：开源预测市场巨鲸监控与订单簿可视化工具"
+  data-share-page="resource/240.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给好友</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="resource/3.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
+    
+    <a href="resource/6.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
+    
+    <a href="resource/16.html" class="drama-card">Can I Run AI：检测电脑能不能运行本地大模型的网页工具</a>
+    
+    <a href="resource/17.html" class="drama-card">MioSub：开源 AI 字幕工具，自动完成视频转录、翻译与压制</a>
+    
+    <a href="resource/24.html" class="drama-card">AirTranslate：Mac系统音频翻译工具，外语视频与会议实时生成悬浮字幕</a>
+    
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1781582865"></script>
+</body>
+</html>
