@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}{% if tag %}{{ tag }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
+{% block title %}{% if tag %}{{ tag | drama_tag_label }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
 {% set drama_list = channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' %}
 {% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
 {% if tag or q %}
-<a href="{{ drama_list }}" class="mp-nav-link">← 短剧列表</a>
-<span class="mp-nav-current">{{ tag or ('搜索：' ~ q) }}</span>
+<a href="{{ drama_list }}" class="mp-nav-link">{{ t('nav.back_drama_list') }}</a>
+<span class="mp-nav-current">{{ tag | drama_tag_label if tag else t('nav.search_prefix') ~ q }}</span>
 {% else %}
-<a href="{{ home_href }}" class="mp-nav-link">← 资源库</a>
-<a href="{{ drama_list }}" class="mp-nav-link is-active">短剧</a>
+<a href="{{ home_href }}" class="mp-nav-link">{{ t('nav.back_library') }}</a>
+<a href="{{ drama_list }}" class="mp-nav-link is-active">{{ t('nav.drama') }}</a>
 {% endif %}
-{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
+{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">{{ t('nav.admin') }}</a>{% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="mp-container">
-  <nav class="mp-channels" aria-label="频道">
+  <nav class="mp-channels" aria-label="{{ t('ui.channels') }}">
     {% for ch in channels %}
     <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
        class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
@@ -31,17 +31,11 @@
     <div class="mp-hero-copy">
       <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }}</p>
       <h1>{{ channel_meta.hint }}</h1>
-      <p class="mp-hero-desc">
-        {% if tag == '国外短剧' %}
-        海外短剧合集（外链分享）。打开后在文件夹内按剧名查找；主盘有空间的会逐步换成小怪盘独立链。
-        {% else %}
-        精选短剧合集：小怪主盘直达为主，国外短剧等暂用外链合集。
-        {% endif %}
-      </p>
+      <p class="mp-hero-desc">{{ hero_desc }}</p>
     </div>
     <div class="mp-hero-stat">
       <span class="mp-hero-stat-num">{{ total_all }}</span>
-      <span class="mp-hero-stat-label">部短剧</span>
+      <span class="mp-hero-stat-label">{{ t('ui.drama_count') }}</span>
     </div>
   </section>
 
@@ -49,43 +43,43 @@
     <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
       <input type="hidden" name="channel" value="drama">
       <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input type="search" name="q" value="{{ q }}" placeholder="搜索短剧名称…" autocomplete="off">
+      <input type="search" name="q" value="{{ q }}" placeholder="{{ t('ui.search_drama_placeholder') }}" autocomplete="off">
       {% if tag %}<input type="hidden" name="tag" value="{{ tag }}">{% endif %}
-      <button type="submit">搜索</button>
-      {% if q or tag %}<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-search-clear">清除</a>{% endif %}
+      <button type="submit">{{ t('ui.search') }}</button>
+      {% if q or tag %}<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-search-clear">{{ t('ui.search_clear') }}</a>{% endif %}
     </form>
   </section>
 
   {% if not q %}
-  <section class="mp-drama-tags" aria-label="热词筛选">
-    <span class="mp-drama-tags-label">癖好热词</span>
+  <section class="mp-drama-tags" aria-label="{{ t('ui.hot_tags') }}">
+    <span class="mp-drama-tags-label">{{ t('ui.hot_tags') }}</span>
     <div class="mp-drama-tags-list" id="drama-tags-list">
-      <a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-drama-tag{% if not tag %} is-active{% endif %}">全部</a>
+      <a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-drama-tag{% if not tag %} is-active{% endif %}">{{ t('ui.all') }}</a>
       {% for kw in hot_tags[:hot_tags_visible] %}
       <a href="{{ drama_tag_href(kw) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (kw | urlencode) }}"
-         class="mp-drama-tag{% if tag == kw %} is-active{% endif %}">{{ kw }}</a>
+         class="mp-drama-tag{% if tag == kw %} is-active{% endif %}">{{ kw | drama_tag_label }}</a>
       {% endfor %}
       {% for kw in hot_tags[hot_tags_visible:] %}
       <a href="{{ drama_tag_href(kw) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (kw | urlencode) }}"
-         class="mp-drama-tag mp-drama-tag--extra{% if tag == kw %} is-active{% endif %}" hidden>{{ kw }}</a>
+         class="mp-drama-tag mp-drama-tag--extra{% if tag == kw %} is-active{% endif %}" hidden>{{ kw | drama_tag_label }}</a>
       {% endfor %}
     </div>
     {% if hot_tags|length > hot_tags_visible %}
-    <button type="button" class="mp-drama-tags-more" id="drama-tags-toggle" aria-expanded="false">
-      展开更多（{{ hot_tags|length - hot_tags_visible }}）
+    <button type="button" class="mp-drama-tags-more" id="drama-tags-toggle" aria-expanded="false" data-expand="{{ t('ui.expand_more', n=hot_tags|length - hot_tags_visible) }}" data-collapse="{{ t('ui.collapse') }}">
+      {{ t('ui.expand_more', n=hot_tags|length - hot_tags_visible) }}
     </button>
     {% endif %}
   </section>
   {% endif %}
 
   {% if q or tag %}
-  <p class="mp-result-hint">共 {{ total }} 部{% if tag %} · 标签「{{ tag }}」{% endif %}{% if q %} · 搜索「{{ q }}」{% endif %}</p>
+  <p class="mp-result-hint">{{ t('ui.drama_results', n=total) }}{% if tag %} · {{ t('ui.tag_label', tag=tag | drama_tag_label) }}{% endif %}{% if q %} · {{ t('ui.search_label', q=q) }}{% endif %}</p>
   {% endif %}
 
   <section class="mp-drama-section">
     <div class="mp-drama-section-head">
-      <h2>{% if tag or q %}筛选结果{% else %}最新短剧{% endif %}</h2>
-      <span>共 {{ total }} 部</span>
+      <h2>{% if tag or q %}{{ t('ui.filter_results') }}{% else %}{{ t('ui.latest_dramas') }}{% endif %}</h2>
+      <span>{{ t('ui.drama_results', n=total) }}</span>
     </div>
 
     {% if dramas %}
@@ -96,28 +90,28 @@
       <a href="{{ drama_href(drama.id) if drama_href is defined else base_path ~ '/drama/' ~ drama.id }}" class="mp-drama-card">
         <div class="mp-drama-cover">
           {% if cover %}
-          <img src="{{ base_path }}{{ cover }}" alt="" loading="lazy" decoding="async">
+          <img src="{{ asset_base }}{{ cover }}" alt="" loading="lazy" decoding="async">
           {% else %}
           <div class="mp-drama-cover-fallback"></div>
           {% endif %}
           <span class="mp-drama-play" aria-hidden="true">▶</span>
-          {% if episodes %}<span class="mp-drama-ep">{{ episodes }}集</span>{% endif %}
+          {% if episodes %}<span class="mp-drama-ep">{{ t('ui.episodes', n=episodes) }}</span>{% endif %}
         </div>
         <div class="mp-drama-body">
           <h3>{{ drama.title | clean_title }}</h3>
           {% if drama.tags %}
           <div class="mp-drama-mini-tags">
-            {% for t in drama.tags[:3] %}<span>{{ t }}</span>{% endfor %}
+            {% for tg in drama.tags[:3] %}<span>{{ tg | drama_tag_label }}</span>{% endfor %}
           </div>
           {% endif %}
           <p class="mp-drama-meta">
             {% if drama.published_at %}<time>{{ drama.published_at[:10] }}</time>{% endif %}
             {% if drama.pan_source == 'external' %}
-            <span class="mp-pan-badge mp-pan-badge--external">外链</span>
+            <span class="mp-pan-badge mp-pan-badge--external">{{ t('detail.external_collection') }}</span>
             {% elif drama.pan_source == 'main' %}
-            <span class="mp-pan-badge mp-pan-badge--main">小怪盘</span>
+            <span class="mp-pan-badge mp-pan-badge--main">{{ t('detail.main_drive') }}</span>
             {% else %}
-            <span class="mp-pan-badge mp-pan-badge--source">源站</span>
+            <span class="mp-pan-badge mp-pan-badge--source">{{ t('detail.source_link') }}</span>
             {% endif %}
           </p>
         </div>
@@ -125,14 +119,14 @@
       {% endfor %}
     </div>
     {% else %}
-    <div class="mp-empty">暂无短剧。</div>
+    <div class="mp-empty">{{ t('ui.empty_drama') }}</div>
     {% endif %}
   </section>
 
   {% if total_pages > 1 %}
-  <nav class="mp-pagination" aria-label="分页">
+  <nav class="mp-pagination" aria-label="{{ t('ui.pagination') }}">
     {% if page > 1 %}
-    <a href="{{ page_url(page - 1, q, '', channel, tag) }}" class="mp-page-btn">上一页</a>
+    <a href="{{ page_url(page - 1, q, '', channel, tag) }}" class="mp-page-btn">{{ t('ui.prev_page') }}</a>
     {% endif %}
     <div class="mp-page-nums">
       {% for p in page_items %}
@@ -142,16 +136,16 @@
       {% endfor %}
     </div>
     {% if page < total_pages %}
-    <a href="{{ page_url(page + 1, q, '', channel, tag) }}" class="mp-page-btn">下一页</a>
+    <a href="{{ page_url(page + 1, q, '', channel, tag) }}" class="mp-page-btn">{{ t('ui.next_page') }}</a>
     {% endif %}
   </nav>
   {% endif %}
 
   <section class="mp-jupan-link">
-    <p>更多短剧</p>
-    <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">夸克短剧 →</a>
+    <p>{{ t('ui.more_dramas') }}</p>
+    <a href="{{ qkduanju_public_url }}" target="_blank" rel="noopener noreferrer">{{ t('ui.quark_drama') }}</a>
     <span class="mp-jupan-link-sep">·</span>
-    <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">剧盘 →</a>
+    <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">{{ t('ui.jupan') }}</a>
   </section>
 </div>
 {% endblock %}

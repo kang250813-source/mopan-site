@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="{{ html_lang }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#5b21b6">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
   <script>
@@ -18,10 +27,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ base_path }}/static/mopan.css?v={{ static_version }}">
+  <link rel="stylesheet" href="{{ asset_base }}/static/mopan.css?v={{ static_version }}">
   {% block extra_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}" data-locale="{{ locale }}" data-i18n="{{ js_messages | tojson | forceescape }}">
   <header class="mp-header">
     <div class="mp-container mp-header-inner">
       <a href="{{ base_path }}/" class="mp-brand">
@@ -31,7 +40,24 @@
           <small>{{ site_slogan }}</small>
         </span>
       </a>
-      <nav class="mp-nav">{% block nav %}{% endblock %}</nav>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="{{ t('ui.theme_aria') }}">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="{{ t('ui.theme_purple') }}" aria-label="{{ t('ui.theme_purple') }}"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="{{ t('ui.theme_ocean') }}" aria-label="{{ t('ui.theme_ocean') }}"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="{{ t('ui.theme_rose') }}" aria-label="{{ t('ui.theme_rose') }}"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="{{ t('ui.theme_forest') }}" aria-label="{{ t('ui.theme_forest') }}"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="{{ t('ui.theme_amber') }}" aria-label="{{ t('ui.theme_amber') }}"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="{{ t('ui.theme_indigo') }}" aria-label="{{ t('ui.theme_indigo') }}"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          {% if locale == 'zh' %}
+          <a href="{{ locale_switch_href }}" class="mp-lang-link" hreflang="en" lang="en">{{ t('ui.lang_switch_en') }}</a>
+          {% else %}
+          <a href="{{ locale_switch_href }}" class="mp-lang-link" hreflang="zh" lang="zh">{{ t('ui.lang_switch_zh') }}</a>
+          {% endif %}
+        </nav>
+        <nav class="mp-nav">{% block nav %}{% endblock %}</nav>
+      </div>
     </div>
   </header>
 
@@ -45,6 +71,6 @@
     </div>
   </footer>
   <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
-  <script src="{{ base_path }}/static/app.js?v={{ static_version }}"></script>
+  <script src="{{ asset_base }}/static/app.js?v={{ static_version }}"></script>
 </body>
 </html>

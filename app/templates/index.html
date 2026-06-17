@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}{% if category %}{{ category }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
+{% block title %}{% if category %}{{ category | cat_label }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
 {% set list_href = channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel %}
 {% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
 {% if category %}
 <a href="{{ list_href }}" class="mp-nav-link">← {{ channel_meta.label }}</a>
-<span class="mp-nav-current">{{ category }}</span>
+<span class="mp-nav-current">{{ category | cat_label }}</span>
 {% else %}
 {% if channel != 'discover' %}
-<a href="{{ home_href }}" class="mp-nav-link">← 资源库</a>
+<a href="{{ home_href }}" class="mp-nav-link">{{ t('nav.back_library') }}</a>
 {% endif %}
-<a href="{{ list_href }}" class="mp-nav-link is-active">{% if channel == 'discover' %}资源库{% else %}{{ channel_meta.label }}{% endif %}</a>
+<a href="{{ list_href }}" class="mp-nav-link is-active">{% if channel == 'discover' %}{{ t('nav.library_only') }}{% else %}{{ channel_meta.label }}{% endif %}</a>
 {% endif %}
-{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">管理</a>{% endif %}
+{% if not static_site %}<a href="{{ base_path }}/admin" class="mp-nav-link">{{ t('nav.admin') }}</a>{% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="mp-container">
-  <nav class="mp-channels" aria-label="频道">
+  <nav class="mp-channels" aria-label="{{ t('ui.channels') }}">
     {% for ch in channels %}
     <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
        class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
@@ -33,23 +33,11 @@
     <div class="mp-hero-copy">
       <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }}</p>
       <h1>{{ channel_meta.hint }}</h1>
-      <p class="mp-hero-desc">
-        {% if channel == 'classics' %}
-        每本书展示<strong>开篇摘录</strong>；完整 txt 可在 <strong>GitHub（{{ classics_github_user }}）</strong> 查看或下载。
-        {% elif channel == 'drama' %}
-        精选短剧合集，点击卡片即可跳转夸克网盘观看。
-        {% elif channel == 'k12' %}
-        学前至高中、少儿编程、英语启蒙与 TED 等学生教育资源，持续收录。
-        {% elif channel == 'ai_video' %}
-        AI 通识、DeepSeek、ChatGPT、AIGC 绘画与视频、AI 办公变现等课程合集。
-        {% else %}
-        探索 AI 工具、效率软件与开发者项目，支持站内阅读与网盘下载。
-        {% endif %}
-      </p>
+      <p class="mp-hero-desc">{{ hero_desc }}</p>
     </div>
     <div class="mp-hero-stat">
       <span class="mp-hero-stat-num">{{ total_all }}</span>
-      <span class="mp-hero-stat-label">本频道</span>
+      <span class="mp-hero-stat-label">{{ t('ui.channel_items') }}</span>
     </div>
   </section>
 
@@ -57,25 +45,25 @@
     <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
       <input type="hidden" name="channel" value="{{ channel }}">
       <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input type="search" name="q" value="{{ q }}" placeholder="搜索标题、简介、正文…" autocomplete="off">
+      <input type="search" name="q" value="{{ q }}" placeholder="{{ t('ui.search_placeholder') }}" autocomplete="off">
       {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
-      <button type="submit">搜索</button>
-      {% if q or category %}<a href="{{ list_href }}" class="mp-search-clear">清除</a>{% endif %}
+      <button type="submit">{{ t('ui.search') }}</button>
+      {% if q or category %}<a href="{{ list_href }}" class="mp-search-clear">{{ t('ui.search_clear') }}</a>{% endif %}
     </form>
   </section>
 
   {% if category_counts %}
-  <section class="mp-categories" aria-label="{% if channel == 'classics' %}丛书筛选{% else %}分类筛选{% endif %}">
-    <a href="{{ channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel }}" class="mp-cat{% if not category %} is-active{% endif %}">全部</a>
+  <section class="mp-categories" aria-label="{% if channel == 'classics' %}{{ t('ui.library_filter') }}{% else %}{{ t('ui.category_filter') }}{% endif %}">
+    <a href="{{ channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel }}" class="mp-cat{% if not category %} is-active{% endif %}">{{ t('ui.all') }}</a>
     {% for cat, n in category_counts.items() %}
     <a href="{{ category_href(channel, cat) if category_href is defined else base_path ~ '/?channel=' ~ channel ~ '&category=' ~ (cat | urlencode) }}"
-       class="mp-cat{% if category == cat %} is-active{% endif %}">{{ cat }}<span>{{ n }}</span></a>
+       class="mp-cat{% if category == cat %} is-active{% endif %}">{% if channel == 'classics' %}{{ cat | lib_label }}{% else %}{{ cat | cat_label }}{% endif %}<span>{{ n }}</span></a>
     {% endfor %}
   </section>
   {% endif %}
 
   {% if q or category %}
-  <p class="mp-result-hint">共 {{ total }} 条结果</p>
+  <p class="mp-result-hint">{{ t('ui.results', n=total) }}</p>
   {% endif %}
 
   <section class="mp-feed">
@@ -84,11 +72,11 @@
       <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}" class="mp-card-link">
         <div class="mp-card-top">
           {% if item.category %}
-          <span class="mp-tag">{% if channel == 'classics' %}{{ item.category | library_label }}{% else %}{{ item.category }}{% endif %}</span>
+          <span class="mp-tag">{% if channel == 'classics' %}{{ item.category | lib_label }}{% else %}{{ item.category | cat_label }}{% endif %}</span>
           {% endif %}
-          {% if item.has_download %}<span class="mp-tag mp-tag--ok">网盘可下</span>
-          {% elif item.is_preview %}<span class="mp-tag mp-tag--github">GitHub</span>
-          {% elif item.link_status == 'on-site' %}<span class="mp-tag mp-tag--read">站内阅读</span>{% endif %}
+          {% if item.has_download %}<span class="mp-tag mp-tag--ok">{{ t('ui.pan_downloadable') }}</span>
+          {% elif item.is_preview %}<span class="mp-tag mp-tag--github">{{ t('ui.github') }}</span>
+          {% elif item.link_status == 'on-site' %}<span class="mp-tag mp-tag--read">{{ t('ui.read_on_site') }}</span>{% endif %}
           {% if item.published_at %}<time class="mp-date">{{ item.published_at[:10] }}</time>{% endif %}
         </div>
         <h2 class="mp-card-title">{{ item.title }}</h2>
@@ -98,30 +86,30 @@
         {% if item.pan_branches %}
         {% include "_pan_branches.html" %}
         {% endif %}
-        <span class="mp-card-more">{% if item.is_preview %}查看预览 →{% else %}阅读全文 →{% endif %}</span>
+        <span class="mp-card-more">{% if item.is_preview %}{{ t('ui.view_preview') }}{% else %}{{ t('ui.read_more') }}{% endif %}</span>
       </a>
     </article>
     {% else %}
     <div class="mp-empty">
       {% if channel == 'classics' %}
-      暂无藏书内容。
+      {{ t('ui.empty_classics') }}
       {% elif channel == 'discover' %}
-      暂无文章。
+      {{ t('ui.empty_discover') }}
       {% elif channel == 'k12' %}
-      暂无 K12 资源。
+      {{ t('ui.empty_k12') }}
       {% elif channel == 'ai_video' %}
-      暂无 AI 课程。
+      {{ t('ui.empty_ai_video') }}
       {% else %}
-      该频道暂无内容。
+      {{ t('ui.empty_channel') }}
       {% endif %}
     </div>
     {% endfor %}
   </section>
 
   {% if total_pages > 1 %}
-  <nav class="mp-pagination" aria-label="分页">
+  <nav class="mp-pagination" aria-label="{{ t('ui.pagination') }}">
     {% if page > 1 %}
-    <a href="{{ page_url(page - 1, q, category, channel) }}" class="mp-page-btn">上一页</a>
+    <a href="{{ page_url(page - 1, q, category, channel) }}" class="mp-page-btn">{{ t('ui.prev_page') }}</a>
     {% endif %}
     <div class="mp-page-nums">
       {% for p in page_items %}
@@ -131,7 +119,7 @@
       {% endfor %}
     </div>
     {% if page < total_pages %}
-    <a href="{{ page_url(page + 1, q, category, channel) }}" class="mp-page-btn">下一页</a>
+    <a href="{{ page_url(page + 1, q, category, channel) }}" class="mp-page-btn">{{ t('ui.next_page') }}</a>
     {% endif %}
   </nav>
   {% endif %}

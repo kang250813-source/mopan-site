@@ -19,40 +19,40 @@
   <div class="detail-info">
     <div class="detail-resource-tags">
       {% if resource.has_download %}
-      <span class="pill pill-own">{{ pan_label }} · 可下载</span>
+      <span class="pill pill-own">{{ pan_label }} · {{ t('detail.downloadable') }}</span>
       {% elif resource.is_preview %}
-      <span class="pill pill-preview">摘录预览</span>
+      <span class="pill pill-preview">{{ t('detail.excerpt_preview') }}</span>
       {% elif resource.link_status == 'on-site' %}
-      <span class="pill pill-read">站内阅读</span>
+      <span class="pill pill-read">{{ t('detail.read_on_site') }}</span>
       {% endif %}
       {% if resource.category %}
-      <span class="pill">{% if resource.channel == 'classics' %}{{ resource.category | library_label }}{% else %}{{ resource.category }}{% endif %}</span>
+      <span class="pill">{% if resource.channel == 'classics' %}{{ resource.category | lib_label }}{% else %}{{ resource.category | cat_label }}{% endif %}</span>
       {% endif %}
       {% include "_share_pill.html" %}
     </div>
     <h1>{{ resource.title }}</h1>
-    {% if resource.channel == 'classics' and (resource.category | library_subtitle) %}
-    <p class="detail-meta detail-meta--sub">{{ resource.category | library_subtitle }}</p>
+    {% if resource.channel == 'classics' and (resource.category | lib_subtitle) %}
+    <p class="detail-meta detail-meta--sub">{{ resource.category | lib_subtitle }}</p>
     {% endif %}
-    {% if resource.published_at %}<p class="detail-meta">发布于 {{ resource.published_at[:10] }}</p>{% endif %}
+    {% if resource.published_at %}<p class="detail-meta">{{ t('detail.published', date=resource.published_at[:10]) }}</p>{% endif %}
     {% if resource.excerpt and not resource.content_html %}<p class="detail-tip">{{ resource.excerpt }}</p>{% endif %}
   </div>
 
   {% if resource.content_html %}
   <div class="article-body">
-    {% if resource.is_preview %}<p class="detail-tip detail-tip--preview">以下为开篇摘录，全文请从 GitHub 下载。</p>{% endif %}
+    {% if resource.is_preview %}<p class="detail-tip detail-tip--preview">{{ t('detail.preview_note') }}</p>{% endif %}
     {{ resource.content_html | highlight_pan | safe }}
   </div>
   {% endif %}
 
   {% if resource.has_github and resource.github %}
   <div class="cta-panel cta-panel--github">
-    <h2 class="cta-heading">完整文本 · GitHub</h2>
-    <p class="cta-desc">正文托管在 <strong>{{ classics_github_user }}/{{ resource.github.repo_label }}</strong>，本站仅展示摘录。</p>
+    <h2 class="cta-heading">{{ t('detail.github_full') }}</h2>
+    <p class="cta-desc">{{ t('detail.github_desc', html=True, user=classics_github_user, repo=resource.github.repo_label) }}</p>
     <div class="cta-actions">
-      <a href="{{ resource.github.blob }}" class="btn btn-github btn-xl" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
-      <a href="{{ resource.github.raw }}" class="btn btn-copy btn-xl" target="_blank" rel="noopener noreferrer" download>下载 txt</a>
-      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.github.raw }}">复制直链</button>
+      <a href="{{ resource.github.blob }}" class="btn btn-github btn-xl" target="_blank" rel="noopener noreferrer">{{ t('detail.github_view') }}</a>
+      <a href="{{ resource.github.raw }}" class="btn btn-copy btn-xl" target="_blank" rel="noopener noreferrer" download>{{ t('detail.download_txt') }}</a>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.github.raw }}">{{ t('detail.copy_raw') }}</button>
       {% include "_share_btn.html" %}
     </div>
     <p class="cta-link-preview"><a href="{{ resource.github.repo }}" target="_blank" rel="noopener noreferrer">{{ resource.github.repo }}</a></p>
@@ -62,7 +62,7 @@
   {% if resource.has_download %}
   {% if resource.pan_branches %}
   <section class="mp-pan-branches-panel">
-    <h2 class="cta-heading">网盘目录 <span class="mp-pan-branches-count">{{ resource.pan_branches|length }} 项</span></h2>
+    <h2 class="cta-heading">{{ t('detail.pan_branches') }} <span class="mp-pan-branches-count">{{ t('detail.pan_branches_count', n=resource.pan_branches|length) }}</span></h2>
     <ul class="mp-pan-branches-list">
       {% for branch in resource.pan_branches %}
       <li>{{ branch }}</li>
@@ -71,23 +71,23 @@
   </section>
   {% endif %}
   <div class="cta-panel" data-pan-url="{{ resource.pan_url }}">
-    <h2 class="cta-heading">下载资源</h2>
+    <h2 class="cta-heading">{{ t('detail.download_resource') }}</h2>
     <div class="cta-actions">
-      <button type="button" class="btn btn-quark btn-xl js-open-pan">打开{{ pan_label }}</button>
-      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.pan_url }}">复制链接</button>
+      <button type="button" class="btn btn-quark btn-xl js-open-pan">{{ t('detail.open_pan', pan=pan_label) }}</button>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ resource.pan_url }}">{{ t('detail.copy_link') }}</button>
       {% include "_share_btn.html" %}
     </div>
     <p class="cta-link-preview">{{ resource.pan_url }}</p>
     <div class="qr-block">
-      <img src="{{ resource.pan_url | qr_data_url }}" alt="二维码" width="160" height="160">
-      <p>扫码打开{{ pan_label }}</p>
+      <img src="{{ resource.pan_url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">
+      <p>{{ t('detail.scan_pan', pan=pan_label) }}</p>
     </div>
   </div>
   {% endif %}
 
   {% if not resource.has_download and not resource.has_github %}
   <div class="cta-panel cta-panel--share-only">
-    <h2 class="cta-heading">分享本文</h2>
+    <h2 class="cta-heading">{{ t('detail.share_article') }}</h2>
     <div class="cta-actions">
       {% include "_share_btn.html" %}
     </div>
@@ -97,7 +97,7 @@
 
 {% if related %}
 <section class="related-section">
-  <h2>同类资源</h2>
+  <h2>{{ t('detail.related') }}</h2>
   <div class="drama-grid drama-grid--compact">
     {% for item in related %}
     <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}" class="drama-card">{{ item.title }}</a>

@@ -83,4 +83,18 @@ def static_version() -> str:
         return "1"
 
 
+def jupan_cover_version() -> str:
+    for covers_dir in (BASE_DIR / "docs" / "jupan-covers", DATA_DIR / "jupan-covers"):
+        if not covers_dir.is_dir():
+            continue
+        try:
+            mtimes = [p.stat().st_mtime for p in covers_dir.glob("*.webp")]
+            if mtimes:
+                return str(int(max(mtimes)))
+        except OSError:
+            continue
+    return "1"
+
+
 STATIC_VERSION = static_version()
+JUPAN_COVER_VERSION = jupan_cover_version()

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}{{ drama.title | clean_title }} - 短剧 - {{ site_title }}{% endblock %}
+{% block title %}{{ drama.title | clean_title }} - {{ t('detail.drama_title_suffix') }} - {{ site_title }}{% endblock %}
 
 {% block nav %}
-<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-nav-link">← 短剧列表</a>
+<a href="{{ channel_href('drama') if channel_href is defined else base_path ~ '/?channel=drama' }}" class="mp-nav-link">{{ t('nav.back_drama_list') }}</a>
 {% endblock %}
 
 {% block body_class %}page-drama-detail{% endblock %}
@@ -18,62 +18,62 @@
   <div class="mp-drama-detail-hero">
     <div class="mp-drama-detail-cover">
       {% if cover %}
-      <img src="{{ base_path }}{{ cover }}" alt="{{ drama.title | clean_title }}" loading="eager">
+      <img src="{{ asset_base }}{{ cover }}" alt="{{ drama.title | clean_title }}" loading="eager">
       {% else %}
       <div class="mp-drama-cover-fallback mp-drama-cover-fallback--lg"></div>
       {% endif %}
-      {% if episodes %}<span class="mp-drama-ep mp-drama-ep--lg">全 {{ episodes }} 集</span>{% endif %}
+      {% if episodes %}<span class="mp-drama-ep mp-drama-ep--lg">{{ t('ui.episodes_full', n=episodes) }}</span>{% endif %}
     </div>
     <div class="mp-drama-detail-info">
       <div class="detail-resource-tags">
         {% if drama.pan_source == 'external' %}
-        <span class="pill pill-external">外链合集</span>
+        <span class="pill pill-external">{{ t('detail.external_collection') }}</span>
         {% elif drama.pan_source == 'main' %}
-        <span class="pill pill-own">{{ pan_label }} · 小怪盘</span>
+        <span class="pill pill-own">{{ pan_label }} · {{ t('detail.main_drive') }}</span>
         {% else %}
-        <span class="pill pill-source">源站链接</span>
+        <span class="pill pill-source">{{ t('detail.source_link') }}</span>
         {% endif %}
         {% include "_share_pill.html" %}
       </div>
       <h1>{{ drama.title | clean_title }}</h1>
       {% if drama.published_at %}
-      <p class="detail-meta">更新于 {{ drama.published_at[:10] }}</p>
+      <p class="detail-meta">{{ t('detail.updated', date=drama.published_at[:10]) }}</p>
       {% endif %}
       {% if drama.tags %}
       <div class="mp-drama-mini-tags mp-drama-mini-tags--detail">
-        {% for t in drama.tags %}
-        <a href="{{ drama_tag_href(t) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (t | urlencode) }}" class="mp-drama-tag">{{ t }}</a>
+        {% for tg in drama.tags %}
+        <a href="{{ drama_tag_href(tg) if drama_tag_href is defined else base_path ~ '/?channel=drama&tag=' ~ (tg | urlencode) }}" class="mp-drama-tag">{{ tg | drama_tag_label }}</a>
         {% endfor %}
       </div>
       {% endif %}
       <p class="detail-tip">
         {% if drama.pan_source == 'external' %}
-        此为外链合集分享，打开后请在文件夹内找到「{{ drama.title | clean_title }}」对应目录。
+        {{ t('detail.external_tip', title=drama.title | clean_title) }}
         {% else %}
-        点击下方按钮打开夸克网盘，即可观看或保存。
+        {{ t('detail.main_tip') }}
         {% endif %}
       </p>
     </div>
   </div>
 
   <div class="cta-panel" data-pan-url="{{ drama.pan_url }}">
-    <h2 class="cta-heading">打开夸克观看</h2>
+    <h2 class="cta-heading">{{ t('detail.open_quark_watch') }}</h2>
     <div class="cta-actions">
-      <button type="button" class="btn btn-quark btn-xl js-open-pan">打开{{ pan_label }}</button>
-      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ drama.pan_url }}">复制网盘链接</button>
+      <button type="button" class="btn btn-quark btn-xl js-open-pan">{{ t('detail.open_pan', pan=pan_label) }}</button>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ drama.pan_url }}">{{ t('detail.copy_pan_link') }}</button>
       {% include "_share_btn.html" %}
     </div>
     <p class="cta-link-preview">{{ drama.pan_url }}</p>
     <div class="qr-block">
-      <img src="{{ drama.pan_url | qr_data_url }}" alt="二维码" width="160" height="160">
-      <p>扫码打开{{ pan_label }}</p>
+      <img src="{{ drama.pan_url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">
+      <p>{{ t('detail.scan_pan', pan=pan_label) }}</p>
     </div>
   </div>
 </article>
 
 {% if related %}
 <section class="related-section">
-  <h2>更多短剧</h2>
+  <h2>{{ t('detail.more_dramas') }}</h2>
   <div class="mp-drama-grid mp-drama-grid--compact">
     {% for item in related %}
     <a href="{{ drama_href(item.id) if drama_href is defined else base_path ~ '/drama/' ~ item.id }}" class="mp-drama-card mp-drama-card--compact">

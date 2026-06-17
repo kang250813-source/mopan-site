@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import sys
 from dataclasses import dataclass
@@ -16,6 +17,16 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app.classics import library_label, library_subtitle  # noqa: E402
+from app.i18n import (  # noqa: E402
+    I18n,
+    LOCALES,
+    category_label,
+    classic_library_label,
+    classic_subtitle_label,
+    drama_tag_label,
+    get_i18n,
+    set_active_i18n,
+)
 from app.config import (  # noqa: E402
     CHANNELS,
     CLASSICS_GITHUB_USER,
@@ -236,64 +247,38 @@ def _filter_resources_by_category(
     return [r for r in resources if (r.category or "其他") == cat]
 
 
-def _category_out_path(channel: str, category_name: str, page: int) -> Path:
+def _list_out_path(docs_root: Path, channel: str, page: int) -> Path:
     if channel == "discover":
-        base = DOCS_DIR / "category" / category_name
+        return docs_root / "index.html" if page == 1 else docs_root / "page" / str(page) / "index.html"
+    if page == 1:
+        return docs_root / "channel" / channel / "index.html"
+    return docs_root / "channel" / channel / "page" / str(page) / "index.html"
+
+
+def _category_out_path(docs_root: Path, channel: str, category_name: str, page: int) -> Path:
+    if channel == "discover":
+        base = docs_root / "category" / category_name
     else:
-        base = DOCS_DIR / "channel" / channel / "category" / category_name
+        base = docs_root / "channel" / channel / "category" / category_name
     if page <= 1:
         return base / "index.html"
     return base / "page" / str(page) / "index.html"
 
 
-def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) -> list[Resource]:
-    same = [r for r in pool if r.id != current.id and r.category == current.category][:limit]
-    if len(same) >= limit:
-        return same
-    seen = {r.id for r in same}
-    for r in pool:
-        if r.id == current.id or r.id in seen:
-            continue
-        same.append(r)
-        if len(same) >= limit:
-            break
-    return same
+def _page_url_path(base_path: str, out_file: Path, docs_root: Path) -> str:
+    rel = out_file.relative_to(docs_root).as_posix()
+    prefix = base_path.rstrip("/")
+    if rel == "index.html":
+        return f"{prefix}/" if prefix else "/"
+    url = f"{prefix}/{rel}" if prefix else f"/{rel}"
+    return url.replace("//", "/")
 
 
-def _list_out_path(channel: str, page: int) -> Path:
-    if channel == "discover":
-        return DOCS_DIR / "index.html" if page == 1 else DOCS_DIR / "page" / str(page) / "index.html"
-    if page == 1:
-        return DOCS_DIR / "channel" / channel / "index.html"
-    return DOCS_DIR / "channel" / channel / "page" / str(page) / "index.html"
+def _docs_root(locale: str) -> Path:
+    return DOCS_DIR if locale == "zh" else DOCS_DIR / "en"
 
 
-def _copy_covers() -> None:
-    dst = DOCS_DIR / "jupan-covers"
-    dst.mkdir(parents=True, exist_ok=True)
-    for src in (COVERS_DATA_DIR, JUPAN_COVERS_DIR):
-        if not src.is_dir():
-            continue
-        for file in src.iterdir():
-            if file.is_file():
-                shutil.copy2(file, dst / file.name)
-        if any(dst.iterdir()):
-            return
-
-
-def build(base_path: str = "") -> None:
-    base_path = base_path.rstrip("/")
-    payload = load_payload()
-    channel_counts = dict(payload.channel_counts)
-
-    if DOCS_DIR.exists():
-        shutil.rmtree(DOCS_DIR)
-    DOCS_DIR.mkdir(parents=True)
-    (DOCS_DIR / "static").mkdir()
-    shutil.copytree(STATIC_DIR, DOCS_DIR / "static", dirs_exist_ok=True)
-    (DOCS_DIR / ".nojekyll").touch()
-    _copy_covers()
-
+def _make_env(i18n: I18n, base_path: str, channel_counts: dict[str, int]) -> Environment:
     env = Environment(
         loader=FileSystemLoader(TEMPLATES_DIR),
         autoescape=select_autoescape(["html", "xml"]),
@@ -305,23 +290,32 @@ def build(base_path: str = "") -> None:
     env.filters["clean_title"] = jupan_bridge.clean_title
     env.filters["cover_src"] = jupan_bridge.cover_src
     env.filters["qr_data_url"] = quark_qr_data_url
+    env.filters["cat_label"] = category_label
+    env.filters["lib_label"] = classic_library_label
+    env.filters["lib_subtitle"] = classic_subtitle_label
+    env.filters["drama_tag_label"] = drama_tag_label
     env.globals.update(
+        t=i18n.t,
+        locale=i18n.locale,
+        html_lang=i18n.html_lang,
         base_path=base_path,
+        asset_base=i18n.asset_base_path,
         static_site=True,
-        site_title=SITE_TITLE,
-        site_slogan=SITE_SLOGAN,
+        site_title=i18n.site_title,
+        site_slogan=i18n.site_slogan,
         site_version="static",
         static_version=STATIC_VERSION,
-        channels=CHANNELS,
+        channels=i18n.channels(),
         default_channel=DEFAULT_CHANNEL,
         contact_email="",
         public_site_url="",
-        pan_label=PAN_LABEL,
+        pan_label=i18n.pan_label,
         jupan_public_url=JUPAN_PUBLIC_URL,
         qkduanju_public_url=QKDUANJU_PUBLIC_URL,
         hot_tags=JUPAN_HOT_TAGS,
         hot_tags_visible=JUPAN_HOT_TAGS_VISIBLE,
         classics_github_user=CLASSICS_GITHUB_USER,
+        js_messages=i18n.js_messages(),
         resource_href=lambda rid: resource_href(base_path, rid, static_site=True),
         drama_href=lambda did: drama_href(base_path, did, static_site=True),
         drama_tag_href=lambda tag, page=1: drama_tag_href(base_path, tag, static_site=True, page=page),
@@ -335,13 +329,24 @@ def build(base_path: str = "") -> None:
             else channel_href(base_path, channel or "discover", static_site=True, page=page)
         ),
     )
+    return env
+
+
+def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, int]) -> dict[str, int]:
+    set_active_i18n(i18n.locale)
+    base_path = i18n.locale_base_path
+    docs_root = _docs_root(i18n.locale)
+    docs_root.mkdir(parents=True, exist_ok=True)
+    env = _make_env(i18n, base_path, channel_counts)
+    stats = {"resources": 0, "list_pages": 0, "dramas": 0}
 
     def write(name: str, path: Path, **ctx) -> None:
         tpl = env.get_template(name)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(tpl.render(**ctx), encoding="utf-8")
-
-    stats = {"resources": 0, "list_pages": 0, "dramas": 0}
+        path.write_text(
+            tpl.render(locale_switch_href=i18n.locale_switch_href(_page_url_path(base_path, path, docs_root)), **ctx),
+            encoding="utf-8",
+        )
 
     for channel in RESOURCE_CHANNELS:
         resources = _resources_for_channel(payload, channel)
@@ -349,17 +354,17 @@ def build(base_path: str = "") -> None:
             continue
         ch_data = payload.channels.get(channel, {})
         category_counts = dict(ch_data.get("category_counts") or {})
-        channel_meta = next(c for c in CHANNELS if c["id"] == channel)
+        channel_meta = i18n.channel(channel)
         total = len(resources)
         pages = calc_total_pages(total, PAGE_SIZE)
-        classics_prefix = channel == "classics"
+        hero_desc = i18n.hero(channel, github_user=CLASSICS_GITHUB_USER)
 
         for page_num in range(1, pages + 1):
             offset = (page_num - 1) * PAGE_SIZE
             page_items = resources[offset : offset + PAGE_SIZE]
             write(
                 "index.html",
-                _list_out_path(channel, page_num),
+                _list_out_path(docs_root, channel, page_num),
                 request=_fake_request("/"),
                 resources=page_items,
                 q="",
@@ -373,6 +378,7 @@ def build(base_path: str = "") -> None:
                 page=page_num,
                 total_pages=pages,
                 page_items=page_window(page_num, pages),
+                hero_desc=hero_desc,
             )
             stats["list_pages"] += 1
 
@@ -387,7 +393,7 @@ def build(base_path: str = "") -> None:
                 related = _related_resources(resource, resources)
             write(
                 "detail.html",
-                DOCS_DIR / "resource" / f"{resource.id}.html",
+                docs_root / "resource" / f"{resource.id}.html",
                 request=_fake_request(f"/resource/{resource.id}"),
                 resource=resource,
                 related=related,
@@ -406,7 +412,7 @@ def build(base_path: str = "") -> None:
                 page_items = filtered[offset : offset + PAGE_SIZE]
                 write(
                     "index.html",
-                    _category_out_path(channel, cat_name, page_num),
+                    _category_out_path(docs_root, channel, cat_name, page_num),
                     request=_fake_request("/"),
                     resources=page_items,
                     q="",
@@ -420,20 +426,19 @@ def build(base_path: str = "") -> None:
                     page=page_num,
                     total_pages=cat_pages,
                     page_items=page_window(page_num, cat_pages),
+                    hero_desc=hero_desc,
                 )
                 stats["list_pages"] += 1
 
     dramas = _dramas(payload)
     if dramas:
-        channel_meta = next(c for c in CHANNELS if c["id"] == "drama")
+        channel_meta = i18n.channel("drama")
         total = len(dramas)
         pages = calc_total_pages(total, PAGE_SIZE)
         for page_num in range(1, pages + 1):
             offset = (page_num - 1) * PAGE_SIZE
             page_items = dramas[offset : offset + PAGE_SIZE]
-            out = DOCS_DIR / "channel" / "drama" / "index.html" if page_num == 1 else (
-                DOCS_DIR / "channel" / "drama" / "page" / str(page_num) / "index.html"
-            )
+            out = _list_out_path(docs_root, "drama", page_num)
             write(
                 "drama_channel.html",
                 out,
@@ -449,6 +454,7 @@ def build(base_path: str = "") -> None:
                 page=page_num,
                 total_pages=pages,
                 page_items=page_window(page_num, pages),
+                hero_desc=i18n.hero("drama"),
             )
             stats["list_pages"] += 1
 
@@ -456,7 +462,7 @@ def build(base_path: str = "") -> None:
             related = [d for d in dramas if d.id != drama.id][:5]
             write(
                 "drama_detail.html",
-                DOCS_DIR / "drama" / f"{drama.id}.html",
+                docs_root / "drama" / f"{drama.id}.html",
                 request=_fake_request(f"/drama/{drama.id}"),
                 drama=drama,
                 related=related,
@@ -468,12 +474,12 @@ def build(base_path: str = "") -> None:
             tagged = _filter_dramas_by_tag(dramas, tag_name)
             if not tagged:
                 continue
-            total = len(tagged)
-            pages = calc_total_pages(total, PAGE_SIZE)
-            for page_num in range(1, pages + 1):
+            tag_total = len(tagged)
+            tag_pages = calc_total_pages(tag_total, PAGE_SIZE)
+            for page_num in range(1, tag_pages + 1):
                 offset = (page_num - 1) * PAGE_SIZE
                 page_items = tagged[offset : offset + PAGE_SIZE]
-                tag_dir = DOCS_DIR / "channel" / "drama" / "tag" / tag_name
+                tag_dir = docs_root / "channel" / "drama" / "tag" / tag_name
                 out = tag_dir / "index.html" if page_num == 1 else tag_dir / "page" / str(page_num) / "index.html"
                 write(
                     "drama_channel.html",
@@ -485,28 +491,74 @@ def build(base_path: str = "") -> None:
                     channel="drama",
                     channel_meta=channel_meta,
                     channel_counts=channel_counts,
-                    total=total,
+                    total=tag_total,
                     total_all=channel_counts.get("drama", len(dramas)),
                     page=page_num,
-                    total_pages=pages,
-                    page_items=page_window(page_num, pages),
+                    total_pages=tag_pages,
+                    page_items=page_window(page_num, tag_pages),
+                    hero_desc=i18n.hero("drama", tag=tag_name),
                 )
                 stats["list_pages"] += 1
 
+    return stats
+
+
+def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) -> list[Resource]:
+    same = [r for r in pool if r.id != current.id and r.category == current.category][:limit]
+    if len(same) >= limit:
+        return same
+    seen = {r.id for r in same}
+    for r in pool:
+        if r.id == current.id or r.id in seen:
+            continue
+        same.append(r)
+        if len(same) >= limit:
+            break
+    return same
+
+
+def _copy_covers() -> None:
+    dst = DOCS_DIR / "jupan-covers"
+    dst.mkdir(parents=True, exist_ok=True)
+    for src in (COVERS_DATA_DIR, JUPAN_COVERS_DIR):
+        if not src.is_dir():
+            continue
+        for file in src.iterdir():
+            if file.is_file():
+                shutil.copy2(file, dst / file.name)
+        if any(dst.iterdir()):
+            return
+
+
+def build(base_path: str = "") -> None:
+    _ = base_path.rstrip("/")
+    payload = load_payload()
+    channel_counts = dict(payload.channel_counts)
+
+    if DOCS_DIR.exists():
+        shutil.rmtree(DOCS_DIR)
+    DOCS_DIR.mkdir(parents=True)
+    shutil.copytree(STATIC_DIR, DOCS_DIR / "static", dirs_exist_ok=True)
+    (DOCS_DIR / ".nojekyll").touch()
+    _copy_covers()
+
+    totals = {"resources": 0, "list_pages": 0, "dramas": 0}
+    for locale in LOCALES:
+        stats = _build_locale(get_i18n(locale), payload, channel_counts)
+        for key in totals:
+            totals[key] += stats[key]
+        print(f"  locale {locale}: resources={stats['resources']}, dramas={stats['dramas']}, lists={stats['list_pages']}")
+
     print(f"Built static site -> {DOCS_DIR}")
     print(f"  channels: {', '.join(f'{k}={v}' for k, v in channel_counts.items())}")
-    print(f"  resource pages: {stats['resources']}")
-    print(f"  drama pages: {stats['dramas']}")
-    print(f"  list pages: {stats['list_pages']}")
+    print(f"  resource pages: {totals['resources']}")
+    print(f"  drama pages: {totals['dramas']}")
+    print(f"  list pages: {totals['list_pages']}")
     domain = os.getenv("CUSTOM_DOMAIN", "").strip()
     if domain:
         (DOCS_DIR / "CNAME").write_text(domain + "\n", encoding="utf-8")
         print(f"  CNAME: {domain}")
-    if base_path:
-        print(f"  preview: https://kang250813-source.github.io{base_path}/")
 
 
 if __name__ == "__main__":
-    import os
-
     build(os.getenv("BASE_PATH", ""))

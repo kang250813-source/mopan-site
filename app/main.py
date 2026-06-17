@@ -37,6 +37,15 @@ from app.config import (
 )
 from app.classics import library_label, library_subtitle
 from app.highlight import highlight_pan_words
+from app.i18n import (
+    active_i18n,
+    category_label,
+    classic_library_label,
+    classic_subtitle_label,
+    drama_tag_label,
+    get_i18n,
+    set_active_i18n,
+)
 from app.pagination import build_page_url, clamp_page, page_window, total_pages as calc_total_pages
 from app.qr_util import quark_qr_data_url
 from app.urls import drama_share_url, resource_share_url
@@ -68,6 +77,10 @@ templates.env.globals.update(
 )
 templates.env.filters["library_label"] = library_label
 templates.env.filters["library_subtitle"] = library_subtitle
+templates.env.filters["cat_label"] = category_label
+templates.env.filters["lib_label"] = classic_library_label
+templates.env.filters["lib_subtitle"] = classic_subtitle_label
+templates.env.filters["drama_tag_label"] = drama_tag_label
 templates.env.filters["qr_data_url"] = quark_qr_data_url
 templates.env.filters["highlight_pan"] = highlight_pan_words
 templates.env.filters["episode_count"] = jupan_bridge.episode_count
@@ -78,14 +91,55 @@ templates.env.globals["page_url"] = lambda page, q="", category="", channel="", 
 )
 
 
+@app.middleware("http")
+async def i18n_middleware(request: Request, call_next):
+    lang = request.query_params.get("lang", "").strip().lower()
+    set_active_i18n("en" if lang == "en" else "zh")
+    return await call_next(request)
+
+
 @app.on_event("startup")
 def on_startup() -> None:
     database.init_db(DB_PATH)
     jupan_bridge.refresh_pan_cache()
 
 
+def _locale_path(request: Request) -> str:
+    path = request.url.path
+    if BASE_PATH and path.startswith(BASE_PATH):
+        path = path[len(BASE_PATH) :] or "/"
+    return path
+
+
+def _i18n_bundle(request: Request, *, channel: str = "", tag: str = "") -> dict:
+    i18n = active_i18n()
+    path = _locale_path(request)
+    base = BASE_PATH.rstrip("/")
+    if i18n.locale == "en":
+        base = f"{base}/en" if base else "/en"
+    switch = i18n.locale_switch_href(path)
+    if BASE_PATH and switch.startswith("/"):
+        switch = f"{BASE_PATH.rstrip('/')}{switch}"
+    return {
+        "locale": i18n.locale,
+        "html_lang": i18n.html_lang,
+        "site_title": i18n.site_title,
+        "site_slogan": i18n.site_slogan,
+        "pan_label": i18n.pan_label,
+        "channels": i18n.channels(),
+        "asset_base": "",
+        "base_path": base,
+        "t": i18n.t,
+        "js_messages": i18n.js_messages(),
+        "locale_switch_href": switch,
+        "hero_desc": i18n.hero(channel, tag=tag, github_user=CLASSICS_GITHUB_USER),
+    }
+
+
 def _ctx(request: Request, **extra):
-    return {"request": request, **extra}
+    channel = str(extra.get("channel") or "")
+    tag = str(extra.get("tag") or "")
+    return {"request": request, "static_site": False, **_i18n_bundle(request, channel=channel, tag=tag), **extra}
 
 
 def _request_base(request: Request) -> str:
@@ -114,6 +168,8 @@ def index(
     if active_channel not in valid_ids:
         active_channel = DEFAULT_CHANNEL
     channel_meta = next((c for c in CHANNELS if c["id"] == active_channel), CHANNELS[0])
+    i18n = active_i18n()
+    channel_meta = i18n.channel(active_channel)
     channel_counts = _channel_counts()
 
     if active_channel == "drama":
