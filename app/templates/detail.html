@@ -39,10 +39,15 @@
   </div>
 
   {% if resource.content_html %}
-  <div class="article-body">
-    {% if resource.is_preview %}<p class="detail-tip detail-tip--preview">{{ t('detail.preview_note') }}</p>{% endif %}
-    {{ resource.content_html | highlight_pan | safe }}
+  <div class="article-body-wrap">
+    <div class="article-body">
+      {% if resource.is_preview %}<p class="detail-tip detail-tip--preview">{{ t('detail.preview_note') }}</p>{% endif %}
+      {{ resource.content_html | highlight_pan | safe }}
+    </div>
+    {% include "_source_stamp.html" %}
   </div>
+  {% else %}
+  {% include "_source_stamp.html" %}
   {% endif %}
 
   {% if resource.has_github and resource.github %}
@@ -81,6 +86,7 @@
     <div class="qr-block">
       <img src="{{ resource.pan_url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">
       <p>{{ t('detail.scan_pan', pan=pan_label) }}</p>
+      <p class="mp-qr-brand">mopan.lol</p>
     </div>
   </div>
   {% endif %}

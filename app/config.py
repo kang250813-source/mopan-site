@@ -71,7 +71,7 @@ JUPAN_HOT_TAGS = [
     if t.strip()
 ]
 JUPAN_COVERS_DIR = JUPAN_SITE_ROOT / "static" / "covers"
-PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "").rstrip("/")
+PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "https://www.mopan.lol").rstrip("/")
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL", "").strip()
 
 SITE_VERSION = "0.2.0"

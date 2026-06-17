@@ -251,4 +251,12 @@
       setDramaTagsExpanded(!dramaTagsList.classList.contains('is-expanded'));
     });
   }
+
+  document.querySelectorAll('.article-body img').forEach(function (img) {
+    if (img.closest('.mp-article-img-wrap')) return;
+    var wrap = document.createElement('span');
+    wrap.className = 'mp-article-img-wrap';
+    img.parentNode.insertBefore(wrap, img);
+    wrap.appendChild(img);
+  });
 })();
