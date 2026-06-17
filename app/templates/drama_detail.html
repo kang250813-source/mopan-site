@@ -26,7 +26,13 @@
     </div>
     <div class="mp-drama-detail-info">
       <div class="detail-resource-tags">
-        <span class="pill pill-own">{{ pan_label }}</span>
+        {% if drama.pan_source == 'external' %}
+        <span class="pill pill-external">外链合集</span>
+        {% elif drama.pan_source == 'main' %}
+        <span class="pill pill-own">{{ pan_label }} · 小怪盘</span>
+        {% else %}
+        <span class="pill pill-source">源站链接</span>
+        {% endif %}
         {% include "_share_pill.html" %}
       </div>
       <h1>{{ drama.title | clean_title }}</h1>
@@ -40,7 +46,13 @@
         {% endfor %}
       </div>
       {% endif %}
-      <p class="detail-tip">点击下方按钮打开夸克网盘，即可观看或保存。</p>
+      <p class="detail-tip">
+        {% if drama.pan_source == 'external' %}
+        此为外链合集分享，打开后请在文件夹内找到「{{ drama.title | clean_title }}」对应目录。
+        {% else %}
+        点击下方按钮打开夸克网盘，即可观看或保存。
+        {% endif %}
+      </p>
     </div>
   </div>
 

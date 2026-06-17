@@ -18,6 +18,8 @@ from app.config import (
 )
 
 _RELATED_ORDER = "COALESCE(d.published_at, d.created_at) DESC, d.id DESC"
+_EXTERNAL_SHARE_IDS = frozenset({"d54031d2ebce"})
+_SHARE_ID_RE = re.compile(r"/s/([0-9a-fA-F]+)", re.IGNORECASE)
 
 
 @dataclass
@@ -28,6 +30,36 @@ class JupanDrama:
     published_at: str | None = None
     cover_url: str | None = None
     tags: list[str] = field(default_factory=list)
+    pan_source: str = "main"  # main | external | source
+
+
+def normalize_pan_url(url: str) -> str:
+    """Strip internal fragments/query used only for DB uniqueness."""
+    return (url or "").split("#")[0].split("?")[0].strip()
+
+
+def _share_id(url: str) -> str | None:
+    match = _SHARE_ID_RE.search(url or "")
+    return match.group(1).lower() if match else None
+
+
+def classify_pan_source(title: str, site_url: str, resolved_url: str) -> str:
+    site_norm = normalize_pan_url(site_url)
+    resolved_norm = normalize_pan_url(resolved_url)
+    share_id = _share_id(site_norm) or _share_id(resolved_norm)
+    if share_id and share_id in _EXTERNAL_SHARE_IDS:
+        return "external"
+    cache = _load_share_cache()
+    save_path = _load_save_paths().get(title)
+    if save_path and save_path in cache:
+        return "main"
+    if resolved_norm in {normalize_pan_url(v) for v in cache.values()}:
+        return "main"
+    if site_norm and resolved_norm != site_norm:
+        return "main"
+    if site_norm:
+        return "source"
+    return "main"
 
 
 def _connect(db_path: Path) -> sqlite3.Connection:
@@ -71,7 +103,25 @@ def resolve_main_pan_url(title: str, fallback: str) -> str:
         for path, url in cache.items():
             if path.endswith(title) or path.rstrip("/").endswith(title.rstrip()):
                 return url
-    return fallback.split("?")[0].strip()
+    return normalize_pan_url(fallback)
+
+
+def _make_drama(row: sqlite3.Row, *, pan_url: str | None = None) -> JupanDrama:
+    site_url = row["quark_url"] or ""
+    resolved = pan_url or resolve_main_pan_url(row["title"], site_url)
+    display_url = normalize_pan_url(resolved)
+    return JupanDrama(
+        id=int(row["id"]),
+        title=row["title"],
+        pan_url=display_url,
+        published_at=row["published_at"],
+        cover_url=row["cover_url"],
+        pan_source=classify_pan_source(row["title"], site_url, resolved),
+    )
+
+
+def _row_to_drama(row: sqlite3.Row, *, pan_url: str | None = None) -> JupanDrama:
+    return _make_drama(row, pan_url=pan_url)
 
 
 def _attach_tags(conn: sqlite3.Connection, dramas: list[JupanDrama]) -> list[JupanDrama]:
@@ -100,20 +150,10 @@ def _attach_tags(conn: sqlite3.Connection, dramas: list[JupanDrama]) -> list[Jup
             published_at=d.published_at,
             cover_url=d.cover_url,
             tags=tag_map.get(d.id, []),
+            pan_source=d.pan_source,
         )
         for d in dramas
     ]
-
-
-def _row_to_drama(row: sqlite3.Row, *, pan_url: str | None = None) -> JupanDrama:
-    site_url = row["quark_url"] or ""
-    return JupanDrama(
-        id=int(row["id"]),
-        title=row["title"],
-        pan_url=pan_url or resolve_main_pan_url(row["title"], site_url),
-        published_at=row["published_at"],
-        cover_url=row["cover_url"],
-    )
 
 
 def _tag_clause(tag: str) -> tuple[str, list[object]]:

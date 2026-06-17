@@ -101,6 +101,7 @@ def _drama_from_dict(raw: dict) -> jupan_bridge.JupanDrama:
         published_at=raw.get("published_at"),
         cover_url=raw.get("cover_url"),
         tags=list(raw.get("tags") or []),
+        pan_source=raw.get("pan_source", "main"),
     )
 
 
