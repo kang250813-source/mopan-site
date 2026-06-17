@@ -65,7 +65,7 @@ EXPORT_MANIFEST = EXPORT_DIR / "manifest.json"
 DISCOVER_JSON = ROOT / "data" / "discover.json"
 COVERS_DATA_DIR = ROOT / "data" / "jupan-covers"
 
-RESOURCE_CHANNELS = ("discover", "k12", "ai_video", "classics")
+RESOURCE_CHANNELS = ("discover", "media", "other", "k12", "ai_video", "classics")
 
 
 @dataclass

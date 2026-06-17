@@ -14,7 +14,7 @@ LOCALES = ("zh", "en")
 DEFAULT_LOCALE = "zh"
 LOCALE_DIR = Path(__file__).resolve().parent / "locales"
 
-CHANNEL_IDS = ("discover", "drama", "k12", "ai_video", "classics")
+CHANNEL_IDS = ("discover", "drama", "media", "other", "k12", "ai_video", "classics")
 
 _current: ContextVar["I18n | None"] = ContextVar("mopan_i18n", default=None)
 
