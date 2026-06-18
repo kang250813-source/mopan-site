@@ -94,10 +94,34 @@ templates.env.globals["page_url"] = lambda page, q="", category="", channel="", 
 )
 
 
+def _strip_base(path: str) -> str:
+    if BASE_PATH and path.startswith(BASE_PATH):
+        return path[len(BASE_PATH) :] or "/"
+    return path
+
+
+def _with_base(path: str) -> str:
+    if not BASE_PATH:
+        return path
+    return BASE_PATH + (path if path.startswith("/") else f"/{path}")
+
+
 @app.middleware("http")
 async def i18n_middleware(request: Request, call_next):
+    inner = _strip_base(request.url.path)
+    locale = "zh"
+
+    if inner == "/en" or inner.startswith("/en/"):
+        locale = "en"
+        stripped = inner[3:] or "/"
+        new_path = _with_base(stripped)
+        request.scope["path"] = new_path
+        request.scope["raw_path"] = new_path.encode("utf-8")
+
     lang = request.query_params.get("lang", "").strip().lower()
-    set_active_i18n("en" if lang == "en" else "zh")
+    if lang == "en":
+        locale = "en"
+    set_active_i18n(locale)
     return await call_next(request)
 
 
@@ -108,9 +132,9 @@ def on_startup() -> None:
 
 
 def _locale_path(request: Request) -> str:
-    path = request.url.path
-    if BASE_PATH and path.startswith(BASE_PATH):
-        path = path[len(BASE_PATH) :] or "/"
+    path = _strip_base(request.url.path)
+    if active_i18n().locale == "en" and not (path == "/en" or path.startswith("/en/")):
+        path = "/en" + ("" if path == "/" else path)
     return path
 
 
