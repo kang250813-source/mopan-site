@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.finger_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-finger{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="finger">
+  <header class="mp-game-head">
+    <h1>{{ t('games.finger_title') }}</h1>
+    <p>{{ t('games.finger_hint') }}</p>
+  </header>
+
+  <div class="mp-finger-stage">
+    <div class="mp-finger-pointer" id="finger-pointer" aria-hidden="true"></div>
+    <div class="mp-finger-disc" id="finger-disc">
+      <div class="mp-finger-slots" id="finger-slots"></div>
+      <button type="button" class="mp-finger-spin-btn" id="finger-spin">{{ t('games.spin') }}</button>
+    </div>
+    <p class="mp-finger-result" id="finger-result" hidden></p>
+  </div>
+
+  <div class="mp-party-controls">
+    <label class="mp-party-label">{{ t('games.finger_players') }}
+      <select id="finger-count" class="mp-party-select">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+      </select>
+    </label>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/finger.js?v={{ static_version }}"></script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.chore_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-chore{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="chore">
+  <header class="mp-game-head">
+    <h1>{{ t('games.chore_title') }}</h1>
+    <p>{{ t('games.chore_hint') }}</p>
+  </header>
+
+  <div class="mp-family-edit">
+    <div class="mp-family-edit-block">
+      <h3>{{ t('games.chore_members') }}</h3>
+      <div class="mp-family-tags" id="chore-members"></div>
+      <div class="mp-family-add">
+        <input type="text" id="chore-member-input" maxlength="8" placeholder="{{ t('games.chore_member_ph') }}">
+        <button type="button" class="btn btn-copy" id="chore-member-add">{{ t('games.chore_add') }}</button>
+      </div>
+    </div>
+    <div class="mp-family-edit-block">
+      <h3>{{ t('games.chore_tasks') }}</h3>
+      <div class="mp-family-tags" id="chore-chores"></div>
+      <div class="mp-family-add">
+        <input type="text" id="chore-chore-input" maxlength="10" placeholder="{{ t('games.chore_task_ph') }}">
+        <button type="button" class="btn btn-copy" id="chore-chore-add">{{ t('games.chore_add') }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mp-family-dual-wheels">
+    <div class="mp-family-wheel-col">
+      <p class="mp-family-wheel-label">{{ t('games.chore_wheel_task') }}</p>
+      <div class="mp-wheel-wrap mp-wheel-wrap--sm">
+        <div class="mp-wheel-pointer" aria-hidden="true"></div>
+        <div class="mp-wheel-outer" id="chore-wheel-disc">
+          <svg class="mp-wheel-svg" viewBox="0 0 200 200" aria-hidden="true">
+            <g id="chore-wheel-rotor"></g>
+          </svg>
+          <div class="mp-wheel-lights" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mp-family-wheel-col">
+      <p class="mp-family-wheel-label">{{ t('games.chore_wheel_who') }}</p>
+      <div class="mp-wheel-wrap mp-wheel-wrap--sm">
+        <div class="mp-wheel-pointer" aria-hidden="true"></div>
+        <div class="mp-wheel-outer" id="who-wheel-disc">
+          <svg class="mp-wheel-svg" viewBox="0 0 200 200" aria-hidden="true">
+            <g id="who-wheel-rotor"></g>
+          </svg>
+          <div class="mp-wheel-lights" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-primary btn-xl mp-family-spin-main" id="chore-spin">{{ t('games.chore_spin') }}</button>
+
+  <div class="mp-family-result" id="chore-result" hidden>
+    <p class="mp-family-result-kicker">{{ t('games.chore_result_kicker') }}</p>
+    <p class="mp-family-result-main"><span id="chore-result-who"></span> · <span id="chore-result-chore"></span></p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/family-wheel.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/chore.js?v={{ static_version }}"></script>
+{% endblock %}

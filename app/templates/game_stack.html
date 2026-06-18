@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.stack_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-stack{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="stack">
+  <header class="mp-game-head">
+    <h1>{{ t('games.stack_title') }}</h1>
+    <p>{{ t('games.stack_hint') }}</p>
+  </header>
+
+  <div class="mp-game-stage mp-game-stage--stack">
+    <canvas id="stack-canvas" class="mp-stack-canvas" width="360" height="520" aria-label="{{ t('games.stack_title') }}"></canvas>
+    <div class="mp-game-overlay" id="stack-overlay" hidden>
+      <div class="mp-game-overlay-card">
+        <p class="mp-game-overlay-kicker">{{ t('games.game_over') }}</p>
+        <p class="mp-game-overlay-score"><span id="stack-final-score">0</span></p>
+        <p class="mp-game-overlay-best">{{ t('games.best_label') }} <span id="stack-best-score">0</span></p>
+        <p class="mp-game-overlay-pick" id="stack-pick" hidden></p>
+        <div class="mp-game-overlay-actions">
+          <button type="button" class="btn btn-primary btn-xl" id="stack-restart">{{ t('games.restart') }}</button>
+          <a href="{{ base_path }}/game/" class="btn btn-copy btn-xl">{{ t('games.back_hub') }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mp-game-hud">
+    <div class="mp-game-hud-item"><span>{{ t('games.score') }}</span><strong id="stack-score">0</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.level') }}</span><strong id="stack-level">1</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.best') }}</span><strong id="stack-best-hud">0</strong></div>
+  </div>
+  <p class="mp-game-tip">{{ t('games.stack_tip') }}</p>
+  <button type="button" class="mp-stack-drop-btn" id="stack-drop">{{ t('games.drop') }}</button>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/stack.js?v={{ static_version }}"></script>
+{% endblock %}

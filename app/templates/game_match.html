@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.match_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-match{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="match">
+  <header class="mp-game-head">
+    <h1>{{ t('games.match_title') }}</h1>
+    <p>{{ t('games.match_hint') }}</p>
+  </header>
+
+  <div class="mp-game-hud">
+    <div class="mp-game-hud-item"><span>{{ t('games.score') }}</span><strong id="match-score">0</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.moves') }}</span><strong id="match-moves">30</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.best') }}</span><strong id="match-best">0</strong></div>
+  </div>
+
+  <div class="mp-game-stage mp-game-stage--match">
+    <div class="mp-match-board" id="match-board" role="grid" aria-label="{{ t('games.match_title') }}"></div>
+    <div class="mp-game-overlay" id="match-overlay" hidden>
+      <div class="mp-game-overlay-card">
+        <p class="mp-game-overlay-kicker" id="match-overlay-title">{{ t('games.game_over') }}</p>
+        <p class="mp-game-overlay-score"><span id="match-final-score">0</span></p>
+        <p class="mp-game-overlay-best">{{ t('games.best_label') }} <span id="match-best-final">0</span></p>
+        <div class="mp-game-overlay-actions">
+          <button type="button" class="btn btn-primary btn-xl" id="match-restart">{{ t('games.restart') }}</button>
+          <a href="{{ base_path }}/game/" class="btn btn-copy btn-xl">{{ t('games.back_hub') }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="mp-game-tip">{{ t('games.match_tip') }}</p>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/match.js?v={{ static_version }}"></script>
+{% endblock %}

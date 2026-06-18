@@ -35,7 +35,7 @@
     <p class="detail-meta detail-meta--sub">{{ resource.category | lib_subtitle }}</p>
     {% endif %}
     {% if resource.published_at %}<p class="detail-meta">{{ t('detail.published', date=resource.published_at[:10]) }}</p>{% endif %}
-    {% if resource.excerpt and not resource.content_html %}<p class="detail-tip">{{ resource.excerpt }}</p>{% endif %}
+    {% if resource.excerpt and not resource.content_html and not (resource.source_ref and resource.source_ref.startswith('linuxdo/')) %}<p class="detail-tip">{{ resource.excerpt }}</p>{% endif %}
   </div>
 
   {% if resource.content_html %}
@@ -110,5 +110,8 @@
     {% endfor %}
   </div>
 </section>
+{% endif %}
+{% if resource.source_ref and resource.source_ref.startswith('linuxdo/') %}
+<p class="mp-page-source-foot">{{ t('stamp.linuxdo_source') }}</p>
 {% endif %}
 {% endblock %}

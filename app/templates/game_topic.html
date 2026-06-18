@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.topic_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-topic{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="topic">
+  <header class="mp-game-head">
+    <h1>{{ t('games.topic_title') }}</h1>
+    <p>{{ t('games.topic_hint') }}</p>
+  </header>
+
+  <div class="mp-topic-stage">
+    <div class="mp-topic-card" id="topic-card">
+      <div class="mp-topic-card-inner">
+        <p class="mp-topic-card-kicker">{{ t('games.topic_card_kicker') }}</p>
+        <p class="mp-topic-card-text" id="topic-text">{{ t('games.topic_ready') }}</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-xl" id="topic-draw">{{ t('games.topic_draw') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/topic.js?v={{ static_version }}"></script>
+{% endblock %}

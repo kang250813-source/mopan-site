@@ -29,6 +29,17 @@
     {% endfor %}
   </nav>
 
+  {% if channel == 'discover' and not q and not category %}
+  <a href="{{ base_path }}/game/" class="mp-home-game">
+    <span class="mp-home-game-icon" aria-hidden="true">🎮</span>
+    <span class="mp-home-game-copy">
+      <strong>{{ t('games.home_entry_title') }}</strong>
+      <small>{{ t('games.home_entry_desc') }}</small>
+    </span>
+    <span class="mp-home-game-cta">{{ t('games.play') }} →</span>
+  </a>
+  {% endif %}
+
   <section class="mp-hero">
     <div class="mp-hero-copy">
       <p class="mp-eyebrow">{{ channel_meta.label }} · {{ pan_label }}</p>
@@ -80,7 +91,7 @@
           {% if item.published_at %}<time class="mp-date">{{ item.published_at[:10] }}</time>{% endif %}
         </div>
         <h2 class="mp-card-title">{{ item.title }}</h2>
-        {% if item.excerpt %}
+        {% if item.excerpt and not (item.source_ref and item.source_ref.startswith('linuxdo/')) and not item.excerpt.startswith('来源 LINUX DO') %}
         <p class="mp-card-excerpt">{{ item.excerpt[:140] }}{% if item.excerpt|length > 140 %}…{% endif %}</p>
         {% endif %}
         {% if item.pan_branches %}

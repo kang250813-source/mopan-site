@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.wheel_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-wheel{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="wheel">
+  <header class="mp-game-head">
+    <h1>{{ t('games.wheel_title') }}</h1>
+    <p>{{ t('games.wheel_hint') }}</p>
+  </header>
+
+  <div class="mp-game-stage mp-game-stage--wheel">
+    <div class="mp-wheel-wrap">
+      <div class="mp-wheel-pointer" aria-hidden="true"></div>
+      <div class="mp-wheel-outer" id="wheel-disc" role="img" aria-label="{{ t('games.wheel_title') }}">
+        <svg class="mp-wheel-svg" viewBox="0 0 200 200" aria-hidden="true">
+          <g id="wheel-rotor"></g>
+        </svg>
+        <div class="mp-wheel-lights" aria-hidden="true"></div>
+      </div>
+      <button type="button" class="mp-wheel-spin-btn" id="wheel-spin">
+        <span class="mp-wheel-spin-label">{{ t('games.spin') }}</span>
+      </button>
+    </div>
+    <div class="mp-wheel-result" id="wheel-result" hidden>
+      <div class="mp-wheel-result-badge" id="wheel-result-badge"></div>
+      <p class="mp-wheel-result-label" id="wheel-result-label"></p>
+      <h2 id="wheel-result-title"></h2>
+      <p class="mp-wheel-result-hint" id="wheel-result-hint"></p>
+      <a href="#" class="btn btn-primary btn-xl" id="wheel-result-link">{{ t('games.open_pick') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script id="wheel-picks" type="application/json">{{ wheel_picks_json | safe }}</script>
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/wheel.js?v={{ static_version }}"></script>
+{% endblock %}

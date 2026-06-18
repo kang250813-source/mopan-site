@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.bomb_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-bomb{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="bomb">
+  <header class="mp-game-head">
+    <h1>{{ t('games.bomb_title') }}</h1>
+    <p>{{ t('games.bomb_hint') }}</p>
+  </header>
+
+  <div class="mp-bomb-panel">
+    <p class="mp-bomb-range" id="bomb-range">1 – 100</p>
+    <p class="mp-bomb-status" id="bomb-status">{{ t('games.bomb_start') }}</p>
+    <div class="mp-bomb-input">
+      <input type="number" id="bomb-guess" min="1" max="100" placeholder="?" inputmode="numeric">
+      <button type="button" class="btn btn-primary" id="bomb-go">{{ t('games.bomb_guess') }}</button>
+    </div>
+    <div class="mp-bomb-history" id="bomb-history"></div>
+  </div>
+
+  <div class="mp-party-controls">
+    <button type="button" class="btn btn-copy btn-xl" id="bomb-restart">{{ t('games.restart') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/bomb.js?v={{ static_version }}"></script>
+{% endblock %}

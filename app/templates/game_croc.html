@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.croc_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-croc{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="croc">
+  <header class="mp-game-head">
+    <h1>{{ t('games.croc_title') }}</h1>
+    <p>{{ t('games.croc_hint') }}</p>
+  </header>
+
+  <div class="mp-game-hud">
+    <div class="mp-game-hud-item"><span>{{ t('games.croc_player') }}</span><strong id="croc-player">1</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.croc_left') }}</span><strong id="croc-left">0</strong></div>
+  </div>
+
+  <div class="mp-croc-stage" id="croc-stage">
+    <div class="mp-croc-head" id="croc-head">
+      <div class="mp-croc-eyes" aria-hidden="true"><span></span><span></span></div>
+      <div class="mp-croc-mouth" id="croc-mouth">
+        <div class="mp-croc-teeth" id="croc-teeth" role="group" aria-label="{{ t('games.croc_title') }}"></div>
+      </div>
+    </div>
+    <p class="mp-croc-status" id="croc-status">{{ t('games.croc_start') }}</p>
+  </div>
+
+  <div class="mp-party-controls">
+    <label class="mp-party-label">{{ t('games.croc_players') }}
+      <select id="croc-player-count" class="mp-party-select">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary btn-xl" id="croc-restart">{{ t('games.restart') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/croc.js?v={{ static_version }}"></script>
+{% endblock %}

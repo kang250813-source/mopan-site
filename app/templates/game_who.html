@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.who_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-who{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="who">
+  <header class="mp-game-head">
+    <h1>{{ t('games.who_title') }}</h1>
+    <p>{{ t('games.who_hint') }}</p>
+  </header>
+
+  <div class="mp-family-edit mp-family-edit--single">
+    <label class="mp-family-task-label">{{ t('games.who_task') }}
+      <input type="text" id="who-task-input" maxlength="16" placeholder="{{ t('games.who_task_ph') }}">
+    </label>
+    <h3>{{ t('games.chore_members') }}</h3>
+    <div class="mp-family-tags" id="who-members"></div>
+    <div class="mp-family-add">
+      <input type="text" id="who-member-input" maxlength="8" placeholder="{{ t('games.chore_member_ph') }}">
+      <button type="button" class="btn btn-copy" id="who-member-add">{{ t('games.chore_add') }}</button>
+    </div>
+  </div>
+
+  <div class="mp-game-stage mp-game-stage--wheel">
+    <div class="mp-wheel-wrap">
+      <div class="mp-wheel-pointer" aria-hidden="true"></div>
+      <div class="mp-wheel-outer" id="who-only-disc">
+        <svg class="mp-wheel-svg" viewBox="0 0 200 200" aria-hidden="true">
+          <g id="who-only-rotor"></g>
+        </svg>
+        <div class="mp-wheel-lights" aria-hidden="true"></div>
+      </div>
+      <button type="button" class="mp-wheel-spin-btn" id="who-only-spin">
+        <span class="mp-wheel-spin-label">{{ t('games.spin') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mp-family-result" id="who-result" hidden>
+    <p class="mp-family-result-kicker">{{ t('games.who_result_kicker') }}</p>
+    <p class="mp-family-result-main"><span id="who-result-name"></span></p>
+    <p class="mp-family-result-sub">{{ t('games.who_result_do') }} <span id="who-result-task"></span></p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/family-wheel.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/who.js?v={{ static_version }}"></script>
+{% endblock %}

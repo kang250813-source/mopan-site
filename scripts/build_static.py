@@ -55,6 +55,7 @@ from app.database import (  # noqa: E402
 from app.highlight import highlight_pan_words  # noqa: E402
 from app.qr_util import quark_qr_data_url  # noqa: E402
 from app import jupan_bridge  # noqa: E402
+from app.game_picks import build_wheel_picks, wheel_picks_json  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
 from app.static_urls import category_href, channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
 
@@ -501,7 +502,42 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 )
                 stats["list_pages"] += 1
 
+    _build_games(i18n, base_path, docs_root, payload, write)
     return stats
+
+
+def _build_games(
+    i18n: I18n,
+    base_path: str,
+    docs_root: Path,
+    payload: SitePayload,
+    write,
+) -> None:
+    picks = build_wheel_picks(
+        locale=i18n.locale,
+        base_path=base_path,
+        static_site=True,
+        payload=payload,
+    )
+    picks_json = wheel_picks_json(picks)
+    write("games_hub.html", docs_root / "game" / "index.html", request=_fake_request("/game/"))
+    write("game_stack.html", docs_root / "game" / "stack" / "index.html", request=_fake_request("/game/stack/"))
+    write(
+        "game_wheel.html",
+        docs_root / "game" / "wheel" / "index.html",
+        request=_fake_request("/game/wheel/"),
+        wheel_picks_json=picks_json,
+    )
+    write("game_match.html", docs_root / "game" / "match" / "index.html", request=_fake_request("/game/match/"))
+    write("game_croc.html", docs_root / "game" / "croc" / "index.html", request=_fake_request("/game/croc/"))
+    write("game_bomb.html", docs_root / "game" / "bomb" / "index.html", request=_fake_request("/game/bomb/"))
+    write("game_dice.html", docs_root / "game" / "dice" / "index.html", request=_fake_request("/game/dice/"))
+    write("game_finger.html", docs_root / "game" / "finger" / "index.html", request=_fake_request("/game/finger/"))
+    write("game_chore.html", docs_root / "game" / "chore" / "index.html", request=_fake_request("/game/chore/"))
+    write("game_who.html", docs_root / "game" / "who" / "index.html", request=_fake_request("/game/who/"))
+    write("game_topic.html", docs_root / "game" / "topic" / "index.html", request=_fake_request("/game/topic/"))
+    if i18n.locale == "zh":
+        (DOCS_DIR / "static" / "game-picks.json").write_text(picks_json + "\n", encoding="utf-8")
 
 
 def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) -> list[Resource]:

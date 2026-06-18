@@ -48,6 +48,7 @@ from app.i18n import (
 )
 from app.pagination import build_page_url, clamp_page, page_window, total_pages as calc_total_pages
 from app.qr_util import quark_qr_data_url
+from app.game_picks import live_wheel_picks, wheel_picks_json
 from app.urls import drama_share_url, resource_share_url
 
 app = FastAPI(title=SITE_TITLE)
@@ -291,6 +292,77 @@ def resource_detail(request: Request, resource_id: int):
             share_page_url=resource_share_url(resource_id, request_base=_request_base(request)),
         ),
     )
+
+
+@app.get("/game", response_class=HTMLResponse)
+@app.get("/game/", response_class=HTMLResponse)
+def games_hub(request: Request):
+    return templates.TemplateResponse("games_hub.html", _ctx(request))
+
+
+@app.get("/game/stack", response_class=HTMLResponse)
+@app.get("/game/stack/", response_class=HTMLResponse)
+def game_stack(request: Request):
+    return templates.TemplateResponse("game_stack.html", _ctx(request))
+
+
+@app.get("/game/wheel", response_class=HTMLResponse)
+@app.get("/game/wheel/", response_class=HTMLResponse)
+def game_wheel(request: Request):
+    bundle = _i18n_bundle(request)
+    picks = live_wheel_picks(bundle["locale"], bundle["base_path"])
+    return templates.TemplateResponse(
+        "game_wheel.html",
+        _ctx(request, wheel_picks_json=wheel_picks_json(picks)),
+    )
+
+
+@app.get("/game/match", response_class=HTMLResponse)
+@app.get("/game/match/", response_class=HTMLResponse)
+def game_match(request: Request):
+    return templates.TemplateResponse("game_match.html", _ctx(request))
+
+
+@app.get("/game/croc", response_class=HTMLResponse)
+@app.get("/game/croc/", response_class=HTMLResponse)
+def game_croc(request: Request):
+    return templates.TemplateResponse("game_croc.html", _ctx(request))
+
+
+@app.get("/game/bomb", response_class=HTMLResponse)
+@app.get("/game/bomb/", response_class=HTMLResponse)
+def game_bomb(request: Request):
+    return templates.TemplateResponse("game_bomb.html", _ctx(request))
+
+
+@app.get("/game/dice", response_class=HTMLResponse)
+@app.get("/game/dice/", response_class=HTMLResponse)
+def game_dice(request: Request):
+    return templates.TemplateResponse("game_dice.html", _ctx(request))
+
+
+@app.get("/game/finger", response_class=HTMLResponse)
+@app.get("/game/finger/", response_class=HTMLResponse)
+def game_finger(request: Request):
+    return templates.TemplateResponse("game_finger.html", _ctx(request))
+
+
+@app.get("/game/chore", response_class=HTMLResponse)
+@app.get("/game/chore/", response_class=HTMLResponse)
+def game_chore(request: Request):
+    return templates.TemplateResponse("game_chore.html", _ctx(request))
+
+
+@app.get("/game/who", response_class=HTMLResponse)
+@app.get("/game/who/", response_class=HTMLResponse)
+def game_who(request: Request):
+    return templates.TemplateResponse("game_who.html", _ctx(request))
+
+
+@app.get("/game/topic", response_class=HTMLResponse)
+@app.get("/game/topic/", response_class=HTMLResponse)
+def game_topic(request: Request):
+    return templates.TemplateResponse("game_topic.html", _ctx(request))
 
 
 @app.get("/admin/login", response_class=HTMLResponse)

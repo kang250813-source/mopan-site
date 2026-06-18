@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.dice_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-dice{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="dice">
+  <header class="mp-game-head">
+    <h1>{{ t('games.dice_title') }}</h1>
+    <p>{{ t('games.dice_hint') }}</p>
+  </header>
+
+  <div class="mp-dice-stage">
+    <div class="mp-dice-row" id="dice-row" aria-live="polite"></div>
+    <p class="mp-dice-total" id="dice-total"></p>
+  </div>
+
+  <div class="mp-party-controls">
+    <label class="mp-party-label">{{ t('games.dice_count') }}
+      <select id="dice-count" class="mp-party-select">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary btn-xl" id="dice-roll">{{ t('games.dice_roll') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/dice.js?v={{ static_version }}"></script>
+{% endblock %}
