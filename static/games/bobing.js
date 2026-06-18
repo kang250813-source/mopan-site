@@ -19,6 +19,7 @@
     duitang: 2,
     zhuangyuan: 1,
   };
+  var LS_NAMES = 'mopan-bobing-names';
 
   function boot() {
     var diceEl = document.getElementById('bobing-dice');
@@ -28,6 +29,7 @@
     var playerEl = document.getElementById('bobing-player');
     var roundEl = document.getElementById('bobing-round');
     var countSel = document.getElementById('bobing-count');
+    var namesEl = document.getElementById('bobing-names');
     var rollBtn = document.getElementById('bobing-roll');
     var settleBtn = document.getElementById('bobing-settle');
     var restartBtn = document.getElementById('bobing-restart');
@@ -53,6 +55,70 @@
         s = s.split('{' + k + '}').join(String(vars[k]));
       });
       return s;
+    }
+
+    function defaultName(n) {
+      return fmt(t('bobing_player_default', 'Player {n}'), { n: n });
+    }
+
+    function loadSavedNames() {
+      try {
+        var raw = localStorage.getItem(LS_NAMES);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveNames() {
+      if (!namesEl) return;
+      var names = [];
+      for (var i = 1; i <= playerCount; i++) {
+        names.push(getPlayerName(i));
+      }
+      try {
+        localStorage.setItem(LS_NAMES, JSON.stringify(names));
+      } catch (e) { /* ignore */ }
+    }
+
+    function getPlayerName(n) {
+      if (!namesEl) return defaultName(n);
+      var input = namesEl.querySelector('[data-player="' + n + '"]');
+      var val = input && input.value ? input.value.trim() : '';
+      return val || defaultName(n);
+    }
+
+    function setNamesDisabled(disabled) {
+      if (!namesEl) return;
+      namesEl.querySelectorAll('.mp-bobing-name-input').forEach(function (el) {
+        el.disabled = disabled;
+      });
+    }
+
+    function renderNameInputs() {
+      if (!namesEl) return;
+      var saved = loadSavedNames() || [];
+      namesEl.innerHTML = '';
+      for (var i = 1; i <= playerCount; i++) {
+        var label = document.createElement('label');
+        label.className = 'mp-bobing-name';
+        var title = document.createElement('span');
+        title.textContent = fmt(t('bobing_name_label', 'Player {n}'), { n: i });
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 8;
+        input.dataset.player = String(i);
+        input.className = 'mp-bobing-name-input';
+        input.placeholder = t('bobing_name_ph', 'Name');
+        input.value = (saved[i - 1] && String(saved[i - 1]).trim()) || defaultName(i);
+        input.addEventListener('input', saveNames);
+        label.appendChild(title);
+        label.appendChild(input);
+        namesEl.appendChild(label);
+      }
+      setNamesDisabled(rolling || gameOver);
     }
 
     function awardLabel(result) {
@@ -220,7 +286,7 @@
     }
 
     function updateHud() {
-      if (playerEl) playerEl.textContent = String(currentPlayer);
+      if (playerEl) playerEl.textContent = getPlayerName(currentPlayer);
       if (roundEl) roundEl.textContent = String(round);
       if (settleBtn) settleBtn.hidden = !contenders.length || gameOver || !remaining.zhuangyuan;
     }
@@ -251,18 +317,18 @@
       remaining.zhuangyuan = 0;
       renderPrizes();
       addLog(
-        fmt(t('bobing_zhuangyuan_win', 'Player {n} wins 状元 — {award}'), {
-          n: winner.player,
+        fmt(t('bobing_zhuangyuan_win', '{name} wins Zhuangyuan — {award}'), {
+          name: getPlayerName(winner.player),
           award: awardLabel(winner.result),
         }),
         'zhuangyuan'
       );
-      setStatus(fmt(t('bobing_zhuangyuan_win', 'Player {n} wins 状元 — {award}'), {
-        n: winner.player,
+      setStatus(fmt(t('bobing_zhuangyuan_win', '{name} wins Zhuangyuan — {award}'), {
+        name: getPlayerName(winner.player),
         award: awardLabel(winner.result),
       }));
-      G.showToast(fmt(t('bobing_zhuangyuan_win', 'Player {n} wins 状元 — {award}'), {
-        n: winner.player,
+      G.showToast(fmt(t('bobing_zhuangyuan_win', '{name} wins Zhuangyuan — {award}'), {
+        name: getPlayerName(winner.player),
         award: awardLabel(winner.result),
       }));
       if (G.hapticDiceRoll) G.hapticDiceRoll();
@@ -274,14 +340,16 @@
     function endGame() {
       gameOver = true;
       rollBtn.disabled = true;
+      setNamesDisabled(true);
       setStatus(t('bobing_over', 'All prizes claimed — game over'));
       addLog(t('bobing_over', 'All prizes claimed — game over'), 'over');
     }
 
     function awardPrize(result, player) {
+      var name = getPlayerName(player);
       if (!result) {
-        setStatus(fmt(t('bobing_miss_turn', 'Player {n} — no prize'), { n: player }));
-        addLog(fmt(t('bobing_miss_turn', 'Player {n} — no prize'), { n: player }));
+        setStatus(fmt(t('bobing_miss_turn', '{name} — no prize'), { name: name }));
+        addLog(fmt(t('bobing_miss_turn', '{name} — no prize'), { name: name }));
         return;
       }
 
@@ -292,12 +360,12 @@
           return;
         }
         contenders.push({ player: player, result: result });
-        setStatus(fmt(t('bobing_zhuangyuan_hold', 'Player {n} — {award} (pending)'), {
-          n: player,
+        setStatus(fmt(t('bobing_zhuangyuan_hold', '{name} — {award} (pending)'), {
+          name: name,
           award: awardLabel(result),
         }));
-        addLog(fmt(t('bobing_zhuangyuan_hold', 'Player {n} — {award} (pending)'), {
-          n: player,
+        addLog(fmt(t('bobing_zhuangyuan_hold', '{name} — {award} (pending)'), {
+          name: name,
           award: awardLabel(result),
         }), 'zhuangyuan');
         if (settleBtn) settleBtn.hidden = false;
@@ -317,12 +385,12 @@
 
       remaining[result.level] -= 1;
       renderPrizes();
-      setStatus(fmt(t('bobing_win', 'Player {n} — {award}!'), {
-        n: player,
+      setStatus(fmt(t('bobing_win', '{name} — {award}!'), {
+        name: name,
         award: awardLabel(result),
       }));
-      addLog(fmt(t('bobing_win', 'Player {n} — {award}!'), {
-        n: player,
+      addLog(fmt(t('bobing_win', '{name} — {award}!'), {
+        name: name,
         award: awardLabel(result),
       }), result.level);
       if (result.level === 'sanhong' || result.level === 'duitang') {
@@ -338,6 +406,7 @@
       rollBtn.disabled = true;
       if (countSel) countSel.disabled = true;
       if (restartBtn) restartBtn.disabled = true;
+      setNamesDisabled(true);
       setStatus(t('bobing_rolling', 'Rolling six dice…'));
       if (G.primeHaptic) G.primeHaptic('bobing-dice-audio');
       if (G.playDiceBowl) G.playDiceBowl('tick');
@@ -372,18 +441,23 @@
           rollBtn.disabled = gameOver;
           if (countSel) countSel.disabled = false;
           if (restartBtn) restartBtn.disabled = false;
+          setNamesDisabled(gameOver);
         }
       }, 70);
     }
 
     function restart() {
       playerCount = parseInt(countSel && countSel.value || '4', 10) || 4;
+      if (playerCount < 2) playerCount = 2;
+      if (playerCount > 10) playerCount = 10;
       currentPlayer = 1;
       round = 1;
       contenders = [];
       gameOver = false;
       resetRemaining();
       renderPrizes();
+      renderNameInputs();
+      saveNames();
       if (logEl) logEl.innerHTML = '';
       if (settleBtn) settleBtn.hidden = true;
       rollBtn.disabled = false;
@@ -392,13 +466,23 @@
       updateHud();
     }
 
+    function onCountChange() {
+      if (rolling) return;
+      saveNames();
+      playerCount = parseInt(countSel && countSel.value || '4', 10) || 4;
+      if (playerCount < 2) playerCount = 2;
+      if (playerCount > 10) playerCount = 10;
+      if (currentPlayer > playerCount) currentPlayer = 1;
+      renderNameInputs();
+      saveNames();
+      updateHud();
+    }
+
     rollBtn.addEventListener('click', roll);
     if (settleBtn) settleBtn.addEventListener('click', function () { settleZhuangyuan(false); });
     if (restartBtn) restartBtn.addEventListener('click', restart);
     if (countSel) {
-      countSel.addEventListener('change', function () {
-        if (!rolling && !gameOver) playerCount = parseInt(countSel.value || '4', 10) || 4;
-      });
+      countSel.addEventListener('change', onCountChange);
     }
     if (rollBtn && G.primeHaptic) {
       rollBtn.addEventListener('pointerdown', function () {
