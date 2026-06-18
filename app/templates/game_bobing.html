@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.bobing_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-bobing{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="bobing">
+  <header class="mp-game-head">
+    <h1>{{ t('games.bobing_title') }}</h1>
+    <p>{{ t('games.bobing_hint') }}</p>
+  </header>
+
+  <div class="mp-game-hud mp-bobing-hud">
+    <div class="mp-game-hud-item"><span>{{ t('games.bobing_player') }}</span><strong id="bobing-player">1</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.bobing_round') }}</span><strong id="bobing-round">1</strong></div>
+  </div>
+
+  <div class="mp-bobing-prizes" id="bobing-prizes" aria-label="{{ t('games.bobing_prizes') }}"></div>
+
+  <div class="mp-bobing-stage" id="bobing-stage">
+    <audio id="bobing-dice-audio" preload="auto" playsinline webkit-playsinline
+      src="{{ asset_base }}/static/games/bobing-dice.wav?v={{ static_version }}"></audio>
+    <div class="mp-bobing-bowl" aria-hidden="true">
+      <div class="mp-dice-row mp-bobing-dice" id="bobing-dice" aria-live="polite"></div>
+    </div>
+    <p class="mp-bobing-result" id="bobing-result">{{ t('games.bobing_start') }}</p>
+  </div>
+
+  <div class="mp-bobing-log" id="bobing-log" aria-live="polite"></div>
+
+  <div class="mp-party-controls mp-bobing-controls">
+    <label class="mp-party-label">{{ t('games.bobing_players') }}
+      <select id="bobing-count" class="mp-party-select">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary btn-xl" id="bobing-roll">{{ t('games.bobing_roll') }}</button>
+    <button type="button" class="btn btn-copy" id="bobing-settle" hidden>{{ t('games.bobing_settle') }}</button>
+    <button type="button" class="btn btn-copy" id="bobing-restart">{{ t('games.restart') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/bobing.js?v={{ static_version }}"></script>
+{% endblock %}

@@ -37,6 +37,7 @@ from app.config import (
     TEMPLATES_DIR,
 )
 from app.admin_urls import admin_href, admin_root
+from app.classics import library_label, library_subtitle
 from app.highlight import highlight_pan_words
 from app.i18n import (
     active_i18n,
@@ -354,6 +355,12 @@ def game_dice(request: Request):
 @app.get("/game/finger/", response_class=HTMLResponse)
 def game_finger(request: Request):
     return templates.TemplateResponse("game_finger.html", _ctx(request))
+
+
+@app.get("/game/bobing", response_class=HTMLResponse)
+@app.get("/game/bobing/", response_class=HTMLResponse)
+def game_bobing(request: Request):
+    return templates.TemplateResponse("game_bobing.html", _ctx(request))
 
 
 @app.get("/game/chore", response_class=HTMLResponse)

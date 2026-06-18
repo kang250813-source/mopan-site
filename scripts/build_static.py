@@ -539,6 +539,7 @@ def _build_games(
     write("game_bomb.html", docs_root / "game" / "bomb" / "index.html", request=_fake_request("/game/bomb/"))
     write("game_dice.html", docs_root / "game" / "dice" / "index.html", request=_fake_request("/game/dice/"))
     write("game_finger.html", docs_root / "game" / "finger" / "index.html", request=_fake_request("/game/finger/"))
+    write("game_bobing.html", docs_root / "game" / "bobing" / "index.html", request=_fake_request("/game/bobing/"))
     write("game_chore.html", docs_root / "game" / "chore" / "index.html", request=_fake_request("/game/chore/"))
     write("game_who.html", docs_root / "game" / "who" / "index.html", request=_fake_request("/game/who/"))
     write("game_topic.html", docs_root / "game" / "topic" / "index.html", request=_fake_request("/game/topic/"))
