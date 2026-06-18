@@ -76,9 +76,9 @@
   <p class="mp-result-hint">{{ t('ui.results', n=total) }}</p>
   {% endif %}
 
-  <section class="mp-feed">
+  <section class="mp-feed{% if classics_hourly_shuffle %} mp-feed--hourly{% endif %}"{% if classics_hourly_shuffle %} data-classics-hourly="1"{% endif %}>
     {% for item in resources %}
-    <article class="mp-card">
+    <article class="mp-card"{% if classics_hourly_shuffle %} data-resource-id="{{ item.id }}"{% endif %}>
       <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}" class="mp-card-link">
         <div class="mp-card-top">
           {% if item.category %}
@@ -138,4 +138,10 @@
   </nav>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if classics_hourly_shuffle %}
+<script src="{{ asset_base }}/static/classics-shuffle.js?v={{ static_version }}"></script>
+{% endif %}
 {% endblock %}

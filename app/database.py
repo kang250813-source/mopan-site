@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Iterator
 
 from app.classics import CLASSIC_LIBRARY_ORDER, github_urls
+from app.classics_shuffle import shuffle_sequence
 from app.config import CATEGORIES, CLASSICS_GITHUB_USER, DB_PATH, DEFAULT_CHANNEL, PAN_LABEL, PAN_TYPE
 
 SCHEMA = """
@@ -333,14 +334,27 @@ def list_resources(
     category_prefix: bool = False,
     limit: int = 100,
     offset: int = 0,
+    shuffle_seed: int | None = None,
 ) -> list[Resource]:
     where, params = _filters(q, category, channel, category_prefix=category_prefix)
+    order_sql = "" if shuffle_seed is not None else "ORDER BY published_at DESC, id DESC"
     with _connect() as conn:
+        if shuffle_seed is not None:
+            rows = conn.execute(
+                f"""
+                SELECT * FROM resources
+                {where}
+                """,
+                params,
+            ).fetchall()
+            resources = [_row_to_resource(row) for row in rows]
+            resources = shuffle_sequence(resources, shuffle_seed)
+            return resources[offset : offset + limit]
         rows = conn.execute(
             f"""
             SELECT * FROM resources
             {where}
-            ORDER BY published_at DESC, id DESC
+            {order_sql}
             LIMIT ? OFFSET ?
             """,
             [*params, limit, offset],

@@ -216,6 +216,11 @@ def index(
     pages = calc_total_pages(total, PAGE_SIZE)
     current_page = clamp_page(page, pages)
     offset = (current_page - 1) * PAGE_SIZE
+    classics_shuffle = None
+    if active_channel == "classics" and not (q or "").strip():
+        from app.classics_shuffle import hourly_shuffle_seed
+
+        classics_shuffle = hourly_shuffle_seed()
     resources = database.list_resources(
         q=q,
         category=active_category or None,
@@ -223,6 +228,7 @@ def index(
         category_prefix=classics_prefix,
         limit=PAGE_SIZE,
         offset=offset,
+        shuffle_seed=classics_shuffle,
     )
     if active_channel == "classics":
         category_counts = database.list_classics_library_counts()
@@ -245,6 +251,7 @@ def index(
             page=current_page,
             total_pages=pages,
             page_items=page_window(current_page, pages),
+            classics_hourly_shuffle=classics_shuffle is not None,
         ),
     )
 
