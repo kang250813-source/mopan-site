@@ -46,7 +46,11 @@ CATEGORIES = [
 ]
 
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+ADMIN_PATH = os.getenv("ADMIN_PATH", "/mp-manage-7f3k").strip() or "/mp-manage-7f3k"
+if not ADMIN_PATH.startswith("/"):
+    ADMIN_PATH = f"/{ADMIN_PATH}"
+ADMIN_PATH = ADMIN_PATH.rstrip("/") or "/mp-manage-7f3k"
 SECRET_KEY = os.getenv("SECRET_KEY", "mopan-site-dev-secret-change-me")
 DB_PATH = Path(os.getenv("DB_PATH", str(DATA_DIR / "site.db")))
 PAGE_SIZE = max(12, int(os.getenv("PAGE_SIZE", "24")))

@@ -12,6 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app import auth, database, jupan_bridge
 from app.config import (
+    ADMIN_PATH,
     BASE_PATH,
     CATEGORIES,
     CHANNELS,
@@ -35,7 +36,7 @@ from app.config import (
     STATIC_VERSION,
     TEMPLATES_DIR,
 )
-from app.classics import library_label, library_subtitle
+from app.admin_urls import admin_href, admin_root
 from app.highlight import highlight_pan_words
 from app.i18n import (
     active_i18n,
@@ -134,6 +135,7 @@ def _i18n_bundle(request: Request, *, channel: str = "", tag: str = "") -> dict:
         "js_messages": i18n.js_messages(),
         "locale_switch_href": switch,
         "hero_desc": i18n.hero(channel, tag=tag, github_user=CLASSICS_GITHUB_USER),
+        "admin_base": admin_root(),
     }
 
 
@@ -365,21 +367,31 @@ def game_topic(request: Request):
     return templates.TemplateResponse("game_topic.html", _ctx(request))
 
 
-@app.get("/admin/login", response_class=HTMLResponse)
+@app.api_route("/admin", methods=["GET", "POST", "HEAD"])
+@app.api_route("/admin/{_path:path}", methods=["GET", "POST", "HEAD", "PUT", "DELETE"])
+def admin_decoy(_path: str = ""):
+    raise HTTPException(status_code=404, detail="Not Found")
+
+
+@app.get(f"{ADMIN_PATH}/login", response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/login/", response_class=HTMLResponse)
 def admin_login_page(request: Request, error: str | None = None):
+    auth.require_local_admin(request)
     if auth.is_admin(request):
-        return RedirectResponse("/admin", status_code=303)
+        return RedirectResponse(admin_href(), status_code=303)
     return templates.TemplateResponse("admin/login.html", _ctx(request, error=error))
 
 
-@app.post("/admin/login")
+@app.post(f"{ADMIN_PATH}/login")
+@app.post(f"{ADMIN_PATH}/login/")
 def admin_login_submit(
     request: Request,
     username: str = Form(...),
     password: str = Form(...),
 ):
+    auth.require_local_admin(request)
     if auth.login(request, username, password):
-        return RedirectResponse("/admin", status_code=303)
+        return RedirectResponse(admin_href(), status_code=303)
     return templates.TemplateResponse(
         "admin/login.html",
         _ctx(request, error="用户名或密码错误"),
@@ -387,16 +399,20 @@ def admin_login_submit(
     )
 
 
-@app.get("/admin/logout")
+@app.get(f"{ADMIN_PATH}/logout", response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/logout/", response_class=HTMLResponse)
 def admin_logout(request: Request):
+    auth.require_local_admin(request)
     auth.logout(request)
     return RedirectResponse("/", status_code=303)
 
 
-@app.get("/admin", response_class=HTMLResponse)
+@app.get(ADMIN_PATH, response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/", response_class=HTMLResponse)
 def admin_dashboard(request: Request, q: str | None = None, msg: str | None = None):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     resources = database.list_resources(q=q, limit=500)
     return templates.TemplateResponse(
         "admin/list.html",
@@ -404,17 +420,20 @@ def admin_dashboard(request: Request, q: str | None = None, msg: str | None = No
     )
 
 
-@app.get("/admin/resource/new", response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/resource/new", response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/resource/new/", response_class=HTMLResponse)
 def admin_new_page(request: Request):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     return templates.TemplateResponse(
         "admin/form.html",
         _ctx(request, resource=None, action="create"),
     )
 
 
-@app.post("/admin/resource/new")
+@app.post(f"{ADMIN_PATH}/resource/new")
+@app.post(f"{ADMIN_PATH}/resource/new/")
 def admin_create(
     request: Request,
     title: str = Form(...),
@@ -424,8 +443,9 @@ def admin_create(
     content_html: str = Form(""),
     published_at: str = Form(""),
 ):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     try:
         database.create_resource(
             title,
@@ -454,13 +474,14 @@ def admin_create(
             ),
             status_code=400,
         )
-    return RedirectResponse(f"/admin?msg={quote('添加成功')}", status_code=303)
+    return RedirectResponse(f"{admin_href()}?msg={quote('添加成功')}", status_code=303)
 
 
-@app.get("/admin/resource/{resource_id}/edit", response_class=HTMLResponse)
+@app.get(f"{ADMIN_PATH}/resource/{{resource_id}}/edit", response_class=HTMLResponse)
 def admin_edit_page(request: Request, resource_id: int):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     resource = database.get_resource(resource_id)
     if not resource:
         raise HTTPException(status_code=404, detail="资源不存在")
@@ -470,7 +491,8 @@ def admin_edit_page(request: Request, resource_id: int):
     )
 
 
-@app.post("/admin/resource/{resource_id}/edit")
+@app.post(f"{ADMIN_PATH}/resource/{{resource_id}}/edit")
+@app.post(f"{ADMIN_PATH}/resource/{{resource_id}}/edit/")
 def admin_update(
     request: Request,
     resource_id: int,
@@ -482,8 +504,9 @@ def admin_update(
     published_at: str = Form(""),
     link_status: str = Form("pending"),
 ):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     if pan_url.strip() and link_status == "pending":
         link_status = "own"
     database.update_resource(
@@ -496,12 +519,14 @@ def admin_update(
         published_at or None,
         link_status,
     )
-    return RedirectResponse(f"/admin?msg={quote('已保存')}", status_code=303)
+    return RedirectResponse(f"{admin_href()}?msg={quote('已保存')}", status_code=303)
 
 
-@app.post("/admin/resource/{resource_id}/delete")
+@app.post(f"{ADMIN_PATH}/resource/{{resource_id}}/delete")
+@app.post(f"{ADMIN_PATH}/resource/{{resource_id}}/delete/")
 def admin_delete(request: Request, resource_id: int):
+    auth.require_local_admin(request)
     if not auth.is_admin(request):
-        return RedirectResponse("/admin/login", status_code=303)
+        return RedirectResponse(admin_href("login"), status_code=303)
     database.delete_resource(resource_id)
-    return RedirectResponse(f"/admin?msg={quote('已删除')}", status_code=303)
+    return RedirectResponse(f"{admin_href()}?msg={quote('已删除')}", status_code=303)
