@@ -45,7 +45,7 @@
   }
 
   var _audioCtx = null;
-  var _biteAudio = null;
+  var _clipCache = {};
 
   function isWeChat() {
     return /MicroMessenger/i.test(navigator.userAgent || '');
@@ -56,38 +56,37 @@
       || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   }
 
-  function primeHaptic() {
+  function getClip(audioId) {
+    if (_clipCache[audioId]) return _clipCache[audioId];
+    var el = document.getElementById(audioId);
+    if (el) {
+      _clipCache[audioId] = el;
+      return el;
+    }
+    return null;
+  }
+
+  function primeHaptic(audioId) {
+    audioId = audioId || 'croc-bite-audio';
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (AC) {
         if (!_audioCtx) _audioCtx = new AC();
         if (_audioCtx.state === 'suspended') _audioCtx.resume();
       }
-      if (!_biteAudio) {
-        _biteAudio = document.getElementById('croc-bite-audio');
-        if (!_biteAudio) {
-          _biteAudio = new Audio();
-          _biteAudio.preload = 'auto';
-          _biteAudio.setAttribute('playsinline', '');
-          _biteAudio.setAttribute('webkit-playsinline', '');
-        }
-      }
-      if (_biteAudio && _biteAudio.src) {
-        _biteAudio.load();
-      }
+      var clip = getClip(audioId);
+      if (clip && clip.src) clip.load();
     } catch (e) { /* ignore */ }
   }
 
-  function playBiteClip(strong) {
+  function playClip(audioId, strong) {
     try {
-      if (!_biteAudio) _biteAudio = document.getElementById('croc-bite-audio');
-      if (!_biteAudio) return false;
-      _biteAudio.volume = strong ? 1 : 0.75;
-      _biteAudio.currentTime = 0;
-      var ret = _biteAudio.play();
-      if (ret && typeof ret.catch === 'function') {
-        ret.catch(function () {});
-      }
+      var clip = getClip(audioId);
+      if (!clip) return false;
+      clip.volume = strong ? 1 : 0.75;
+      clip.currentTime = 0;
+      var ret = clip.play();
+      if (ret && typeof ret.catch === 'function') ret.catch(function () {});
       return true;
     } catch (e) {
       return false;
@@ -96,7 +95,8 @@
 
   function audioBuzz(strong) {
     if (isWeChat() || isIOS()) {
-      if (playBiteClip(strong)) return;
+      if (playClip('croc-bite-audio', strong)) return;
+      if (playClip('bomb-boom-audio', strong)) return;
     }
     try {
       primeHaptic();
@@ -127,15 +127,31 @@
     }
   }
 
-  /** Bite feedback: vibrate (Android/部分微信), audio + shake fallback */
-  function hapticBite() {
+  function hapticImpact(opts) {
+    var pattern = opts.pattern || [150, 80, 250, 80, 380];
+    var fallback = opts.fallback || 420;
+    var wechatFallback = opts.wechatFallback || 260;
+    var audioId = opts.audioId || 'croc-bite-audio';
     var buzzed = false;
     if (!isIOS()) {
-      buzzed = vibrate([150, 80, 250, 80, 380]);
-      if (!buzzed) buzzed = vibrate(420);
-      if (!buzzed && isWeChat()) buzzed = vibrate(260);
+      buzzed = vibrate(pattern);
+      if (!buzzed) buzzed = vibrate(fallback);
+      if (!buzzed && isWeChat()) buzzed = vibrate(wechatFallback);
     }
-    if (!playBiteClip(!buzzed)) audioBuzz(!buzzed);
+    if (!playClip(audioId, !buzzed)) audioBuzz(!buzzed);
+  }
+
+  function hapticBite() {
+    hapticImpact({ audioId: 'croc-bite-audio' });
+  }
+
+  function hapticBoom() {
+    hapticImpact({
+      audioId: 'bomb-boom-audio',
+      pattern: [180, 90, 300, 90, 420, 90, 220],
+      fallback: 500,
+      wechatFallback: 320,
+    });
   }
 
   window.MopanGames = {
@@ -147,5 +163,6 @@
     vibrate: vibrate,
     primeHaptic: primeHaptic,
     hapticBite: hapticBite,
+    hapticBoom: hapticBoom,
   };
 })();
