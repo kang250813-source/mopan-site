@@ -11,6 +11,7 @@
     var goBtn = document.getElementById('bomb-go');
     var historyEl = document.getElementById('bomb-history');
     var restartBtn = document.getElementById('bomb-restart');
+    var panelEl = document.getElementById('bomb-panel');
     if (!guessEl || !window.MopanGames) return;
 
     var G = window.MopanGames;
@@ -77,6 +78,8 @@
       }
 
       if (raw === bomb) {
+        if (G.hapticBoom) G.hapticBoom();
+        shakePanel();
         over = true;
         guessEl.disabled = true;
         if (goBtn) goBtn.disabled = true;
@@ -100,8 +103,23 @@
       guessEl.focus();
     }
 
-    if (goBtn) goBtn.addEventListener('click', submitGuess);
+    function shakePanel() {
+      if (!panelEl) return;
+      panelEl.classList.remove('is-shake');
+      void panelEl.offsetWidth;
+      panelEl.classList.add('is-shake');
+    }
+
+    function primeAudio() {
+      if (G.primeHaptic) G.primeHaptic('bomb-boom-audio');
+    }
+
+    if (goBtn) {
+      goBtn.addEventListener('pointerdown', primeAudio, { passive: true });
+      goBtn.addEventListener('click', submitGuess);
+    }
     if (restartBtn) restartBtn.addEventListener('click', reset);
+    guessEl.addEventListener('pointerdown', primeAudio, { passive: true });
     guessEl.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') submitGuess();
     });

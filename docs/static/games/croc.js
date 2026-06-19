@@ -12,6 +12,7 @@
     var leftEl = document.getElementById('croc-left');
     var countSel = document.getElementById('croc-player-count');
     var restartBtn = document.getElementById('croc-restart');
+    var stageEl = document.getElementById('croc-stage');
     if (!teethEl || !window.MopanGames) return;
 
     var G = window.MopanGames;
@@ -46,9 +47,26 @@
         btn.className = 'mp-croc-tooth';
         btn.dataset.index = String(i);
         btn.setAttribute('aria-label', String(i + 1));
-        btn.addEventListener('click', onToothClick);
+        btn.addEventListener('pointerdown', onToothPrime, { passive: true });
+        btn.addEventListener('pointerup', onToothActivate);
         teethEl.appendChild(btn);
       }
+    }
+
+    function onToothPrime() {
+      if (G.primeHaptic) G.primeHaptic();
+    }
+
+    function onToothActivate(ev) {
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      onToothClick(ev);
+    }
+
+    function shakeStage() {
+      if (!stageEl) return;
+      stageEl.classList.remove('is-shake');
+      void stageEl.offsetWidth;
+      stageEl.classList.add('is-shake');
     }
 
     function reset() {
@@ -76,6 +94,8 @@
       btn.classList.add('is-picked');
 
       if (idx === badTooth) {
+        if (G.hapticBite) G.hapticBite();
+        shakeStage();
         over = true;
         btn.classList.add('is-bad');
         if (headEl) headEl.classList.add('is-bite');
