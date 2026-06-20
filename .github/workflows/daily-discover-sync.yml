@@ -1,9 +1,9 @@
-name: Daily Discover Sync
+name: Daily Site Sync
 
 on:
   schedule:
-    # 每天北京时间 06:00（UTC 22:00 前一天）
-    - cron: "0 22 * * *"
+    # 每天北京时间 10:00（UTC 02:00）
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 permissions:
@@ -33,17 +33,18 @@ jobs:
           pip install -q -r mopan-sync/requirements.txt
           pip install -q -r mopan-site/requirements.txt
 
-      - name: Run daily discover sync
+      - name: Run daily site sync
         env:
           SITE_ROOT: ${{ github.workspace }}/mopan-site
           PUSH_GITHUB: "0"
           BASE_PATH: /
+          LINUXDO_PAGES: "3"
         run: |
           cd mopan-sync
           python3 -m venv .venv
           .venv/bin/pip install -q -r requirements.txt
-          chmod +x scripts/daily_discover_sync.sh
-          ./scripts/daily_discover_sync.sh
+          chmod +x scripts/daily_site_sync.sh
+          ./scripts/daily_site_sync.sh
 
       - name: Commit and push mopan-site
         working-directory: mopan-site
@@ -54,7 +55,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "mopan-site: no changes"
           else
-            git commit -m "chore: daily discover sync $(date -u +%Y-%m-%d)"
+            git commit -m "chore: daily site sync $(date -u +%Y-%m-%d)"
             git push
           fi
 
@@ -67,6 +68,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "mopan-sync: no changes"
           else
-            git commit -m "chore: daily discover crawl $(date -u +%Y-%m-%d)"
+            git commit -m "chore: daily site sync $(date -u +%Y-%m-%d)"
             git push
           fi

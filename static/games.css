@@ -81,6 +81,9 @@
 .mp-game-card--chore { border-top: 3px solid #0d9488; }
 .mp-game-card--who { border-top: 3px solid #f97316; }
 .mp-game-card--topic { border-top: 3px solid #6366f1; }
+.mp-game-card--tictactoe { border-top: 3px solid #8b5cf6; }
+.mp-game-card--site-wheel { border-top: 3px solid #6366f1; }
+.mp-game-card--today { border-top: 3px solid var(--mp-brand-deep); }
 
 .mp-games-section {
   margin: 28px 0 14px;
@@ -1164,6 +1167,57 @@
   font-weight: 700;
   color: var(--mp-brand-deep);
 }
+
+.mp-game-stage--tictactoe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.mp-tictactoe-hud {
+  margin-bottom: 4px;
+}
+.mp-tictactoe-status {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mp-brand-deep);
+  text-align: center;
+}
+.mp-tictactoe-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(72px, 92px));
+  gap: 10px;
+  width: min(100%, 300px);
+}
+.mp-tictactoe-cell {
+  aspect-ratio: 1;
+  border: 2px solid rgba(124, 58, 237, 0.22);
+  border-radius: 14px;
+  background: #fff;
+  font-size: clamp(2rem, 10vw, 2.6rem);
+  font-weight: 800;
+  color: var(--mp-brand-deep);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.mp-tictactoe-cell:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(124, 58, 237, 0.45);
+  background: #faf5ff;
+}
+.mp-tictactoe-cell:disabled {
+  cursor: default;
+}
+.mp-tictactoe-cell.is-x { color: #7c3aed; }
+.mp-tictactoe-cell.is-o { color: #e11d48; }
+.mp-tictactoe-cell.is-win {
+  background: #ede9fe;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.18);
+}
+
+/* Site wheel uses default wheel stage layout */
 
 @media (max-width: 640px) {
   .mp-match-cell { font-size: 1.15rem; border-radius: 8px; }

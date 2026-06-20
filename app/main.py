@@ -51,6 +51,7 @@ from app.i18n import (
 from app.pagination import build_page_url, clamp_page, page_window, total_pages as calc_total_pages
 from app.qr_util import quark_qr_data_url
 from app.game_picks import live_wheel_picks, wheel_picks_json
+from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json
 from app.urls import drama_share_url, resource_share_url
 
 app = FastAPI(title=SITE_TITLE)
@@ -328,6 +329,7 @@ def resource_detail(request: Request, resource_id: int):
     )
 
 
+
 @app.get("/game", response_class=HTMLResponse)
 @app.get("/game/", response_class=HTMLResponse)
 def games_hub(request: Request):
@@ -348,6 +350,35 @@ def game_wheel(request: Request):
     return templates.TemplateResponse(
         "game_wheel.html",
         _ctx(request, wheel_picks_json=wheel_picks_json(picks)),
+    )
+
+
+@app.get("/game/site-wheel", response_class=HTMLResponse)
+@app.get("/game/site-wheel/", response_class=HTMLResponse)
+def game_site_wheel(request: Request):
+    bundle = _i18n_bundle(request)
+    picks = build_site_wheel_picks(locale=bundle["locale"], base_path=bundle["base_path"])
+    return templates.TemplateResponse(
+        "game_site_wheel.html",
+        _ctx(request, site_wheel_json=site_wheel_json(picks)),
+    )
+
+
+@app.get("/game/book-wheel", response_class=HTMLResponse)
+@app.get("/game/book-wheel/", response_class=HTMLResponse)
+def game_book_wheel_redirect():
+    path = f"{BASE_PATH}/game/site-wheel/".replace("//", "/")
+    return RedirectResponse(url=path or "/game/site-wheel/", status_code=302)
+
+
+@app.get("/game/today", response_class=HTMLResponse)
+@app.get("/game/today/", response_class=HTMLResponse)
+def game_today(request: Request):
+    bundle = _i18n_bundle(request)
+    picks = build_home_wheel_picks(locale=bundle["locale"], base_path=bundle["base_path"])
+    return templates.TemplateResponse(
+        "game_today.html",
+        _ctx(request, today_wheel_json=home_wheel_json(picks)),
     )
 
 
@@ -403,6 +434,12 @@ def game_who(request: Request):
 @app.get("/game/topic/", response_class=HTMLResponse)
 def game_topic(request: Request):
     return templates.TemplateResponse("game_topic.html", _ctx(request))
+
+
+@app.get("/game/tictactoe", response_class=HTMLResponse)
+@app.get("/game/tictactoe/", response_class=HTMLResponse)
+def game_tictactoe(request: Request):
+    return templates.TemplateResponse("game_tictactoe.html", _ctx(request))
 
 
 @app.api_route("/admin", methods=["GET", "POST", "HEAD"])

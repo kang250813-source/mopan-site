@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('games.tictactoe_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-game-tictactoe{% endblock %}
+{% block nav %}
+<a href="{{ base_path }}/game/" class="mp-nav-link">{{ t('games.back_hub') }}</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ asset_base }}/static/games.css?v={{ static_version }}">
+{% endblock %}
+
+{% block content %}
+<section class="mp-container mp-game-shell" data-game="tictactoe">
+  <header class="mp-game-head">
+    <h1>{{ t('games.tictactoe_title') }}</h1>
+    <p>{{ t('games.tictactoe_hint') }}</p>
+  </header>
+
+  <div class="mp-game-hud mp-tictactoe-hud">
+    <div class="mp-game-hud-item"><span>{{ t('games.tictactoe_turn') }}</span><strong id="tictactoe-turn">X</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.tictactoe_score_x') }}</span><strong id="tictactoe-score-x">0</strong></div>
+    <div class="mp-game-hud-item"><span>{{ t('games.tictactoe_score_o') }}</span><strong id="tictactoe-score-o">0</strong></div>
+  </div>
+
+  <div class="mp-game-stage mp-game-stage--tictactoe">
+    <p class="mp-tictactoe-status" id="tictactoe-status">{{ t('games.tictactoe_start') }}</p>
+    <div class="mp-tictactoe-board" id="tictactoe-board" role="grid" aria-label="{{ t('games.tictactoe_title') }}"></div>
+    <button type="button" class="btn btn-primary btn-xl" id="tictactoe-restart">{{ t('games.restart') }}</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_base }}/static/games/common.js?v={{ static_version }}"></script>
+<script src="{{ asset_base }}/static/games/tictactoe.js?v={{ static_version }}"></script>
+{% endblock %}

@@ -56,6 +56,7 @@ from app.database import (  # noqa: E402
 from app.highlight import highlight_pan_words  # noqa: E402
 from app.qr_util import quark_qr_data_url  # noqa: E402
 from app import jupan_bridge  # noqa: E402
+from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json  # noqa: E402
 from app.game_picks import build_wheel_picks, wheel_picks_json  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
 from app.static_urls import category_href, channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
@@ -543,6 +544,21 @@ def _build_games(
     write("game_chore.html", docs_root / "game" / "chore" / "index.html", request=_fake_request("/game/chore/"))
     write("game_who.html", docs_root / "game" / "who" / "index.html", request=_fake_request("/game/who/"))
     write("game_topic.html", docs_root / "game" / "topic" / "index.html", request=_fake_request("/game/topic/"))
+    write("game_tictactoe.html", docs_root / "game" / "tictactoe" / "index.html", request=_fake_request("/game/tictactoe/"))
+    site_picks = build_site_wheel_picks(locale=i18n.locale, base_path=base_path)
+    today_picks = build_home_wheel_picks(locale=i18n.locale, base_path=base_path)
+    write(
+        "game_today.html",
+        docs_root / "game" / "today" / "index.html",
+        request=_fake_request("/game/today/"),
+        today_wheel_json=home_wheel_json(today_picks),
+    )
+    write(
+        "game_site_wheel.html",
+        docs_root / "game" / "site-wheel" / "index.html",
+        request=_fake_request("/game/site-wheel/"),
+        site_wheel_json=site_wheel_json(site_picks),
+    )
     if i18n.locale == "zh":
         (DOCS_DIR / "static" / "game-picks.json").write_text(picks_json + "\n", encoding="utf-8")
 
