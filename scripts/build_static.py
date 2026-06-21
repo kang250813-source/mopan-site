@@ -163,9 +163,25 @@ def _load_payload_from_export_dir() -> SitePayload | None:
     return SitePayload(channel_counts=channel_counts, channels=channels, dramas=dramas)
 
 
+def _validate_export_payload(payload: SitePayload) -> None:
+    counts = payload.channel_counts or {}
+    classics = payload.channels.get("classics", {}).get("resources") or []
+    if counts.get("classics") and not classics:
+        raise SystemExit(
+            "data/export/classics.json is empty but manifest lists "
+            f"{counts['classics']} classics — run scripts/export_data.py"
+        )
+    if counts.get("drama") and not payload.dramas:
+        raise SystemExit(
+            "data/export/drama.json is empty but manifest lists "
+            f"{counts['drama']} dramas — run scripts/export_data.py"
+        )
+
+
 def load_payload() -> SitePayload:
     payload = _load_payload_from_export_dir()
     if payload is not None:
+        _validate_export_payload(payload)
         return payload
     if SITE_EXPORT_JSON.exists():
         data = json.loads(SITE_EXPORT_JSON.read_text(encoding="utf-8"))
