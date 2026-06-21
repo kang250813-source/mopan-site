@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from app.classics import library_label, library_subtitle  # noqa: E402
-from app.classics_shuffle import hourly_shuffle_seed, shuffle_sequence  # noqa: E402
+from app.classics_shuffle import daily_shuffle_seed, hourly_shuffle_seed, shuffle_sequence  # noqa: E402
 from app.i18n import (  # noqa: E402
     I18n,
     LOCALES,
@@ -458,6 +458,8 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
     dramas = _dramas(payload)
     if dramas:
         channel_meta = i18n.channel("drama")
+        drama_daily = True
+        dramas = shuffle_sequence(dramas, daily_shuffle_seed())
         total = len(dramas)
         pages = calc_total_pages(total, PAGE_SIZE)
         for page_num in range(1, pages + 1):
@@ -480,6 +482,7 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 total_pages=pages,
                 page_items=page_window(page_num, pages),
                 hero_desc=i18n.hero("drama"),
+                drama_daily_shuffle=drama_daily,
             )
             stats["list_pages"] += 1
 

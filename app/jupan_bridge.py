@@ -17,6 +17,7 @@ from app.config import (
     JUPAN_SITE_DB,
     JUPAN_SYNC_DB,
 )
+from app.classics_shuffle import shuffle_sequence
 
 _RELATED_ORDER = "COALESCE(d.published_at, d.created_at) DESC, d.id DESC"
 _EXTERNAL_SHARE_IDS = frozenset({"d54031d2ebce"})
@@ -175,6 +176,7 @@ def list_dramas(
     tag: str | None = None,
     limit: int = 24,
     offset: int = 0,
+    shuffle_seed: int | None = None,
 ) -> list[JupanDrama]:
     if not JUPAN_SITE_DB.exists():
         return []
@@ -190,9 +192,16 @@ def list_dramas(
         params.append(f"%{q.strip()}%")
     if where:
         query += " WHERE " + " AND ".join(where)
-    query += f" ORDER BY {_RELATED_ORDER} LIMIT ? OFFSET ?"
-    params.extend([limit, offset])
+    order_sql = "" if shuffle_seed is not None else f" ORDER BY {_RELATED_ORDER}"
     with _connect(JUPAN_SITE_DB) as conn:
+        if shuffle_seed is not None:
+            rows = conn.execute(query + order_sql, params).fetchall()
+            dramas = [_row_to_drama(row) for row in rows]
+            dramas = _attach_tags(conn, dramas)
+            dramas = shuffle_sequence(dramas, shuffle_seed)
+            return dramas[offset : offset + limit]
+        query += f"{order_sql} LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
         rows = conn.execute(query, params).fetchall()
         dramas = [_row_to_drama(row) for row in rows]
         return _attach_tags(conn, dramas)

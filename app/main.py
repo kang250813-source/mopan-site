@@ -207,11 +207,17 @@ def index(
         pages = calc_total_pages(total, PAGE_SIZE)
         current_page = clamp_page(page, pages)
         offset = (current_page - 1) * PAGE_SIZE
+        drama_shuffle = None
+        if not (q or "").strip() and not active_tag:
+            from app.classics_shuffle import daily_shuffle_seed
+
+            drama_shuffle = daily_shuffle_seed()
         dramas = jupan_bridge.list_dramas(
             q=q,
             tag=active_tag or None,
             limit=PAGE_SIZE,
             offset=offset,
+            shuffle_seed=drama_shuffle,
         )
         return templates.TemplateResponse(
             "drama_channel.html",
@@ -228,6 +234,7 @@ def index(
                 page=current_page,
                 total_pages=pages,
                 page_items=page_window(current_page, pages),
+                drama_daily_shuffle=drama_shuffle is not None,
             ),
         )
 
