@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('promo.quark_title') }} - {{ site_title }}{% endblock %}
+{% block body_class %}page-quark-promo{% endblock %}
+
+{% block nav %}
+<a href="{{ channel_href('discover') if channel_href is defined else base_path ~ '/?channel=discover' }}" class="mp-nav-link">{{ t('nav.back_library') }}</a>
+<span class="mp-nav-current">{{ t('promo.quark_nav') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mp-container mp-quark-promo">
+  <section class="mp-hero mp-hero--promo">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">{{ pan_label }} · {{ t('promo.quark_eyebrow') }}</p>
+      <h1>{{ promo.primary.title or t('promo.quark_title') }}</h1>
+      <p class="mp-hero-desc">{{ promo.primary.description or t('promo.quark_lead') }}</p>
+    </div>
+  </section>
+
+  <section class="cta-panel mp-quark-promo-main"{% if promo.primary.url %} data-pan-url="{{ promo.primary.url }}"{% endif %}>
+    <h2 class="cta-heading">{{ t('promo.quark_get') }}</h2>
+    {% if promo.primary.command %}
+    <div class="mp-quark-command">
+      <span class="mp-quark-command-label">{{ t('promo.quark_command') }}</span>
+      <code class="mp-quark-command-text" id="quark-promo-command">{{ promo.primary.command }}</code>
+    </div>
+    <div class="cta-actions">
+      <button type="button" class="btn btn-quark btn-xl" data-copy="{{ promo.primary.command }}">{{ t('promo.quark_copy_command') }}</button>
+      {% if promo.primary.url %}
+      <button type="button" class="btn btn-copy btn-xl js-open-pan">{{ t('promo.quark_open_link') }}</button>
+      {% endif %}
+    </div>
+    {% elif promo.primary.url %}
+    <div class="cta-actions">
+      <button type="button" class="btn btn-quark btn-xl js-open-pan">{{ t('detail.open_pan', pan=pan_label) }}</button>
+      <button type="button" class="btn btn-copy btn-xl" data-copy="{{ promo.primary.url }}">{{ t('detail.copy_link') }}</button>
+    </div>
+    <p class="cta-link-preview">{{ promo.primary.url }}</p>
+    {% endif %}
+    {% if promo.primary.url %}
+    <div class="qr-block">
+      <img src="{{ promo.primary.url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">
+      <p>{{ t('detail.scan_pan', pan=pan_label) }}</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="mp-quark-steps" aria-label="{{ t('promo.quark_steps_title') }}">
+    <h2>{{ t('promo.quark_steps_title') }}</h2>
+    <ol>
+      <li>{{ t('promo.quark_step1') }}</li>
+      <li>{{ t('promo.quark_step2') }}</li>
+      <li>{{ t('promo.quark_step3') }}</li>
+      <li>{{ t('promo.quark_step4') }}</li>
+    </ol>
+  </section>
+
+  {% if promo.bundles %}
+  <section class="mp-quark-bundles">
+    <h2>{{ t('promo.quark_more_bundles') }}</h2>
+    <div class="mp-quark-bundle-grid">
+      {% for bundle in promo.bundles %}
+      <article class="mp-quark-bundle-card">
+        <h3>{{ bundle.title }}</h3>
+        {% if bundle.description %}<p>{{ bundle.description }}</p>{% endif %}
+        {% if bundle.command %}
+        <code class="mp-quark-command-text mp-quark-command-text--sm">{{ bundle.command }}</code>
+        <button type="button" class="btn btn-copy btn-xl" data-copy="{{ bundle.command }}">{{ t('promo.quark_copy_command') }}</button>
+        {% elif bundle.url %}
+        <div class="mp-quark-bundle-open" data-pan-url="{{ bundle.url }}">
+          <button type="button" class="btn btn-quark btn-xl js-open-pan">{{ t('promo.quark_open_link') }}</button>
+        </div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if featured_resources %}
+  <section class="mp-quark-featured">
+    <h2>{{ t('promo.quark_featured') }}</h2>
+    <p class="mp-quark-featured-note">{{ t('promo.quark_featured_note') }}</p>
+    <ul class="mp-quark-featured-list">
+      {% for item in featured_resources %}
+      <li>
+        <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}">{{ item.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <aside class="mp-quark-notice" role="note">
+    <h2>{{ t('promo.quark_notice_title') }}</h2>
+    <ul>
+      <li>{{ t('promo.quark_notice1') }}</li>
+      <li>{{ t('promo.quark_notice2') }}</li>
+      <li>{{ t('promo.quark_notice3') }}</li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}

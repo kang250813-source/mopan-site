@@ -52,6 +52,7 @@ from app.pagination import build_page_url, clamp_page, page_window, total_pages 
 from app.qr_util import quark_qr_data_url
 from app.game_picks import live_wheel_picks, wheel_picks_json
 from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json
+from app.quark_promo import apply_drama_override, is_promo_active, load_quark_promo, promo_href
 from app.urls import drama_share_url, resource_share_url
 
 app = FastAPI(title=SITE_TITLE)
@@ -162,6 +163,8 @@ def _i18n_bundle(request: Request, *, channel: str = "", tag: str = "") -> dict:
         "locale_switch_href": switch,
         "hero_desc": i18n.hero(channel, tag=tag, github_user=CLASSICS_GITHUB_USER),
         "admin_base": admin_root(),
+        "quark_promo_active": is_promo_active(),
+        "quark_promo_href": promo_href(base),
     }
 
 
@@ -295,11 +298,13 @@ def drama_detail(request: Request, drama_id: int):
         raise HTTPException(status_code=404, detail="短剧不存在")
     related = jupan_bridge.list_dramas(limit=6)
     related = [d for d in related if d.id != drama.id][:5]
+    drama, drama_promo = apply_drama_override(drama)
     return templates.TemplateResponse(
         "drama_detail.html",
         _ctx(
             request,
             drama=drama,
+            drama_promo=drama_promo,
             related=related,
             share_page_url=drama_share_url(drama_id, request_base=_request_base(request)),
         ),
@@ -334,6 +339,23 @@ def resource_detail(request: Request, resource_id: int):
         ),
     )
 
+
+
+@app.get("/promo/quark", response_class=HTMLResponse)
+@app.get("/promo/quark/", response_class=HTMLResponse)
+def quark_promo_page(request: Request):
+    promo = load_quark_promo()
+    if not promo or not promo.active:
+        raise HTTPException(status_code=404, detail="Not found")
+    featured: list = []
+    for rid in promo.featured_resource_ids:
+        row = database.get_resource(rid)
+        if row:
+            featured.append(row)
+    return templates.TemplateResponse(
+        "quark_promo.html",
+        _ctx(request, promo=promo, featured_resources=featured),
+    )
 
 
 @app.get("/game", response_class=HTMLResponse)

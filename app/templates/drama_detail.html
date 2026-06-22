@@ -58,11 +58,26 @@
 
   <div class="cta-panel" data-pan-url="{{ drama.pan_url }}">
     <h2 class="cta-heading">{{ t('detail.open_quark_watch') }}</h2>
+    {% if drama.pan_source == 'main' and quark_promo_active %}
+    <p class="cta-desc">{{ t('promo.drama_main_tip') }}</p>
+    {% endif %}
+    {% if drama_promo and drama_promo.command %}
+    <div class="mp-quark-command">
+      <span class="mp-quark-command-label">{{ t('promo.quark_command') }}</span>
+      <code class="mp-quark-command-text">{{ drama_promo.command }}</code>
+    </div>
+  <div class="cta-actions">
+      <button type="button" class="btn btn-quark btn-xl" data-copy="{{ drama_promo.command }}">{{ t('promo.quark_copy_command') }}</button>
+      <button type="button" class="btn btn-copy btn-xl js-open-pan">{{ t('promo.quark_open_link') }}</button>
+      {% include "_share_btn.html" %}
+    </div>
+    {% else %}
     <div class="cta-actions">
       <button type="button" class="btn btn-quark btn-xl js-open-pan">{{ t('detail.open_pan', pan=pan_label) }}</button>
       <button type="button" class="btn btn-copy btn-xl" data-copy="{{ drama.pan_url }}">{{ t('detail.copy_pan_link') }}</button>
       {% include "_share_btn.html" %}
     </div>
+    {% endif %}
     <p class="cta-link-preview">{{ drama.pan_url }}</p>
     <div class="qr-block">
       <img src="{{ drama.pan_url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">

@@ -211,8 +211,11 @@
 
   document.querySelectorAll('.js-open-pan').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var panel = btn.closest('.cta-panel');
-      var url = panel && panel.getAttribute('data-pan-url');
+      var url = btn.getAttribute('data-pan-url');
+      if (!url) {
+        var panel = btn.closest('[data-pan-url]');
+        url = panel && panel.getAttribute('data-pan-url');
+      }
       if (url) window.open(url, '_blank', 'noopener');
     });
   });

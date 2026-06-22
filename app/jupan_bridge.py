@@ -18,6 +18,7 @@ from app.config import (
     JUPAN_SYNC_DB,
 )
 from app.classics_shuffle import shuffle_sequence
+from app.quark_promo import drama_promo_override
 
 _RELATED_ORDER = "COALESCE(d.published_at, d.created_at) DESC, d.id DESC"
 _EXTERNAL_SHARE_IDS = frozenset({"d54031d2ebce"})
@@ -110,10 +111,15 @@ def resolve_main_pan_url(title: str, fallback: str) -> str:
 
 def _make_drama(row: sqlite3.Row, *, pan_url: str | None = None) -> JupanDrama:
     site_url = row["quark_url"] or ""
-    resolved = pan_url or resolve_main_pan_url(row["title"], site_url)
+    drama_id = int(row["id"])
+    override = drama_promo_override(drama_id)
+    if override and override.url:
+        resolved = normalize_pan_url(override.url)
+    else:
+        resolved = pan_url or resolve_main_pan_url(row["title"], site_url)
     display_url = normalize_pan_url(resolved)
     return JupanDrama(
-        id=int(row["id"]),
+        id=drama_id,
         title=row["title"],
         pan_url=display_url,
         published_at=row["published_at"],

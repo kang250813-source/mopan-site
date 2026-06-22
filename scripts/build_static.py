@@ -59,6 +59,7 @@ from app import jupan_bridge  # noqa: E402
 from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json  # noqa: E402
 from app.game_picks import build_wheel_picks, wheel_picks_json  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
+from app.quark_promo import apply_drama_override, is_promo_active, load_quark_promo, promo_href  # noqa: E402
 from app.static_urls import category_href, channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
 
 TEMPLATES_DIR = ROOT / "app" / "templates"
@@ -219,7 +220,12 @@ def _resources_for_channel(payload: SitePayload, channel: str) -> list[Resource]
 
 
 def _dramas(payload: SitePayload) -> list[jupan_bridge.JupanDrama]:
-    return [_drama_from_dict(d) if isinstance(d, dict) else d for d in payload.dramas]
+    rows = [_drama_from_dict(d) if isinstance(d, dict) else d for d in payload.dramas]
+    out: list[jupan_bridge.JupanDrama] = []
+    for drama in rows:
+        merged, _ = apply_drama_override(drama)
+        out.append(merged)
+    return out
 
 
 def _filter_dramas_by_tag(dramas: list[jupan_bridge.JupanDrama], tag: str) -> list[jupan_bridge.JupanDrama]:
@@ -348,6 +354,8 @@ def _make_env(i18n: I18n, base_path: str, channel_counts: dict[str, int]) -> Env
             if category
             else channel_href(base_path, channel or "discover", static_site=True, page=page)
         ),
+        quark_promo_active=is_promo_active(),
+        quark_promo_href=promo_href(base_path),
     )
     return env
 
@@ -486,11 +494,13 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
 
         for drama in dramas:
             related = [d for d in dramas if d.id != drama.id][:5]
+            drama_page, drama_promo = apply_drama_override(drama)
             write(
                 "drama_detail.html",
                 docs_root / "drama" / f"{drama.id}.html",
                 request=_fake_request(f"/drama/{drama.id}"),
-                drama=drama,
+                drama=drama_page,
+                drama_promo=drama_promo,
                 related=related,
                 share_page_url=drama_href(base_path, drama.id, static_site=True),
             )
@@ -527,7 +537,38 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 stats["list_pages"] += 1
 
     _build_games(i18n, base_path, docs_root, payload, write)
+    _build_quark_promo(i18n, base_path, docs_root, payload, write)
     return stats
+
+
+def _featured_resources(payload: SitePayload, ids: list[int]) -> list[Resource]:
+    if not ids:
+        return []
+    pool: dict[int, Resource] = {}
+    for channel in RESOURCE_CHANNELS:
+        for row in _resources_for_channel(payload, channel):
+            pool[row.id] = row
+    return [pool[rid] for rid in ids if rid in pool]
+
+
+def _build_quark_promo(
+    i18n: I18n,
+    base_path: str,
+    docs_root: Path,
+    payload: SitePayload,
+    write,
+) -> None:
+    promo = load_quark_promo()
+    if not promo or not promo.active:
+        return
+    featured = _featured_resources(payload, promo.featured_resource_ids)
+    write(
+        "quark_promo.html",
+        docs_root / "promo" / "quark" / "index.html",
+        request=_fake_request("/promo/quark/"),
+        promo=promo,
+        featured_resources=featured,
+    )
 
 
 def _build_games(
