@@ -2,14 +2,17 @@
   'use strict';
 
   function boot() {
-    var root = document.getElementById('home-site-wheel');
-    var disc = document.getElementById('home-wheel-disc');
-    var rotor = document.getElementById('home-wheel-rotor');
-    var resultBox = document.getElementById('home-wheel-result');
-    var resultCat = document.getElementById('home-wheel-result-cat');
-    var resultLink = document.getElementById('home-wheel-result-link');
-    var picksNode = document.getElementById('home-wheel-picks');
-    if (!root || !disc || !rotor || !picksNode || !window.MopanGames) return;
+    var disc = document.getElementById('today-wheel-disc');
+    var rotor = document.getElementById('today-wheel-rotor');
+    var spinBtn = document.getElementById('today-wheel-spin');
+    var resultBox = document.getElementById('today-wheel-result');
+    var resultBadge = document.getElementById('today-wheel-result-badge');
+    var resultLabel = document.getElementById('today-wheel-result-label');
+    var resultTitle = document.getElementById('today-wheel-result-title');
+    var resultHint = document.getElementById('today-wheel-result-hint');
+    var resultLink = document.getElementById('today-wheel-result-link');
+    var picksNode = document.getElementById('today-wheel-picks');
+    if (!disc || !rotor || !spinBtn || !picksNode || !window.MopanGames) return;
 
     var G = window.MopanGames;
     var data = { segments: [], sites: [] };
@@ -18,7 +21,6 @@
     } catch (e) {
       data = { segments: [], sites: [] };
     }
-
     var segments = data.segments || [];
     var sites = data.sites || [];
     if (!segments.length || !sites.length) return;
@@ -26,9 +28,9 @@
     var rotation = 0;
     var spinning = false;
     var slice = 360 / segments.length;
-    var cx = 60;
-    var cy = 60;
-    var r = 54;
+    var cx = 100;
+    var cy = 100;
+    var r = 92;
 
     function polar(angle, radius) {
       var rad = (angle - 90) * Math.PI / 180;
@@ -60,29 +62,47 @@
         path.setAttribute('d', segmentPath(start, end));
         path.setAttribute('fill', seg.color || '#7c3aed');
         path.setAttribute('stroke', '#fff');
-        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('stroke-width', '2');
         rotor.appendChild(path);
 
-        var labelPos = polar(mid, r * 0.58);
+        var labelPos = polar(mid, r * 0.62);
         var icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         icon.setAttribute('x', labelPos.x);
-        icon.setAttribute('y', labelPos.y);
+        icon.setAttribute('y', labelPos.y - 4);
         icon.setAttribute('text-anchor', 'middle');
-        icon.setAttribute('dominant-baseline', 'middle');
         icon.setAttribute('fill', '#fff');
-        icon.setAttribute('font-size', '11');
+        icon.setAttribute('font-size', '15');
         icon.textContent = seg.icon || '🌐';
         rotor.appendChild(icon);
+
+        var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', labelPos.x);
+        text.setAttribute('y', labelPos.y + 12);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#fff');
+        text.setAttribute('font-size', '8.5');
+        text.setAttribute('font-weight', '700');
+        var label = seg.label || '';
+        text.textContent = label.length > 4 ? label.slice(0, 4) : label;
+        rotor.appendChild(text);
       });
 
       var hub = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       hub.setAttribute('cx', cx);
       hub.setAttribute('cy', cy);
-      hub.setAttribute('r', '12');
+      hub.setAttribute('r', '18');
       hub.setAttribute('fill', '#fff');
-      hub.setAttribute('stroke', 'rgba(193,44,66,0.2)');
-      hub.setAttribute('stroke-width', '1.5');
+      hub.setAttribute('stroke', 'rgba(91,33,182,0.25)');
+      hub.setAttribute('stroke-width', '2');
       rotor.appendChild(hub);
+    }
+
+    function pickForSegment(seg) {
+      var label = seg.label || '';
+      var pool = sites.filter(function (s) {
+        return s.category === label;
+      });
+      return G.pickRandom(pool.length ? pool : sites) || sites[0];
     }
 
     function isLocal(url) {
@@ -96,37 +116,39 @@
       }
     }
 
-    function pickForSegment(seg) {
-      var label = seg.label || '';
-      var pool = sites.filter(function (s) {
-        return s.category === label;
-      });
-      return G.pickRandom(pool.length ? pool : sites) || sites[0];
-    }
-
     function spin() {
       if (spinning) return;
       spinning = true;
-      disc.disabled = true;
+      spinBtn.disabled = true;
+      spinBtn.classList.add('is-spinning');
+      resultBox.hidden = true;
       disc.classList.add('is-spinning');
-      if (resultBox) resultBox.hidden = true;
 
       var index = Math.floor(Math.random() * segments.length);
-      var extra = 1440 + Math.floor(Math.random() * 360);
+      var extra = 1800 + Math.floor(Math.random() * 360);
       var target = extra + (segments.length - index - 0.5) * slice;
       rotation += target;
       rotor.style.transform = 'rotate(' + rotation + 'deg)';
 
       window.setTimeout(function () {
         disc.classList.remove('is-spinning');
+        spinBtn.classList.remove('is-spinning');
         spinning = false;
-        disc.disabled = false;
+        spinBtn.disabled = false;
         var seg = segments[index];
         var item = pickForSegment(seg);
-        if (resultCat) resultCat.textContent = item.category || seg.label || '';
+        if (resultBadge) {
+          resultBadge.textContent = seg.icon || '🌐';
+          resultBadge.style.background = seg.color || 'var(--mp-brand)';
+        }
+        if (resultLabel) resultLabel.textContent = item.category || seg.label;
+        if (resultTitle) resultTitle.textContent = item.title;
+        if (resultHint) {
+          resultHint.textContent = item.hint || G.readI18n('games_site_wheel_result_hint', 'A handy site worth bookmarking.');
+        }
         if (resultLink) {
           resultLink.href = item.url || '#';
-          resultLink.textContent = item.title || G.readI18n('ui_home_wheel_visit', 'Visit');
+          resultLink.textContent = G.readI18n('games_open_pick', 'Visit');
           if (isLocal(item.url)) {
             resultLink.target = '_self';
             resultLink.removeAttribute('rel');
@@ -135,18 +157,16 @@
             resultLink.rel = 'noopener noreferrer';
           }
         }
-        if (resultBox) {
-          resultBox.hidden = false;
-          resultBox.classList.remove('is-reveal');
-          window.requestAnimationFrame(function () {
-            resultBox.classList.add('is-reveal');
-          });
-        }
-      }, 2800);
+        resultBox.hidden = false;
+        resultBox.classList.remove('is-reveal');
+        window.requestAnimationFrame(function () {
+          resultBox.classList.add('is-reveal');
+        });
+      }, 4200);
     }
 
     buildWheel();
-    disc.addEventListener('click', spin);
+    spinBtn.addEventListener('click', spin);
   }
 
   if (document.readyState === 'loading') {
