@@ -17,7 +17,7 @@ def hourly_shuffle_seed() -> int:
 
 
 def daily_shuffle_seed() -> int:
-    """Calendar day in Asia/Shanghai as YYYYMMDD (matches client drama-shuffle.js)."""
+    """Calendar day in Asia/Shanghai as YYYYMMDD."""
     return int(datetime.now(_BEIJING).strftime("%Y%m%d"))
 
 

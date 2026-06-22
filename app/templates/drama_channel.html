@@ -82,11 +82,11 @@
     </div>
 
     {% if dramas %}
-    <div class="mp-drama-grid{% if drama_daily_shuffle %} mp-drama-grid--daily{% endif %}"{% if drama_daily_shuffle %} data-drama-daily="1"{% endif %}>
+    <div class="mp-drama-grid">
       {% for drama in dramas %}
       {% set episodes = drama.title | episode_count %}
       {% set cover = drama.cover_url | cover_src %}
-      <a href="{{ drama_href(drama.id) if drama_href is defined else base_path ~ '/drama/' ~ drama.id }}" class="mp-drama-card"{% if drama_daily_shuffle %} data-drama-id="{{ drama.id }}"{% endif %}>
+      <a href="{{ drama_href(drama.id) if drama_href is defined else base_path ~ '/drama/' ~ drama.id }}" class="mp-drama-card">
         <div class="mp-drama-cover">
           {% if cover %}
           <img src="{{ asset_base }}{{ cover }}" alt="" loading="lazy" decoding="async">
@@ -147,7 +147,4 @@
     <a href="{{ jupan_public_url }}" target="_blank" rel="noopener noreferrer">{{ t('ui.jupan') }}</a>
   </section>
 </div>
-{% if drama_daily_shuffle %}
-<script src="{{ asset_base }}/static/drama-shuffle.js?v={{ static_version }}"></script>
-{% endif %}
 {% endblock %}

@@ -458,7 +458,6 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
     dramas = _dramas(payload)
     if dramas:
         channel_meta = i18n.channel("drama")
-        drama_daily = True
         dramas = shuffle_sequence(dramas, daily_shuffle_seed())
         total = len(dramas)
         pages = calc_total_pages(total, PAGE_SIZE)
@@ -482,7 +481,6 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 total_pages=pages,
                 page_items=page_window(page_num, pages),
                 hero_desc=i18n.hero("drama"),
-                drama_daily_shuffle=drama_daily,
             )
             stats["list_pages"] += 1
 

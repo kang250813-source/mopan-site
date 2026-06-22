@@ -234,7 +234,6 @@ def index(
                 page=current_page,
                 total_pages=pages,
                 page_items=page_window(current_page, pages),
-                drama_daily_shuffle=drama_shuffle is not None,
             ),
         )
 
