@@ -2,6 +2,16 @@
 
 {% block title %}{% if category %}{{ category | cat_label }} - {% elif q %}{{ q }} - {% endif %}{{ channel_meta.label }} - {{ site_title }}{% endblock %}
 
+{% set is_home_discover = channel == 'discover' and not q and not category %}
+
+{% block body_class %}{% if is_home_discover %}page-home-discover{% endif %}{% endblock %}
+
+{% block extra_head %}
+{% if is_home_discover %}
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+{% endif %}
+{% endblock %}
+
 {% block nav %}
 {% set list_href = channel_href(channel) if channel_href is defined else base_path ~ '/?channel=' ~ channel %}
 {% set home_href = channel_href('discover') if channel_href is defined else base_path ~ '/' %}
@@ -18,6 +28,33 @@
 
 {% block content %}
 <div class="mp-container">
+  {% if is_home_discover %}
+  <section class="mp-hero mp-hero--editorial">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">{{ site_title }} · {{ pan_label }}</p>
+      <h1>{{ channel_meta.hint }}</h1>
+      <p class="mp-hero-desc">{{ hero_desc }}</p>
+    </div>
+    <p class="mp-hero-meta">{{ total_all }} {{ t('ui.channel_items') }}</p>
+  </section>
+
+  <nav class="mp-home-strip" aria-label="{{ t('ui.home_highlights') }}">
+    {% if quark_promo_active %}
+    <a href="{{ quark_promo_href }}" class="mp-home-strip-link">{{ t('promo.quark_home_title') }}</a>
+    {% endif %}
+    <a href="{{ base_path }}/game/" class="mp-home-strip-link">{{ t('games.home_entry_title') }}</a>
+  </nav>
+
+  <nav class="mp-channels mp-channels--editorial" aria-label="{{ t('ui.channels') }}">
+    {% for ch in channels %}
+    <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
+       class="mp-channel{% if channel == ch.id %} is-active{% endif %}">
+      <span class="mp-channel-label">{{ ch.label }}</span>
+      <span class="mp-channel-count">{{ channel_counts.get(ch.id, 0) }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+  {% else %}
   <nav class="mp-channels" aria-label="{{ t('ui.channels') }}">
     {% for ch in channels %}
     <a href="{{ channel_href(ch.id) if channel_href is defined else base_path ~ '/?channel=' ~ ch.id }}"
@@ -60,6 +97,7 @@
       <span class="mp-hero-stat-label">{{ t('ui.channel_items') }}</span>
     </div>
   </section>
+  {% endif %}
 
   <section class="mp-toolbar">
     <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
@@ -86,7 +124,7 @@
   <p class="mp-result-hint">{{ t('ui.results', n=total) }}</p>
   {% endif %}
 
-  <section class="mp-feed{% if classics_hourly_shuffle %} mp-feed--hourly{% endif %}"{% if classics_hourly_shuffle %} data-classics-hourly="1"{% endif %}>
+  <section class="mp-feed{% if classics_hourly_shuffle %} mp-feed--hourly{% endif %}{% if is_home_discover %} mp-feed--editorial{% endif %}"{% if classics_hourly_shuffle %} data-classics-hourly="1"{% endif %}>
     {% for item in resources %}
     <article class="mp-card"{% if classics_hourly_shuffle %} data-resource-id="{{ item.id }}"{% endif %}>
       <a href="{{ resource_href(item.id) if resource_href is defined else base_path ~ '/resource/' ~ item.id }}" class="mp-card-link">
