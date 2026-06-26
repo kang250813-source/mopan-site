@@ -52,6 +52,33 @@
     return (I18N && I18N[key]) || fallback || key;
   }
 
+  // --- 任推邦推广埋点：复用页面已加载的 GA4 (gtag) ---
+  function track(eventName, params) {
+    try {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', eventName, params || {});
+      }
+      if (window.dataLayer && typeof window.dataLayer.push === 'function' && typeof window.gtag !== 'function') {
+        window.dataLayer.push(Object.assign({ event: eventName }, params || {}));
+      }
+    } catch (err) {
+      /* 统计失败不影响交互 */
+    }
+  }
+
+  // 从元素或其最近的带 data-promo-id 的祖先收集推广上下文
+  function promoContext(el) {
+    var node = el && el.closest ? el.closest('[data-promo-id]') : null;
+    var ctx = {};
+    if (node) {
+      ctx.promo_id = node.getAttribute('data-promo-id') || '';
+      var kind = node.getAttribute('data-promo-kind');
+      if (kind) ctx.promo_kind = kind;
+    }
+    ctx.page_path = window.location.pathname;
+    return ctx;
+  }
+
   function isMobile() {
     return MOBILE_RE.test(navigator.userAgent) || window.innerWidth < 768;
   }
@@ -199,6 +226,10 @@
   document.querySelectorAll('[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var text = btn.getAttribute('data-copy') || '';
+      var ctx = promoContext(btn);
+      if (ctx.promo_id) {
+        track('promo_copy', Object.assign({ copy_value: text.slice(0, 60) }, ctx));
+      }
       copyText(text).then(function () {
         var old = btn.textContent.trim();
         btn.textContent = msg('copied', '已复制');
@@ -216,7 +247,21 @@
         var panel = btn.closest('[data-pan-url]');
         url = panel && panel.getAttribute('data-pan-url');
       }
+      var ctx = promoContext(btn);
+      if (ctx.promo_id) {
+        track('promo_open', Object.assign({ pan_url: (url || '').slice(0, 80) }, ctx));
+      }
       if (url) window.open(url, '_blank', 'noopener');
+    });
+  });
+
+  // 站内推广入口（首页条幅/卡片、短剧卡片、footer 链接等）
+  document.querySelectorAll('[data-promo-entry]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      track('promo_entry', {
+        promo_entry: link.getAttribute('data-promo-entry') || 'unknown',
+        page_path: window.location.pathname
+      });
     });
   });
 
