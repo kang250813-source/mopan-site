@@ -91,8 +91,9 @@ def _now() -> str:
 @contextmanager
 def _connect(db_path: Path | None = None) -> Iterator[sqlite3.Connection]:
     path = db_path or DB_PATH
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, timeout=30)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout = 30000")
     try:
         yield conn
         conn.commit()
