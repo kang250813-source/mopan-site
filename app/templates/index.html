@@ -38,12 +38,30 @@
     <p class="mp-hero-meta">{{ total_all }} {{ t('ui.channel_items') }}</p>
   </section>
 
+  <a href="{{ base_path }}/game/" class="mp-home-games-spotlight" aria-label="{{ t('games.home_spotlight_aria') }}">
+    <span class="mp-home-games-spotlight-deco" aria-hidden="true">📀</span>
+    <span class="mp-home-games-spotlight-deco mp-home-games-spotlight-deco--2" aria-hidden="true">🎲</span>
+    <span class="mp-home-games-spotlight-deco mp-home-games-spotlight-deco--3" aria-hidden="true">🥮</span>
+    <span class="mp-home-games-spotlight-badge">{{ t('games.home_spotlight_badge') }}</span>
+    <span class="mp-home-games-spotlight-copy">
+      <strong class="mp-home-games-spotlight-title">{{ t('games.home_entry_title') }}</strong>
+      <span class="mp-home-games-spotlight-desc">{{ t('games.home_spotlight_desc') }}</span>
+    </span>
+    <span class="mp-home-games-spotlight-chips" aria-hidden="true">
+      <span>{{ t('games.stack_title') }}</span>
+      <span>{{ t('games.bobing_title') }}</span>
+      <span>{{ t('games.wheel_title') }}</span>
+      <span>{{ t('games.bomb_title') }}</span>
+      <span>{{ t('games.chore_title') }}</span>
+    </span>
+    <span class="mp-home-games-spotlight-cta">{{ t('games.home_spotlight_cta') }} →</span>
+  </a>
+
+  {% if quark_promo_active %}
   <nav class="mp-home-strip" aria-label="{{ t('ui.home_highlights') }}">
-    {% if quark_promo_active %}
     <a href="{{ quark_promo_href }}" class="mp-home-strip-link" data-promo-entry="home-strip">{{ t('promo.quark_home_title') }}</a>
-    {% endif %}
-    <a href="{{ base_path }}/game/" class="mp-home-strip-link">{{ t('games.home_entry_title') }}</a>
   </nav>
+  {% endif %}
 
   <nav class="mp-channels mp-channels--editorial" aria-label="{{ t('ui.channels') }}">
     {% for ch in channels %}
