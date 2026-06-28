@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1530" />
+<title data-i18n-title="life.title">无限人生 · 人生重开模拟器</title>
+<meta name="description" content="无限人生 —— 网页文字人生模拟器。创建角色，分配天赋，经历上百种随机人生事件，做出选择改变命运。" />
+<style>
+:root{
+  --bg:#16132a; --bg2:#1f1b3a; --card:#262145; --card2:#2d2752;
+  --line:rgba(255,255,255,.1); --ink:#ece9ff; --muted:#a59ed0;
+  --accent:#8b7bff; --accent2:#b78bff; --gold:#ffd45b;
+  --money:#ffd45b; --int:#6ab7ff; --charm:#ff7ab8; --stam:#5be08a; --luck:#c08bff;
+  --good:#5be08a; --bad:#ff6b6b;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(circle at 50% -10%,#2a2150 0%,#16132a 55%,#0d0a1c 100%);
+  background-attachment:fixed;
+  min-height:100%;
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px;
+  -webkit-user-select:none;user-select:none;
+}
+.app{width:100%;max-width:560px;display:flex;flex-direction:column;flex:1}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mark{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));font-size:20px;font-weight:900;
+  box-shadow:0 4px 0 #4c3da8}
+.logo b{font-size:17px;letter-spacing:2px;display:block}
+.logo small{font-size:10px;letter-spacing:3px;color:var(--muted)}
+.top-link{font-size:13px;color:var(--accent2);border:1px solid var(--line);padding:6px 13px;border-radius:999px;text-decoration:none}
+
+/* card */
+.card{background:linear-gradient(165deg,var(--card2),var(--card));border:1px solid var(--line);
+  border-radius:20px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.4)}
+.screen{display:none;flex-direction:column;flex:1}
+.screen.active{display:flex}
+
+h1.title{font-size:clamp(30px,8vw,46px);text-align:center;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(90deg,#9f8bff,#ff8bd0,#ffd45b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{text-align:center;color:var(--muted);letter-spacing:5px;font-size:12px;margin-top:6px;margin-bottom:6px}
+.lead{text-align:center;color:#cfc8f5;font-size:14px;line-height:1.8;margin:14px 0 22px}
+
+/* form */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;letter-spacing:1px}
+.input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--ink);
+  border-radius:12px;padding:13px 15px;font-size:16px;font-family:inherit;outline:none}
+.input:focus{border-color:var(--accent)}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--muted);
+  border-radius:12px;padding:12px;font-family:inherit;font-size:15px;cursor:pointer;font-weight:700}
+.seg button.on{background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;border-color:var(--accent)}
+
+/* stat allocator */
+.alloc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.alloc-head .pts{font-size:13px;color:var(--muted)}
+.alloc-head .pts b{color:var(--gold);font-size:18px}
+.stat-row{display:flex;align-items:center;gap:10px;margin:10px 0}
+.stat-row .nm{width:60px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.stat-row .dot{width:9px;height:9px;border-radius:50%}
+.stat-row .val{width:34px;text-align:center;font-weight:800;font-size:17px}
+.stepper{display:flex;gap:6px;margin-left:auto}
+.stepper button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+  background:rgba(0,0,0,.3);color:var(--ink);font-size:18px;font-weight:900;cursor:pointer}
+.stepper button:active{transform:scale(.9)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+
+/* talents */
+.talents{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.talent{display:flex;gap:12px;align-items:flex-start;background:rgba(0,0,0,.22);border:1px solid var(--line);
+  border-radius:13px;padding:12px 14px;cursor:pointer;transition:border-color .15s}
+.talent.on{border-color:var(--accent);background:rgba(139,123,255,.16);box-shadow:0 0 14px rgba(139,123,255,.25)}
+.talent .ico{font-size:26px;line-height:1}
+.talent .tt{font-size:15px;font-weight:800}
+.talent .td{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+
+/* buttons */
+.btn{display:block;width:100%;border:none;border-radius:14px;padding:15px;font-size:18px;font-weight:900;
+  letter-spacing:2px;cursor:pointer;font-family:inherit;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;
+  box-shadow:0 6px 0 #4c3da8,0 12px 22px rgba(0,0,0,.35);margin-top:8px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #4c3da8}
+.btn.ghost{background:transparent;color:var(--accent2);border:1px solid var(--accent);box-shadow:none}
+.btn.ghost:active{transform:translateY(2px);box-shadow:none}
+.btn.sm{font-size:15px;padding:12px;letter-spacing:1px}
+
+/* play screen */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:12px}
+.stat-pill{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center}
+.stat-pill .sl{font-size:10px;color:var(--muted);letter-spacing:1px}
+.stat-pill .sv{font-size:17px;font-weight:900;margin-top:2px}
+.sv.money{color:var(--money)} .sv.int{color:var(--int)} .sv.charm{color:var(--charm)}
+.sv.stam{color:var(--stam)} .sv.luck{color:var(--luck)}
+
+.agebar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px}
+.agebar .age{font-size:15px;font-weight:800}
+.agebar .age b{color:var(--gold);font-size:22px}
+.agebar .stage{font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);padding:4px 12px;border-radius:999px}
+
+.log{flex:1;overflow-y:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;
+  padding:14px;margin-bottom:12px;min-height:220px;max-height:46vh;scroll-behavior:smooth}
+.entry{font-size:14px;line-height:1.7;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.06);
+  animation:fade .35s ease}
+.entry:last-child{border-bottom:none}
+.entry .yr{color:var(--accent2);font-weight:800;margin-right:8px}
+.entry.good{color:#bff5d4}.entry.bad{color:#ffc7c7}.entry.big{color:var(--gold);font-weight:700}
+.entry .delta{font-size:12px;margin-left:6px;opacity:.85}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* choice modal */
+.choices{display:flex;flex-direction:column;gap:9px;margin-bottom:8px}
+.choice{background:linear-gradient(180deg,rgba(70,60,130,.6),rgba(40,34,80,.7));border:1px solid var(--line);
+  color:var(--ink);border-radius:13px;padding:13px 15px;font-size:15px;font-family:inherit;cursor:pointer;text-align:left;font-weight:600}
+.choice:active{transform:scale(.98)}
+.evtext{font-size:15px;line-height:1.7;color:#e3def8;background:rgba(0,0,0,.25);border-radius:12px;
+  padding:13px 15px;margin-bottom:12px;border-left:3px solid var(--accent)}
+
+/* summary / end */
+.end-stat{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+.end-stat b{color:var(--ink)}
+.rank{font-size:clamp(40px,12vw,64px);font-weight:900;text-align:center;
+  background:linear-gradient(90deg,var(--gold),#ff8bd0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ach-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.ach-chip{font-size:12px;background:rgba(255,212,91,.14);border:1px solid rgba(255,212,91,.4);color:var(--gold);
+  padding:5px 11px;border-radius:999px}
+
+/* achievements panel */
+.ach-grid{display:grid;grid-template-columns:1fr;gap:8px;max-height:60vh;overflow-y:auto}
+.ach-item{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.25);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px}
+.ach-item.locked{opacity:.45}
+.ach-item .ai-ico{font-size:26px}
+.ach-item .ai-nm{font-size:14px;font-weight:800}
+.ach-item .ai-ds{font-size:12px;color:var(--muted);margin-top:2px}
+.ach-item .ai-tick{margin-left:auto;color:var(--good);font-weight:900}
+
+.row2{display:flex;gap:10px}.row2>*{flex:1}
+.muted-link{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
+.muted-link a{color:var(--accent2)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--card2);
+  border:1px solid var(--accent);color:var(--ink);padding:11px 20px;border-radius:999px;font-size:14px;z-index:90;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);animation:fade .3s ease}
+.toast[hidden]{display:none}
+.scroll-tip{text-align:center;font-size:11px;color:var(--muted);margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">
+      <span class="mark">命</span>
+      <span><b data-i18n="life.title">无限人生</b><small>INFINITE LIFE</small></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="lang-switch"></span>
+      <a class="top-link" href="/game/" data-i18n="common.back_hub">← 游戏大厅</a>
+    </div>
+  </div>
+
+  <!-- ===== START ===== -->
+  <section class="screen active card" id="screen-start">
+    <h1 class="title" data-i18n="life.title">无限人生</h1>
+    <div class="subtitle" data-i18n="life.subtitle">人 生 重 开 模 拟 器</div>
+    <p class="lead" data-i18n-html="life.lead">这一世，你会成为谁？<br/>从呱呱坠地到尘归尘土，<br/>每一个选择，都将书写不同的人生。</p>
+    <button class="btn" id="btn-new" data-i18n="life.new">投 胎 重 开</button>
+    <button class="btn ghost sm" id="btn-continue" style="display:none" data-i18n="life.continue">继续上一世</button>
+    <button class="btn ghost sm" id="btn-ach-open" data-i18n="life.ach_open">🏆 成就馆</button>
+    <p class="muted-link" id="life-count"></p>
+  </section>
+
+  <!-- ===== CREATE ===== -->
+  <section class="screen card" id="screen-create">
+    <h1 class="title" style="font-size:26px" data-i18n="life.create_title">捏 一 个 人</h1>
+    <div class="field">
+      <label data-i18n="life.name_label">姓名</label>
+      <input class="input" id="in-name" maxlength="12" data-i18n-attr="placeholder:life.name_ph" placeholder="随便取个名字" />
+    </div>
+    <div class="field">
+      <label data-i18n="life.gender_label">性别</label>
+      <div class="seg" id="seg-gender">
+        <button data-g="male" class="on" data-i18n="life.g_male">👦 男</button>
+        <button data-g="female" data-i18n="life.g_female">👧 女</button>
+        <button data-g="secret" data-i18n="life.g_secret">🌈 保密</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="alloc-head">
+        <label style="margin:0" data-i18n="life.alloc_label">分配天赋点</label>
+        <span class="pts"><span data-i18n="life.alloc_left">剩余</span> <b id="pts-left">20</b></span>
+      </div>
+      <div id="alloc"></div>
+    </div>
+    <div class="field">
+      <label data-i18n="life.talent_label">选择一个天赋（影响一生）</label>
+      <div class="talents" id="talents"></div>
+    </div>
+    <div class="row2">
+      <button class="btn ghost sm" id="btn-rand" data-i18n="life.random">🎲 随机</button>
+      <button class="btn sm" id="btn-begin" data-i18n="life.begin">开 始 人 生</button>
+    </div>
+  </section>
+
+  <!-- ===== PLAY ===== -->
+  <section class="screen card" id="screen-play">
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="agebar">
+      <span class="age"><span data-i18n="life.age_label">年龄</span> <b id="age-num">0</b> <span data-i18n="life.age_unit">岁</span></span>
+      <span class="stage" id="stage-tag">婴儿</span>
+    </div>
+    <div class="scroll-tip" id="who-line"></div>
+    <div class="log" id="log"></div>
+    <div class="choices" id="choices" style="display:none"></div>
+    <button class="btn" id="btn-next" data-i18n="life.next_year">活 下 去（+1 岁）</button>
+  </section>
+
+  <!-- ===== END ===== -->
+  <section class="screen card" id="screen-end">
+    <h1 class="title" style="font-size:26px" data-i18n="life.end_title">人 生 落 幕</h1>
+    <div class="rank" id="end-rank">C</div>
+    <p class="lead" id="end-words" style="margin:6px 0 14px"></p>
+    <div id="end-stats"></div>
+    <div class="ach-list" id="end-ach"></div>
+    <button class="btn" id="btn-again" data-i18n="life.again">再 活 一 次</button>
+    <button class="btn ghost sm" id="btn-end-ach" data-i18n="life.end_ach">🏆 查看成就馆</button>
+  </section>
+
+  <!-- ===== ACHIEVEMENTS ===== -->
+  <section class="screen card" id="screen-ach">
+    <h1 class="title" style="font-size:26px" data-i18n="life.ach_title">🏆 成 就 馆</h1>
+    <p class="subtitle" id="ach-progress"></p>
+    <div class="ach-grid" id="ach-grid" style="margin-top:12px"></div>
+    <button class="btn ghost sm" id="btn-ach-back" style="margin-top:14px" data-i18n="life.back">返回</button>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="/static/wukong/assets/i18n/i18n.js"></script>
+<script>
+"use strict";
+(function(){
+
+/* ============ helpers ============ */
+var $=function(id){return document.getElementById(id);};
+var T=function(k,v){return (window.WukongI18n?window.WukongI18n.t(k,v):k);};
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var rand=function(a,b){return a+Math.random()*(b-a);};
+var irand=function(a,b){return Math.floor(rand(a,b+1));};
+var pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
+var chance=function(p){return Math.random()<p;};
+
+function toast(msg){
+  var el=$("toast");el.textContent=msg;el.hidden=false;
+  clearTimeout(toast._t);toast._t=setTimeout(function(){el.hidden=true;},2000);
+}
+function beep(freq,dur,type,vol){
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    beep._c=beep._c||new AC();var c=beep._c;if(c.state==="suspended")c.resume();
+    var t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+    o.type=type||"sine";o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(vol||.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+(dur||.12));
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+(dur||.12)+.02);
+  }catch(e){}
+}
+
+/* ============ static data ============ */
+var STATS=[
+  {key:"money", name:"金钱", cls:"money", ico:"💰"},
+  {key:"int",   name:"智力", cls:"int",   ico:"🧠"},
+  {key:"charm", name:"魅力", cls:"charm", ico:"💎"},
+  {key:"stam",  name:"体力", cls:"stam",  ico:"💪"},
+  {key:"luck",  name:"幸运", cls:"luck",  ico:"🍀"}
+];
+var STAT_KEYS=["money","int","charm","stam","luck"];
+
+var TALENTS=[
+  {id:"genius",  ico:"🧠", name:"天生聪慧", desc:"智力 +3，学业相关事件更顺利。", apply:function(s){s.int+=3;}},
+  {id:"beauty",  ico:"💃", name:"倾国倾城", desc:"魅力 +3，感情桃花运更旺。", apply:function(s){s.charm+=3;}},
+  {id:"rich",    ico:"🏦", name:"含着金汤匙", desc:"金钱 +4，出身富裕家庭。", apply:function(s){s.money+=4;}},
+  {id:"strong",  ico:"🏋️", name:"天赋异禀", desc:"体力 +3，身体硬朗少生病。", apply:function(s){s.stam+=3;}},
+  {id:"lucky",   ico:"🍀", name:"天选之子", desc:"幸运 +4，好事更常降临。", apply:function(s){s.luck+=4;}},
+  {id:"balance", ico:"☯️", name:"平平淡淡", desc:"全属性 +1，人生稳健。", apply:function(s){STAT_KEYS.forEach(function(k){s[k]+=1;});}},
+  {id:"phoenix", ico:"🔥", name:"涅槃重生", desc:"体力低于 0 时有机会绝处逢生。", apply:function(){}},
+  {id:"hidden",  ico:"🐲", name:"扮猪吃虎", desc:"幸运 +2，重大机遇出现概率更高。", apply:function(s){s.luck+=2;}}
+];
+
+var STAGES=[
+  {min:0, max:2,  tag:"婴儿", id:"baby"},
+  {min:3, max:5,  tag:"幼儿", id:"toddler"},
+  {min:6, max:11, tag:"童年", id:"child"},
+  {min:12,max:17, tag:"少年", id:"teen"},
+  {min:18,max:22, tag:"青年", id:"youth"},
+  {min:23,max:39, tag:"成年", id:"adult"},
+  {min:40,max:59, tag:"中年", id:"midlife"},
+  {min:60,max:200,tag:"暮年", id:"elder"}
+];
+function stageOf(age){
+  for(var i=0;i<STAGES.length;i++) if(age>=STAGES[i].min&&age<=STAGES[i].max) return T("life.stage."+STAGES[i].id);
+  return T("life.stage.elder");
+}
+/* localized stat/talent name accessors */
+function statName(k){return T("life.stat."+k);}
+function talentName(id){return T("life.talent."+id+"_n");}
+function talentDesc(id){return T("life.talent."+id+"_d");}
+function achName(id){return T("life.ach."+id+"_n");}
+function achDesc(id){return T("life.ach."+id+"_d");}
+
+/* ============ events DB (100+) ============
+   event: {id, min, max, w(weight), once, cond(s), kind, text, eff{stat:delta}, choices:[{t,eff,text,kind}]}
+   text/eff can use stat deltas. choices override auto-eff.
+*/
+function E(min,max,kind,text,eff,opt){
+  opt=opt||{};
+  return {min:min,max:max,kind:kind,text:text,eff:eff||{},
+          w:opt.w||1, once:opt.once||false, cond:opt.cond||null, choices:opt.choices||null, id:opt.id||null};
+}
+
+var EVENTS=[
+  /* ---- 婴儿 0-2 ---- */
+  E(0,0,"big","你出生了，来到这个世界第一声啼哭响彻产房。",{}),
+  E(0,2,"good","你长得粉雕玉琢，亲戚们都来逗你笑。",{charm:1}),
+  E(0,2,"good","你很早就会翻身，家人惊呼是个机灵鬼。",{int:1}),
+  E(0,2,"bad","你半夜哭闹不止，全家都没睡好。",{stam:-1}),
+  E(0,2,"normal","你学会了走路，跌跌撞撞扑进妈妈怀里。",{stam:1}),
+  E(0,2,"bad","你发了一场高烧，住了几天院。",{stam:-1,money:-1}),
+  E(0,2,"good","抓周时你一把抓起了算盘。",{money:1,int:1}),
+  E(0,2,"normal","你说出了人生第一个词：『钱』，全家哭笑不得。",{}),
+  E(1,2,"good","你被选为小区里最可爱宝宝。",{charm:1,luck:1}),
+
+  /* ---- 幼儿 3-5 ---- */
+  E(3,5,"good","幼儿园里你是孩子王，大家都听你的。",{charm:1}),
+  E(3,5,"normal","你迷上了动画片，一看就是一整天。",{int:-1,stam:-1}),
+  E(3,5,"good","你在才艺表演上背了首唐诗，赢得满堂彩。",{int:1,charm:1}),
+  E(3,5,"bad","你和小朋友抢玩具打了一架，鼻青脸肿。",{stam:-1,charm:-1}),
+  E(3,5,"good","你帮老师收拾教室，被表扬为好孩子。",{charm:1}),
+  E(3,5,"normal","你养了一只蜗牛当宠物，给它取名『大圣』。",{}),
+  E(3,5,"bad","你把家里的存钱罐打碎了，挨了一顿训。",{money:-1}),
+  E(3,5,"good","你在公园捡到一块钱，开心了一整天。",{money:1,luck:1}),
+  E(4,5,"good","你提前学会了认字，邻居夸你是神童。",{int:2}),
+
+  /* ---- 童年 6-11 ---- */
+  E(6,11,"normal","你上小学了，背着新书包既兴奋又紧张。",{},{w:2}),
+  E(6,11,"good","你考了班级第一名，奖状贴满了墙。",{int:2,charm:1},{cond:function(s){return s.int>=6;}}),
+  E(6,11,"bad","你考试不及格，被罚抄课文十遍。",{int:-1},{cond:function(s){return s.int<5;}}),
+  E(6,11,"good","你参加运动会拿了短跑冠军。",{stam:2,charm:1},{cond:function(s){return s.stam>=6;}}),
+  E(6,11,"bad","你近视了，戴上了厚厚的眼镜。",{charm:-1}),
+  E(6,11,"good","你的作文被当成范文在全班朗读。",{int:1,charm:1}),
+  E(6,11,"normal","你迷上了打游戏，成绩有点下滑。",{int:-1}),
+  E(6,11,"bad","你的零花钱被高年级同学抢走了。",{money:-1,stam:-1}),
+  E(6,11,"good","你学会了游泳，在泳池里如鱼得水。",{stam:1}),
+  E(6,11,"good","你被选为班长，开始管理班级事务。",{charm:2},{cond:function(s){return s.charm>=6;}}),
+  E(6,11,"normal","你掉了第一颗乳牙，把它藏在了枕头下。",{}),
+  E(6,11,"bad","你养的小狗走丢了，你哭了好几天。",{charm:-1}),
+  E(8,11,"good","你在数学竞赛中获奖，老师对你刮目相看。",{int:2}),
+  E(8,11,"good","你帮同学补习功课，收获了真挚的友情。",{int:1,charm:1}),
+
+  /* ---- 少年 12-17 ---- */
+  E(12,17,"normal","你升入了中学，学业压力骤然增大。",{},{w:2}),
+  E(12,17,"good","你暗恋的人对你笑了一下，你一整天都在飘。",{charm:1,luck:1}),
+  E(12,17,"bad","你叛逆期和父母大吵一架，摔门而出。",{charm:-1,stam:-1}),
+  E(12,17,"good","你组建了校园乐队，成了风云人物。",{charm:2},{cond:function(s){return s.charm>=7;}}),
+  E(12,17,"good","你熬夜刷题，模考冲进了年级前十。",{int:2,stam:-1},{cond:function(s){return s.int>=7;}}),
+  E(12,17,"bad","你沉迷手机熬夜，体质越来越差。",{stam:-2,int:-1}),
+  E(12,17,"good","你在篮球赛绝杀全场，被女生们尖叫包围。",{stam:1,charm:2},{cond:function(s){return s.stam>=7;}}),
+  E(12,17,"normal","你开始写日记，记录青春的烦恼。",{int:1}),
+  E(12,17,"bad","你被老师叫家长，原因是上课睡觉。",{int:-1,charm:-1}),
+  E(12,17,"good","你做家教兼职，赚到了人生第一桶金。",{money:2,int:1}),
+  E(12,17,"bad","你长了满脸青春痘，自信受到打击。",{charm:-1}),
+  E(15,17,"big","高考来临，这是改变命运的一战。",{},{cond:function(s){return s.age>=17&&false;}}),
+
+  /* ---- 青年 18-22 ---- */
+  E(18,18,"big","你成年了，可以独立做出人生的重大选择。",{}),
+  E(18,22,"good","你谈了一场轰轰烈烈的恋爱。",{charm:2,money:-1}),
+  E(18,22,"bad","你失恋了，借酒消愁。",{charm:-1,stam:-1}),
+  E(18,22,"good","你拿到了奖学金，父母为你骄傲。",{money:2,int:1},{cond:function(s){return s.int>=8;}}),
+  E(18,22,"normal","你参加了社团活动，认识了一群朋友。",{charm:1}),
+  E(18,22,"good","你创业的小项目意外火了。",{money:3},{cond:function(s){return s.luck>=8;}}),
+  E(18,22,"bad","你被骗子盯上，损失了一笔钱。",{money:-2},{cond:function(s){return s.luck<5;}}),
+  E(18,22,"good","你去旅行，看到了人生中最美的风景。",{charm:1,stam:1,money:-1}),
+  E(18,22,"normal","你开始健身，身材逐渐变好。",{stam:2,charm:1}),
+  E(18,22,"bad","你通宵打游戏荒废了学业。",{int:-2}),
+  E(18,22,"good","你的论文被教授推荐发表。",{int:2},{cond:function(s){return s.int>=9;}}),
+
+  /* ---- 成年 23-39 ---- */
+  E(23,39,"normal","你踏入社会，开始为生活奔波。",{},{w:2}),
+  E(23,39,"good","你升职加薪，成了部门骨干。",{money:3,charm:1},{cond:function(s){return s.int>=7;}}),
+  E(23,39,"bad","你被裁员了，一时陷入低谷。",{money:-2,stam:-1}),
+  E(23,39,"good","你投资股票小赚一笔。",{money:3},{cond:function(s){return s.luck>=7;}}),
+  E(23,39,"bad","你投资失败，血本无归。",{money:-3},{cond:function(s){return s.luck<5;}}),
+  E(23,39,"big","你结婚了，和心爱的人步入婚姻殿堂。",{charm:1,money:-2},{cond:function(s){return s.charm>=7;}}),
+  E(23,39,"good","你的孩子出生了，初为父母满是喜悦。",{charm:1,money:-1,stam:-1}),
+  E(23,39,"bad","你长期加班，身体亮起了红灯。",{stam:-2,money:1}),
+  E(23,39,"good","你买了人生第一套房。",{money:-2,charm:2},{cond:function(s){return s.money>=10;}}),
+  E(23,39,"good","你跳槽进入大公司，薪水翻倍。",{money:3,int:1},{cond:function(s){return s.int>=8;}}),
+  E(23,39,"normal","你养了一只猫，生活多了份温柔。",{charm:1}),
+  E(23,39,"bad","你和朋友合伙做生意闹翻了。",{money:-2,charm:-1}),
+  E(23,39,"good","你出版了一本书，小有名气。",{int:2,charm:2,money:1},{cond:function(s){return s.int>=10;}}),
+
+  /* ---- 中年 40-59 ---- */
+  E(40,59,"normal","你步入中年，上有老下有小。",{},{w:2}),
+  E(40,59,"good","你晋升为公司高管，事业达到巅峰。",{money:4,charm:2},{cond:function(s){return s.int>=9&&s.charm>=8;}}),
+  E(40,59,"bad","你查出了三高，开始注意养生。",{stam:-2}),
+  E(40,59,"good","你的孩子考上了名校，你倍感欣慰。",{charm:1}),
+  E(40,59,"bad","你遭遇中年危机，对人生感到迷茫。",{stam:-1,charm:-1}),
+  E(40,59,"good","你的理财收益颇丰，实现了财务自由。",{money:4},{cond:function(s){return s.money>=14;}}),
+  E(40,59,"bad","父母年迈生病，你日夜操劳。",{money:-2,stam:-2}),
+  E(40,59,"good","你重拾年轻时的爱好，活得通透。",{charm:1,stam:1}),
+  E(40,59,"normal","你开始规律晨跑，身体硬朗了不少。",{stam:2}),
+  E(40,59,"bad","你被老友借钱不还，伤了和气。",{money:-2,charm:-1}),
+
+  /* ---- 暮年 60+ ---- */
+  E(60,200,"normal","你退休了，终于可以含饴弄孙。",{},{w:2}),
+  E(60,200,"good","你儿孙满堂，过着幸福的晚年。",{charm:1},{cond:function(s){return s.charm>=8;}}),
+  E(60,200,"bad","你患上慢性病，行动渐渐不便。",{stam:-2}),
+  E(60,200,"good","你跳广场舞成了社区明星。",{charm:1,stam:1}),
+  E(60,200,"good","你年轻时的投资如今价值连城。",{money:3},{cond:function(s){return s.money>=12;}}),
+  E(60,200,"normal","你写起了回忆录，记录这一生。",{int:1}),
+  E(60,200,"bad","你时常感到孤独，盼着子女回家。",{charm:-1,stam:-1}),
+  E(60,200,"good","你和老伴携手游遍了大江南北。",{charm:1,stam:1,money:-1}),
+
+  /* ---- 通用随机（全年龄）---- */
+  E(6,200,"good","你在路上捡到了钱包并归还失主，收到一笔酬谢。",{money:1,charm:1}),
+  E(6,200,"bad","你感冒发烧，浑身无力躺了三天。",{stam:-1}),
+  E(10,200,"good","你买彩票中了小奖！",{money:2,luck:1},{cond:function(s){return s.luck>=8;}}),
+  E(6,200,"bad","你出门摔了一跤，扭伤了脚。",{stam:-1}),
+  E(12,200,"good","你做了一件好事，内心充满阳光。",{charm:1}),
+  E(6,200,"normal","平平淡淡的一年，没什么特别的事发生。",{},{w:2}),
+  E(16,200,"good","你结识了一位贵人，他指点了你的迷津。",{int:1,money:1,charm:1},{cond:function(s){return s.luck>=7;}}),
+  E(12,200,"bad","你被小偷偷了钱包。",{money:-1}),
+  E(18,200,"good","你坚持读书学习，气质愈发出众。",{int:1,charm:1}),
+  E(6,200,"bad","你熬夜追剧，第二天黑眼圈很重。",{stam:-1}),
+
+  /* ====== 扩充：童年趣事 6-11 ====== */
+  E(6,11,"good","你学会了骑自行车，满院子撒欢。",{stam:1,charm:1}),
+  E(6,11,"good","你的绘画作品入选了少儿画展。",{int:1,charm:1}),
+  E(6,11,"normal","你迷上了集卡，把零花钱都花光了。",{money:-1}),
+  E(6,11,"bad","你考试作弊被抓，写了检讨。",{int:-1,charm:-1}),
+  E(6,11,"good","你照顾受伤的流浪猫，把它养好了。",{charm:1,luck:1}),
+  E(6,11,"normal","你参加了夏令营，第一次离开家。",{stam:1,int:1}),
+  E(6,11,"good","你在校园朗诵比赛中拿了奖。",{charm:1,int:1}),
+  E(6,11,"bad","你贪玩从树上摔下来，缝了三针。",{stam:-2}),
+  E(8,11,"good","你迷上了科学小实验，梦想当科学家。",{int:2}),
+  E(8,11,"normal","你交了一个一辈子的好朋友。",{charm:1}),
+
+  /* ====== 扩充：少年烦恼 12-17 ====== */
+  E(12,17,"good","你自学编程，做出了第一个小游戏。",{int:2}),
+  E(12,17,"good","你在校运会上为班级争光。",{stam:2,charm:1}),
+  E(12,17,"bad","你沉迷网络小说，月考退步。",{int:-2}),
+  E(12,17,"good","你参加志愿者活动，懂得了责任。",{charm:2}),
+  E(12,17,"normal","你开始学吉他，弹给暗恋的人听。",{charm:1}),
+  E(12,17,"bad","你和好友因误会绝交，难过了很久。",{charm:-1,stam:-1}),
+  E(12,17,"good","你的短视频意外走红，涨了好多粉。",{charm:2,money:1},{cond:function(s){return s.luck>=7;}}),
+  E(12,17,"bad","你被网络喷子攻击，心情低落。",{charm:-1}),
+  E(12,17,"good","你拿到了人生第一张奖学金证书。",{int:1,money:1}),
+  E(14,17,"normal","你第一次打工发传单，体会了赚钱不易。",{money:1,stam:-1}),
+
+  /* ====== 扩充：青年抉择 18-22 ====== */
+  E(18,22,"good","你考取了驾照，约朋友自驾游。",{charm:1,money:-1}),
+  E(18,22,"good","你在大学社团当上了社长。",{charm:2,int:1},{cond:function(s){return s.charm>=7;}}),
+  E(18,22,"bad","你挂了好几科，面临重修。",{int:-1,money:-1}),
+  E(18,22,"good","你做兼职攒钱买了心仪已久的电脑。",{money:-1,int:1}),
+  E(18,22,"normal","你尝试了第一次独自旅行。",{stam:1,charm:1}),
+  E(18,22,"bad","你被渣男/渣女伤透了心。",{charm:-2}),
+  E(18,22,"good","你参加比赛拿了大奖，登上校报。",{int:1,charm:2},{cond:function(s){return s.int>=8;}}),
+  E(18,22,"bad","你网贷消费陷入债务，焦头烂额。",{money:-3},{cond:function(s){return s.int<5;}}),
+  E(18,22,"good","你献血并加入了骨髓库。",{charm:1,luck:1}),
+  E(18,22,"normal","你考虑考研还是工作，纠结了一整年。",{int:1}),
+
+  /* ====== 扩充：职业百态 23-39 ====== */
+  E(23,39,"good","你成了行业里小有名气的专家。",{int:2,charm:1},{cond:function(s){return s.int>=10;}}),
+  E(23,39,"good","你的副业收入超过了主业。",{money:3},{cond:function(s){return s.luck>=7;}}),
+  E(23,39,"bad","你遭遇职场 PUA，身心俱疲。",{stam:-2,charm:-1}),
+  E(23,39,"good","你做自媒体爆火，粉丝百万。",{money:3,charm:3},{cond:function(s){return s.charm>=9;}}),
+  E(23,39,"bad","你创业失败，负债累累。",{money:-4},{cond:function(s){return s.luck<5;}}),
+  E(23,39,"good","你跳槽成为公司合伙人。",{money:4,charm:1},{cond:function(s){return s.int>=9&&s.charm>=8;}}),
+  E(23,39,"normal","你考取了一张含金量很高的职业证书。",{int:2,money:1}),
+  E(23,39,"bad","你被同事抢了功劳，敢怒不敢言。",{charm:-1,stam:-1}),
+  E(23,39,"good","你的专利获批，拿到一笔授权费。",{money:3,int:1},{cond:function(s){return s.int>=10;}}),
+  E(23,39,"good","你成功转行进入热门领域。",{money:2,int:2}),
+  E(23,39,"bad","你被裁员后送了半年外卖维持生计。",{money:-1,stam:-1}),
+  E(23,39,"good","你写的代码/作品被业界广泛采用。",{int:2,charm:1}),
+
+  /* ====== 扩充：感情家庭 23-59 ====== */
+  E(23,39,"good","你和初恋久别重逢，再续前缘。",{charm:2,luck:1}),
+  E(23,39,"bad","你经历了一场痛苦的离婚。",{charm:-2,money:-2}),
+  E(23,39,"good","你和伴侣一起还清了房贷。",{money:1,charm:1},{cond:function(s){return s.money>=10;}}),
+  E(23,59,"good","你成了别人眼中的模范夫妻。",{charm:1}),
+  E(23,59,"bad","你和父母在育儿观念上爆发争执。",{charm:-1}),
+  E(23,59,"good","你的家庭温馨美满，邻里称羡。",{charm:1,stam:1}),
+  E(23,59,"normal","你养了一条狗，每天遛弯成了习惯。",{stam:1,charm:1}),
+  E(30,59,"good","你的孩子很争气，懂事又优秀。",{charm:1}),
+  E(30,59,"bad","你为孩子的教育操碎了心。",{stam:-1,money:-1}),
+
+  /* ====== 扩充：健康养生（全年龄）====== */
+  E(18,200,"good","你坚持长跑，完成了人生第一个马拉松。",{stam:3,charm:1},{cond:function(s){return s.stam>=8;}}),
+  E(23,200,"bad","你确诊了职业病，需要长期调理。",{stam:-2}),
+  E(18,200,"good","你戒掉了多年的坏习惯，整个人焕然一新。",{stam:2,charm:1}),
+  E(30,200,"bad","你体检查出小毛病，虚惊一场。",{stam:-1}),
+  E(40,200,"good","你练习太极/瑜伽，身心舒畅。",{stam:2}),
+  E(23,200,"bad","你压力太大失眠，靠咖啡硬撑。",{stam:-2,int:-1}),
+  E(18,200,"good","你学会了健康饮食，气色越来越好。",{stam:1,charm:1}),
+
+  /* ====== 扩充：爱好兴趣（全年龄）====== */
+  E(12,200,"good","你迷上了摄影，拍出了获奖作品。",{charm:1,int:1}),
+  E(18,200,"good","你学会了做一手好菜，朋友都爱来蹭饭。",{charm:1,stam:1}),
+  E(16,200,"good","你坚持写作，作品被杂志刊登。",{int:2,money:1}),
+  E(18,200,"normal","你迷上了养多肉植物，阳台变花园。",{charm:1}),
+  E(16,200,"good","你组建乐队登台演出，台下掌声雷动。",{charm:2},{cond:function(s){return s.charm>=7;}}),
+  E(18,200,"normal","你迷上了徒步，走遍了周边的山。",{stam:2,money:-1}),
+  E(23,200,"good","你收藏的旧物升值，小赚一笔。",{money:2,luck:1}),
+  E(12,200,"normal","你迷上了下棋，棋艺日渐精进。",{int:1}),
+
+  /* ====== 扩充：意外与运气（全年龄）====== */
+  E(18,200,"good","你买的基金大涨，账户翻红。",{money:3},{cond:function(s){return s.luck>=8;}}),
+  E(18,200,"bad","你的手机/钱包丢了，补办折腾半天。",{money:-1,stam:-1}),
+  E(16,200,"good","你抽奖中了大奖，乐开了花。",{money:3,luck:2},{cond:function(s){return s.luck>=9;}}),
+  E(12,200,"bad","你被狗追了一条街，惊魂未定。",{stam:-1}),
+  E(18,200,"good","你帮陌生人解了围，对方竟是大人物。",{charm:1,money:1,luck:1},{cond:function(s){return s.luck>=7;}}),
+  E(18,200,"bad","你遇到电信诈骗，幸好及时止损。",{money:-1},{cond:function(s){return s.int>=6;}}),
+  E(23,200,"good","你的老房子赶上拆迁，喜提补偿款。",{money:4,luck:2},{cond:function(s){return s.luck>=8;}}),
+  E(12,200,"normal","你做了一个奇怪的梦，醒来若有所思。",{}),
+  E(18,200,"good","你在旧外套口袋里翻出一笔忘记的钱。",{money:1,luck:1}),
+
+  /* ====== 扩充：奇遇与隐藏（高幸运触发）====== */
+  E(16,200,"big","你在山中迷路，竟误入一处世外桃源。",{stam:2,charm:1,luck:2},{cond:function(s){return s.luck>=9;}}),
+  E(18,200,"big","你梦中得高人指点，醒来灵感如泉涌。",{int:3},{cond:function(s){return s.luck>=9&&s.int>=8;}}),
+  E(23,200,"big","你偶然发现自己有惊人的商业天赋。",{money:3,int:1},{cond:function(s){return s.luck>=8;}}),
+  E(16,200,"good","你救起落水儿童，上了本地新闻。",{charm:2,luck:1},{cond:function(s){return s.stam>=7;}}),
+  E(40,200,"big","你年轻时种下的一棵树，如今成了网红打卡点。",{money:2,charm:2,luck:1}),
+
+  /* ====== 扩充：社会与时代 ====== */
+  E(23,200,"good","你赶上了行业风口，身价水涨船高。",{money:3},{cond:function(s){return s.luck>=7;}}),
+  E(18,200,"normal","你成了志愿者骨干，组织了多次公益。",{charm:2}),
+  E(23,200,"bad","你所在行业突然遇冷，前途未卜。",{money:-2,stam:-1}),
+  E(18,200,"good","你的一条建议被采纳，改善了社区生活。",{charm:1,int:1}),
+  E(30,200,"good","你成了远近闻名的热心肠，谁有事都找你。",{charm:2}),
+
+  /* ====== 扩充：学业与考试（童年-青年）====== */
+  E(6,11,"good","你参加机器人兴趣班，作品在市赛获奖。",{int:2,charm:1}),
+  E(6,11,"normal","你转学到了新学校，重新交朋友。",{charm:1,stam:-1}),
+  E(12,17,"good","你自学编程做出了第一个小游戏。",{int:2}),
+  E(12,17,"bad","你偏科严重，理科一塌糊涂。",{int:-1}),
+  E(12,17,"good","你当上了学生会主席，组织能力大涨。",{charm:2,int:1},{cond:function(s){return s.charm>=7;}}),
+  E(12,17,"normal","你第一次住校，学会了独立生活。",{stam:1}),
+  E(15,17,"good","你拿到了重点大学的保送名额。",{int:3,charm:1},{cond:function(s){return s.int>=9;}}),
+  E(18,22,"good","你考取了含金量很高的职业证书。",{int:2,money:1}),
+  E(18,22,"bad","你挂科补考，差点延毕。",{int:-1,stam:-1}),
+  E(18,22,"good","你交换留学一年，眼界大开。",{int:1,charm:2,money:-1},{cond:function(s){return s.money>=8;}}),
+
+  /* ====== 扩充：职业百态（成年-中年）====== */
+  E(23,55,"good","你成了行业小有名气的设计师。",{money:2,charm:1,int:1}),
+  E(23,55,"good","你开的小店生意红火，成了网红打卡点。",{money:3,charm:1},{cond:function(s){return s.luck>=7;}}),
+  E(23,55,"bad","你开的店因经营不善关门了。",{money:-3,stam:-1},{cond:function(s){return s.luck<5;}}),
+  E(23,55,"good","你写的代码上线服务百万用户。",{int:2,money:2},{cond:function(s){return s.int>=9;}}),
+  E(23,55,"normal","你成了自由职业者，时间自由但收入不稳。",{money:-1,charm:1}),
+  E(23,55,"good","你转行做了主播/UP主，意外走红。",{money:3,charm:2,luck:1},{cond:function(s){return s.charm>=8;}}),
+  E(23,55,"bad","你被同事抢了功劳，气得够呛。",{charm:-1,stam:-1}),
+  E(23,55,"good","你评上了高级职称，待遇翻番。",{money:2,int:1},{cond:function(s){return s.int>=8;}}),
+  E(23,55,"good","你跳槽到心仪的公司，圆了梦。",{money:2,charm:1}),
+  E(23,55,"bad","你创业的项目融资失败，团队解散。",{money:-3,charm:-1}),
+  E(28,55,"good","你成了部门里最年轻的管理者。",{money:2,charm:2},{cond:function(s){return s.charm>=8&&s.int>=8;}}),
+  E(30,55,"normal","你开始做副业，周末忙得团团转。",{money:1,stam:-1}),
+
+  /* ====== 扩充：感情与家庭 ====== */
+  E(18,40,"good","你遇到了灵魂伴侣，相知相惜。",{charm:2,luck:1},{cond:function(s){return s.charm>=7;}}),
+  E(18,40,"bad","你被劈腿了，心碎一地。",{charm:-2,stam:-1}),
+  E(23,45,"good","你筹办了一场浪漫的婚礼。",{charm:2,money:-2}),
+  E(23,45,"bad","你经历了一段不欢而散的关系。",{charm:-1,money:-1}),
+  E(25,50,"good","你和伴侣一起还清了房贷，如释重负。",{money:1,charm:1,stam:1}),
+  E(25,55,"good","你陪孩子长大，见证了无数个第一次。",{charm:2}),
+  E(25,55,"bad","你和家人因观念不同争执不断。",{charm:-1,stam:-1}),
+  E(30,60,"good","你们全家来了一场说走就走的旅行。",{charm:2,stam:1,money:-1}),
+  E(40,70,"good","你迎来了第一个孙辈，乐得合不拢嘴。",{charm:2}),
+  E(23,55,"normal","你成了朋友圈里的'红娘'，撮合了好几对。",{charm:1,luck:1}),
+
+  /* ====== 扩充：旅行与世界 ====== */
+  E(18,200,"good","你登顶雪山，在峰顶看到了壮丽日出。",{stam:2,charm:1},{cond:function(s){return s.stam>=8;}}),
+  E(18,200,"good","你独自背包穷游，结识了天南海北的朋友。",{charm:2,int:1,money:-1}),
+  E(18,200,"normal","你去海边度假，晒得像块碳。",{stam:1,charm:-1}),
+  E(18,200,"bad","你旅途中证件丢失，滞留异乡几天。",{money:-1,stam:-1}),
+  E(23,200,"good","你环游了大半个世界，写下旅行札记。",{charm:2,int:1,money:-2},{cond:function(s){return s.money>=12;}}),
+  E(18,200,"good","你在异国他乡尝遍美食，幸福感爆棚。",{charm:1,stam:1}),
+
+  /* ====== 扩充：宠物与日常 ====== */
+  E(6,200,"good","你领养了一只流浪猫，它成了你的精神支柱。",{charm:1,stam:1}),
+  E(12,200,"bad","你的宠物生病，花了不少医药费。",{money:-1,stam:-1}),
+  E(18,200,"good","你训练的狗狗会十几种才艺，邻里皆知。",{charm:1}),
+  E(23,200,"normal","你把阳台改造成了小菜园，自给自足。",{stam:1,money:1}),
+  E(18,200,"good","你学会了烘焙，做的蛋糕被抢着订。",{charm:1,money:1}),
+
+  /* ====== 扩充：财富起伏 ====== */
+  E(23,200,"good","你早年低价买入的资产如今暴涨。",{money:4,luck:2},{cond:function(s){return s.luck>=8;}}),
+  E(23,200,"bad","你给亲戚做了担保，结果被牵连负债。",{money:-3,charm:-1}),
+  E(18,200,"good","你的一笔小投资稳健增值，积少成多。",{money:2}),
+  E(23,200,"bad","你冲动消费买了贵重物品，月底吃土。",{money:-2}),
+  E(30,200,"good","你实现了'睡后收入'，被动现金流稳定。",{money:3},{cond:function(s){return s.money>=15;}}),
+  E(23,200,"bad","你遭遇了一次经济危机，资产缩水。",{money:-2},{cond:function(s){return s.luck<6;}}),
+
+  /* ====== 扩充：暮年百态 ====== */
+  E(60,200,"good","你的书法作品在老年大学展出获好评。",{charm:1,int:1}),
+  E(60,200,"good","你成了广场舞领队，活力不输年轻人。",{stam:2,charm:1}),
+  E(60,200,"normal","你开始研究家谱，追溯家族往事。",{int:1}),
+  E(60,200,"bad","你的老伙计们一个个离开，心生感慨。",{charm:-1,stam:-1}),
+  E(60,200,"good","你把毕生积蓄的一部分捐给了希望小学。",{charm:2,money:-1}),
+  E(60,200,"good","你的养生之道上了本地报纸，成了'网红爷爷/奶奶'。",{charm:2,luck:1}),
+  E(65,200,"good","你迎来了金婚纪念，儿孙满堂齐祝福。",{charm:2},{cond:function(s){return s.charm>=10;}}),
+
+  /* ====== 扩充：现代生活 ====== */
+  E(16,200,"normal","你沉迷短视频，时间不知不觉溜走。",{int:-1}),
+  E(18,200,"good","你在网上分享知识，意外收获大批粉丝。",{charm:2,money:1}),
+  E(18,200,"bad","你的账号被盗，折腾了好久才找回。",{stam:-1,money:-1}),
+  E(16,200,"good","你参加线上比赛拿了名次，奖金到账。",{money:1,int:1,luck:1}),
+  E(18,200,"normal","你尝试数字极简，删掉了大半 App。",{int:1,stam:1})
+];
+
+/* ============ choice events ============ */
+var CHOICE_EVENTS=[
+  E(6,11,"normal","暑假到了，你想怎么过？",{},{choices:[
+    {t:"报补习班拼命学习",eff:{int:2,stam:-1}},
+    {t:"去乡下爷爷家撒野",eff:{stam:2,charm:1}},
+    {t:"在家打一整个假期游戏",eff:{int:-1,charm:1}}
+  ]}),
+  E(12,17,"normal","班里要选文理科，你怎么选？",{},{choices:[
+    {t:"理科——学好数理化",eff:{int:2}},
+    {t:"文科——挥洒文采",eff:{int:1,charm:1}},
+    {t:"艺术特长生",eff:{charm:2,money:-1}}
+  ]}),
+  E(12,17,"normal","你捡到一部丢失的手机，怎么做？",{},{choices:[
+    {t:"想办法还给失主",eff:{charm:2,luck:1}},
+    {t:"占为己有",eff:{money:1,charm:-2}},
+    {t:"交给老师",eff:{charm:1}}
+  ]}),
+  E(15,17,"big","高考志愿如何填报？",{},{choices:[
+    {t:"冲名校热门专业",eff:{int:2,money:1},kind:"good"},
+    {t:"选稳妥的普通院校",eff:{int:1},kind:"normal"},
+    {t:"直接去学一门手艺",eff:{money:1,stam:1},kind:"normal"}
+  ]}),
+  E(18,22,"normal","毕业后第一份工作怎么选？",{},{choices:[
+    {t:"进大厂内卷高薪",eff:{money:3,stam:-2}},
+    {t:"考公务员求安稳",eff:{money:1,charm:1}},
+    {t:"追逐梦想去创业",eff:{money:-1,int:1,luck:1}}
+  ]}),
+  E(18,22,"normal","有人向你推销一个『稳赚不赔』的投资，你？",{},{choices:[
+    {t:"梭哈全部积蓄",eff:{money:-3},kind:"bad",cond:function(s){return s.luck<7;}},
+    {t:"小试一笔",eff:{money:1}},
+    {t:"果断拒绝",eff:{int:1}}
+  ]}),
+  E(23,39,"big","一个心仪的对象向你告白，你？",{},{choices:[
+    {t:"勇敢接受",eff:{charm:2,money:-1}},
+    {t:"婉言拒绝专注事业",eff:{money:2,int:1}},
+    {t:"暧昧不清",eff:{charm:-1,luck:-1}}
+  ]}),
+  E(23,39,"normal","公司让你出差三个月，去吗？",{},{choices:[
+    {t:"去，搏一个晋升机会",eff:{money:2,charm:1,stam:-1}},
+    {t:"拒绝，陪伴家人",eff:{charm:1,money:-1}}
+  ]}),
+  E(23,39,"normal","老同学拉你加入创业团队，你？",{},{choices:[
+    {t:"全职加入",eff:{money:-1,int:2,luck:1}},
+    {t:"业余兼职参与",eff:{money:1,stam:-1}},
+    {t:"只投钱不参与",eff:{money:-2,luck:1},cond:function(s){return s.money>=8;}}
+  ]}),
+  E(40,59,"normal","体检报告显示你需要减重，你？",{},{choices:[
+    {t:"办健身卡严格自律",eff:{stam:3,money:-1}},
+    {t:"佛系养生喝枸杞",eff:{stam:1}},
+    {t:"无所谓，继续大吃大喝",eff:{stam:-2,charm:-1}}
+  ]}),
+  E(40,59,"normal","孩子想出国留学，学费不菲，你？",{},{choices:[
+    {t:"砸锅卖铁也支持",eff:{money:-3,charm:2},cond:function(s){return s.money>=6;}},
+    {t:"让孩子申请奖学金",eff:{charm:1,int:1}},
+    {t:"劝孩子留在国内",eff:{charm:-1}}
+  ]}),
+  E(60,200,"normal","社区选举老年协会会长，你？",{},{choices:[
+    {t:"积极竞选",eff:{charm:2,stam:-1}},
+    {t:"安心做个普通会员",eff:{charm:1}},
+    {t:"在家含饴弄孙",eff:{stam:1}}
+  ]}),
+  E(8,200,"normal","路边有位老人摔倒了，你？",{},{choices:[
+    {t:"立刻上前扶起",eff:{charm:2,luck:1}},
+    {t:"先拍视频再扶",eff:{charm:1}},
+    {t:"假装没看见走开",eff:{charm:-2}}
+  ]}),
+  E(18,200,"normal","你发现钱包里多了一张百元大钞（找零错误），你？",{},{choices:[
+    {t:"退还给店家",eff:{charm:1,luck:1}},
+    {t:"偷着乐收下",eff:{money:1,charm:-1}}
+  ]}),
+  E(16,200,"good","一个神秘老者说你骨骼惊奇，要传你绝学，你？",{},{choices:[
+    {t:"拜师学艺",eff:{int:2,stam:2},kind:"big",cond:function(s){return s.luck>=8;}},
+    {t:"觉得是骗子，走开",eff:{int:1}},
+    {t:"反手报警",eff:{charm:1}}
+  ]}),
+
+  /* ====== 扩充抉择 ====== */
+  E(6,11,"normal","学校要选课外兴趣班，你报哪个？",{},{choices:[
+    {t:"奥数班（练脑）",eff:{int:2}},
+    {t:"篮球队（练体）",eff:{stam:2}},
+    {t:"美术班（练审美）",eff:{charm:2}}
+  ]}),
+  E(12,17,"normal","同学拉你一起逃课去网吧，你？",{},{choices:[
+    {t:"拒绝，回教室上课",eff:{int:1,charm:-1}},
+    {t:"去一次试试",eff:{int:-1,charm:1}},
+    {t:"劝他也别去",eff:{charm:2}}
+  ]}),
+  E(18,22,"big","毕业了，要不要继续深造？",{},{choices:[
+    {t:"读研深造",eff:{int:3,money:-1}},
+    {t:"出国留学",eff:{int:2,charm:1,money:-3},cond:function(s){return s.money>=6;}},
+    {t:"直接就业赚钱",eff:{money:2,stam:-1}}
+  ]}),
+  E(23,39,"normal","攒了一笔钱，怎么打理？",{},{choices:[
+    {t:"全款付首付买房",eff:{money:-2,charm:2},cond:function(s){return s.money>=8;}},
+    {t:"投资理财钱生钱",eff:{money:2,luck:1},cond:function(s){return s.luck>=6;}},
+    {t:"存银行图安心",eff:{money:1}}
+  ]}),
+  E(23,39,"normal","公司内斗，你站哪边？",{},{choices:[
+    {t:"站队强势的一方",eff:{money:1,charm:-1}},
+    {t:"明哲保身不掺和",eff:{int:1}},
+    {t:"坚持做对的事",eff:{charm:2,money:-1}}
+  ]}),
+  E(23,39,"big","大城市打拼还是回老家？",{},{choices:[
+    {t:"留在大城市拼",eff:{money:2,stam:-1}},
+    {t:"回老家安稳过",eff:{charm:1,stam:1}},
+    {t:"去新一线城市折中",eff:{money:1,charm:1}}
+  ]}),
+  E(23,39,"normal","朋友创业找你借一大笔钱，你？",{},{choices:[
+    {t:"全力支持借给他",eff:{money:-2,charm:1}},
+    {t:"借一部分意思下",eff:{money:-1}},
+    {t:"婉拒，谈钱伤感情",eff:{charm:-1,money:1}}
+  ]}),
+  E(30,59,"normal","周末难得空闲，怎么安排？",{},{choices:[
+    {t:"陪家人出游",eff:{charm:2,money:-1}},
+    {t:"在家补觉养生",eff:{stam:2}},
+    {t:"加班再赚一笔",eff:{money:2,stam:-1}}
+  ]}),
+  E(40,59,"big","中年遇到事业天花板，你？",{},{choices:[
+    {t:"二次创业放手一搏",eff:{money:-1,int:1,luck:1}},
+    {t:"稳住现状求安稳",eff:{money:1}},
+    {t:"转型做顾问/讲师",eff:{charm:2,money:1},cond:function(s){return s.int>=8;}}
+  ]}),
+  E(40,59,"normal","老同学聚会，你以什么姿态出席？",{},{choices:[
+    {t:"低调谦逊",eff:{charm:2}},
+    {t:"分享成功经验",eff:{charm:1,int:1}},
+    {t:"攀比炫耀",eff:{charm:-2,money:-1}}
+  ]}),
+  E(60,200,"normal","退休金怎么花？",{},{choices:[
+    {t:"环游世界圆梦",eff:{charm:2,stam:1,money:-2}},
+    {t:"补贴儿孙",eff:{charm:1,money:-1}},
+    {t:"继续投资发挥余热",eff:{money:2},cond:function(s){return s.int>=7;}}
+  ]}),
+  E(18,200,"good","你捡到一个钱包，里面有厚厚一沓现金，你？",{},{choices:[
+    {t:"原封不动交警察",eff:{charm:2,luck:1}},
+    {t:"留下钱扔掉包",eff:{money:2,charm:-2}},
+    {t:"联系失主归还",eff:{charm:1,luck:1}}
+  ]}),
+  E(23,200,"normal","体检建议你换个轻松点的工作，你？",{},{choices:[
+    {t:"为健康果断换岗",eff:{stam:2,money:-1}},
+    {t:"咬牙坚持高薪岗",eff:{money:2,stam:-2}},
+    {t:"申请远程办公",eff:{stam:1}}
+  ]}),
+  E(16,200,"big","你被陌生人推荐了一个改变命运的机会，你？",{},{choices:[
+    {t:"抓住机会全力以赴",eff:{money:2,int:1,luck:1},kind:"big",cond:function(s){return s.luck>=7;}},
+    {t:"谨慎观望",eff:{int:1}},
+    {t:"完全不信",eff:{charm:-1}}
+  ]}),
+  E(12,17,"normal","同学约你周末去打球还是去图书馆？",{},{choices:[
+    {t:"打球，强身健体",eff:{stam:2,charm:1}},
+    {t:"泡图书馆充电",eff:{int:2}},
+    {t:"在家睡懒觉",eff:{stam:1,int:-1}}
+  ]}),
+  E(18,22,"big","毕业季，要不要离开家乡去大城市？",{},{choices:[
+    {t:"去大城市闯一闯",eff:{money:1,int:1,charm:1,stam:-1}},
+    {t:"留在家乡求安稳",eff:{charm:1,money:-1}},
+    {t:"出国深造",eff:{int:2,money:-2},cond:function(s){return s.money>=8&&s.int>=8;}}
+  ]}),
+  E(23,39,"normal","攒下一笔钱，怎么打理？",{},{choices:[
+    {t:"稳健存银行/买国债",eff:{money:1}},
+    {t:"投资股市搏一把",eff:{money:3,luck:0},kind:"normal",cond:function(s){return s.luck>=7;}},
+    {t:"投资自己报个课程",eff:{int:2,money:-1}}
+  ]}),
+  E(23,45,"big","事业与家庭难两全，你更偏向？",{},{choices:[
+    {t:"拼事业冲一波",eff:{money:3,charm:-1,stam:-1}},
+    {t:"重心放家庭",eff:{charm:2,money:-1}},
+    {t:"努力平衡",eff:{int:1,charm:1,stam:-1}}
+  ]}),
+  E(23,50,"normal","老板画大饼让你加班，你？",{},{choices:[
+    {t:"拼命表现争取晋升",eff:{money:2,stam:-2}},
+    {t:"准点下班守住生活",eff:{stam:1,charm:1}},
+    {t:"开始骑驴找马",eff:{int:1,money:-0}}
+  ]}),
+  E(30,55,"normal","同学聚会，混得一般的你去不去？",{},{choices:[
+    {t:"大方赴约叙旧",eff:{charm:1}},
+    {t:"找借口推掉",eff:{charm:-1,stam:1}},
+    {t:"低调出席只听不说",eff:{int:1}}
+  ]}),
+  E(40,60,"big","面对中年危机，你的选择是？",{},{choices:[
+    {t:"重新学习转型",eff:{int:2,money:-1,stam:-1}},
+    {t:"稳住现状不折腾",eff:{money:1,charm:-1}},
+    {t:"追寻年轻时的梦想",eff:{charm:2,money:-2,luck:1}}
+  ]}),
+  E(45,65,"normal","攒了一辈子的钱，怎么花？",{},{choices:[
+    {t:"留给子女",eff:{charm:2,money:-2}},
+    {t:"环游世界享受生活",eff:{stam:1,charm:2,money:-3}},
+    {t:"做慈善回馈社会",eff:{charm:3,money:-2,luck:1}}
+  ]}),
+  E(60,200,"normal","退休后的生活，你想怎么过？",{},{choices:[
+    {t:"含饴弄孙天伦乐",eff:{charm:2}},
+    {t:"发展兴趣发挥余热",eff:{int:1,charm:1,stam:1}},
+    {t:"重返职场做顾问",eff:{money:2,stam:-1}}
+  ]}),
+  E(18,200,"normal","朋友创业邀你投资，你？",{},{choices:[
+    {t:"重金押注",eff:{money:-3,luck:1},cond:function(s){return s.money>=8;}},
+    {t:"小额支持",eff:{money:-1,charm:1}},
+    {t:"婉拒但帮忙宣传",eff:{charm:1}}
+  ]}),
+  E(16,200,"good","你偶然捡到一本无名笔记，里面似有玄机，你？",{},{choices:[
+    {t:"潜心钻研",eff:{int:2,luck:1},kind:"big",cond:function(s){return s.int>=7;}},
+    {t:"上交相关部门",eff:{charm:1,luck:1}},
+    {t:"随手丢一边",eff:{}}
+  ]})
+];
+
+/* ============ event i18n bridge ============
+   Each event/choice gets a stable id; the inline Chinese is the zh-CN source and
+   the en-US fallback when no translation exists, so text always resolves (never a raw key).
+   Translations live under life.ev.<id> / life.ch.<id> (option text under life.chq.<id>.<n>). */
+function evText(ev){
+  var v = T("life.ev." + ev.id);
+  return v === ("life.ev." + ev.id) ? ev.text : v;
+}
+function choiceQuestion(ev){
+  var v = T("life.chq." + ev.id);
+  return v === ("life.chq." + ev.id) ? ev.text : v;
+}
+function choiceOpt(ev, idx, fallback){
+  var key = "life.cho." + ev.id + "." + idx;
+  var v = T(key);
+  return v === key ? fallback : v;
+}
+(function assignEventIds(){
+  EVENTS.forEach(function(ev,i){ ev.id = "e" + i; });
+  CHOICE_EVENTS.forEach(function(ev,i){ ev.id = "c" + i; });
+})();
+
+/* ============ achievements ============ */
+var ACHIEVEMENTS=[
+  {id:"first",   ico:"🐣", name:"初来乍到", desc:"完成第一次人生。"},
+  {id:"longevity",ico:"🧓",name:"寿比南山", desc:"活到 80 岁以上。"},
+  {id:"rich",    ico:"💰", name:"富甲一方", desc:"金钱达到 25 以上。"},
+  {id:"genius",  ico:"🧠", name:"绝世天才", desc:"智力达到 20 以上。"},
+  {id:"star",    ico:"🌟", name:"万人迷",   desc:"魅力达到 20 以上。"},
+  {id:"iron",    ico:"🦾", name:"铁人",     desc:"体力达到 20 以上。"},
+  {id:"lucky",   ico:"🍀", name:"欧皇附体", desc:"幸运达到 20 以上。"},
+  {id:"perfect", ico:"👑", name:"完美人生", desc:"以 SSS 评级结束一生。"},
+  {id:"tragic",  ico:"💀", name:"天妒英才", desc:"未满 18 岁便英年早逝。"},
+  {id:"balanced",ico:"☯️", name:"五维均衡", desc:"结束时五项属性均不低于 12。"},
+  {id:"reborn",  ico:"🔄", name:"轮回十世", desc:"累计重开 10 次。"},
+  {id:"phoenix", ico:"🔥", name:"绝处逢生", desc:"触发涅槃天赋起死回生。"}
+];
+
+/* ============ persistence ============ */
+var SAVE_KEY="infinite-life-save";
+var META_KEY="infinite-life-meta";
+
+function loadMeta(){
+  try{return JSON.parse(localStorage.getItem(META_KEY))||{ach:{},lives:0};}
+  catch(e){return {ach:{},lives:0};}
+}
+function saveMeta(){localStorage.setItem(META_KEY,JSON.stringify(meta));}
+function unlockAch(id){
+  if(meta.ach[id])return false;
+  meta.ach[id]=true;saveMeta();
+  var a=ACHIEVEMENTS.find(function(x){return x.id===id;});
+  if(a){toast(T("life.ach_done",{name:achName(a.id)}));beep(880,.12,"sine",.16);newlyUnlocked.push(a);}
+  return true;
+}
+
+function saveGame(){
+  if(!G||G.dead)return;
+  localStorage.setItem(SAVE_KEY,JSON.stringify(G));
+}
+function clearSave(){localStorage.removeItem(SAVE_KEY);}
+function loadGame(){
+  try{return JSON.parse(localStorage.getItem(SAVE_KEY));}catch(e){return null;}
+}
+
+/* ============ game state ============ */
+var meta=loadMeta();
+var G=null;
+var newlyUnlocked=[];
+var pendingChoice=false;
+
+/* ============ screen nav ============ */
+function show(id){
+  ["start","create","play","end","ach"].forEach(function(s){
+    $("screen-"+s).classList.toggle("active",s===id);
+  });
+  window.scrollTo(0,0);
+}
+
+/* ============ create character ============ */
+var create={gender:"male",talent:null,pts:20,stats:{money:0,int:0,charm:0,stam:0,luck:0}};
+var BASE=3, ALLOC_POOL=20, MAXSTAT=10;
+
+function renderAlloc(){
+  var box=$("alloc");box.innerHTML="";
+  STATS.forEach(function(st){
+    var v=create.stats[st.key];
+    var row=document.createElement("div");
+    row.className="stat-row";
+    row.innerHTML=
+      '<span class="nm"><span class="dot" style="background:var(--'+st.cls+')"></span>'+statName(st.key)+'</span>'+
+      '<span class="val" style="color:var(--'+st.cls+')">'+(BASE+v)+'</span>'+
+      '<span class="stepper">'+
+        '<button data-dec="'+st.key+'"'+(v<=0?' disabled':'')+'>−</button>'+
+        '<button data-inc="'+st.key+'"'+(create.pts<=0||BASE+v>=MAXSTAT?' disabled':'')+'>+</button>'+
+      '</span>';
+    box.appendChild(row);
+  });
+  $("pts-left").textContent=create.pts;
+}
+function renderTalents(){
+  var box=$("talents");box.innerHTML="";
+  TALENTS.forEach(function(t){
+    var el=document.createElement("div");
+    el.className="talent"+(create.talent===t.id?" on":"");
+    el.dataset.talent=t.id;
+    el.innerHTML='<span class="ico">'+t.ico+'</span><div><div class="tt">'+talentName(t.id)+'</div><div class="td">'+talentDesc(t.id)+'</div></div>';
+    box.appendChild(el);
+  });
+}
+function resetCreate(){
+  create={gender:"male",talent:null,pts:ALLOC_POOL,stats:{money:0,int:0,charm:0,stam:0,luck:0}};
+  $("in-name").value="";
+  Array.prototype.forEach.call($("seg-gender").children,function(b,i){b.classList.toggle("on",i===0);});
+  renderAlloc();renderTalents();
+}
+
+$("alloc").addEventListener("click",function(e){
+  var inc=e.target.getAttribute("data-inc"),dec=e.target.getAttribute("data-dec");
+  if(inc&&create.pts>0&&BASE+create.stats[inc]<MAXSTAT){create.stats[inc]++;create.pts--;beep(520,.04,"square",.08);}
+  if(dec&&create.stats[dec]>0){create.stats[dec]--;create.pts++;beep(380,.04,"square",.06);}
+  renderAlloc();
+});
+$("seg-gender").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  create.gender=b.getAttribute("data-g");
+  Array.prototype.forEach.call(this.children,function(x){x.classList.remove("on");});
+  b.classList.add("on");
+});
+$("talents").addEventListener("click",function(e){
+  var el=e.target.closest(".talent");if(!el)return;
+  create.talent=el.dataset.talent;renderTalents();beep(600,.06,"sine",.1);
+});
+$("btn-rand").addEventListener("click",function(){
+  // random allocation
+  create.stats={money:0,int:0,charm:0,stam:0,luck:0};create.pts=ALLOC_POOL;
+  while(create.pts>0){
+    var k=pick(STAT_KEYS);
+    if(BASE+create.stats[k]<MAXSTAT){create.stats[k]++;create.pts--;}
+    else if(STAT_KEYS.every(function(x){return BASE+create.stats[x]>=MAXSTAT;}))break;
+  }
+  create.talent=pick(TALENTS).id;
+  create.gender=pick(["male","female","secret"]);
+  Array.prototype.forEach.call($("seg-gender").children,function(b){
+    b.classList.toggle("on",b.getAttribute("data-g")===create.gender);
+  });
+  if(!$("in-name").value)$("in-name").value=pick(T("life.rand_names").split(","));
+  renderAlloc();renderTalents();beep(700,.08,"sine",.12);
+});
+
+/* ============ begin life ============ */
+function begin(){
+  var name=($("in-name").value||T("life.default_name")).trim().slice(0,12);
+  var talent=TALENTS.find(function(t){return t.id===create.talent;})||TALENTS[5];
+  var s={};STAT_KEYS.forEach(function(k){s[k]=BASE+create.stats[k];});
+  talent.apply(s);
+  STAT_KEYS.forEach(function(k){s[k]=clamp(s[k],0,99);});
+  G={
+    name:name, gender:create.gender, talentId:talent.id, talentName:talent.name,
+    age:0, dead:false,
+    money:s.money, int:s.int, charm:s.charm, stam:s.stam, luck:s.luck,
+    log:[], usedOnce:{}, phoenixUsed:false
+  };
+  newlyUnlocked=[];
+  pendingChoice=false;
+  show("play");
+  renderStats();renderWho();
+  $("log").innerHTML="";
+  pushLog(0,"big",T("life.born",{name:G.name}),{});
+  // talent line
+  pushLog(0,"normal",T("life.talent_line",{name:talentName(talent.id),desc:talentDesc(talent.id)}),{});
+  $("choices").style.display="none";
+  $("btn-next").style.display="block";
+  saveGame();
+}
+
+/* ============ stats render ============ */
+function renderStats(){
+  var bar=$("stats-bar");bar.innerHTML="";
+  STATS.forEach(function(st){
+    var v=G[st.key];
+    var d=document.createElement("div");
+    d.className="stat-pill";
+    d.innerHTML='<div class="sl">'+st.ico+' '+statName(st.key)+'</div><div class="sv '+st.cls+'">'+v+'</div>';
+    bar.appendChild(d);
+  });
+  $("age-num").textContent=G.age;
+  $("stage-tag").textContent=stageOf(G.age);
+}
+function renderWho(){
+  var gtag=G.gender==="male"?"♂":G.gender==="female"?"♀":"⚧";
+  $("who-line").textContent=T("life.who_line",{name:G.name,g:gtag,talent:talentName(G.talentId)});
+}
+
+/* ============ log ============ */
+function pushLog(age,kind,text,eff){
+  var parts=[];
+  for(var k in eff){if(!eff[k])continue;
+    var st=STATS.find(function(x){return x.key===k;});
+    parts.push((eff[k]>0?"+":"")+eff[k]+st.ico);
+  }
+  var deltaStr=parts.length?'<span class="delta">'+parts.join(" ")+'</span>':"";
+  var div=document.createElement("div");
+  div.className="entry "+(kind||"normal");
+  div.innerHTML='<span class="yr">'+age+'岁</span>'+text+deltaStr;
+  $("log").appendChild(div);
+  $("log").scrollTop=$("log").scrollHeight;
+}
+
+/* ============ apply effect ============ */
+function applyEff(eff){
+  for(var k in eff){
+    if(STAT_KEYS.indexOf(k)<0)continue;
+    G[k]=G[k]+eff[k];
+    if(k!=="money") G[k]=clamp(G[k],0,99); // money can't go negative below 0 either
+    if(G[k]<0)G[k]=0;
+  }
+}
+
+/* ============ pick an event ============ */
+function eligible(list){
+  return list.filter(function(ev){
+    if(G.age<ev.min||G.age>ev.max)return false;
+    if(ev.once&&G.usedOnce[ev.text])return false;
+    if(ev.cond){var s={};STAT_KEYS.forEach(function(k){s[k]=G[k];});s.age=G.age;if(!ev.cond(s))return false;}
+    return true;
+  });
+}
+function weightedPick(list){
+  var total=0;list.forEach(function(e){total+=(e.w||1)*(1+(G.luck>=8&&e.kind==="good"?0.6:0));});
+  var r=Math.random()*total;
+  for(var i=0;i<list.length;i++){
+    r-=(list[i].w||1)*(1+(G.luck>=8&&list[i].kind==="good"?0.6:0));
+    if(r<=0)return list[i];
+  }
+  return list[list.length-1];
+}
+
+/* ============ advance one year ============ */
+function nextYear(){
+  if(G.dead||pendingChoice)return;
+  G.age++;
+  renderStats();
+
+  // chance for a choice event (rises with age stages), else auto event
+  var choicePool=eligible(CHOICE_EVENTS);
+  var autoPool=eligible(EVENTS);
+  var useChoice=choicePool.length && chance(0.32);
+
+  if(useChoice){
+    presentChoice(weightedPick(choicePool));
+  }else if(autoPool.length){
+    var ev=weightedPick(autoPool);
+    if(ev.once)G.usedOnce[ev.text]=true;
+    applyEff(ev.eff);
+    pushLog(G.age,ev.kind,evText(ev),ev.eff);
+    if(ev.kind==="good")beep(660,.06,"sine",.1);
+    else if(ev.kind==="bad")beep(220,.08,"sawtooth",.1);
+    else if(ev.kind==="big")beep(520,.1,"sine",.14);
+    afterEvent();
+  }else{
+    pushLog(G.age,"normal",T("life.peaceful_year"),{});
+    afterEvent();
+  }
+}
+
+function afterEvent(){
+  renderStats();
+  checkLiveAchievements();
+  // death check
+  var dieRisk=deathRisk();
+  if(G.stam<=0){
+    if(G.talentId==="phoenix"&&!G.phoenixUsed&&chance(0.6)){
+      G.phoenixUsed=true;G.stam=5;
+      pushLog(G.age,"big",T("life.death.phoenix"),{stam:5});
+      unlockAch("phoenix");
+    }else{
+      return die(T("life.death.stam"));
+    }
+  }
+  if(chance(dieRisk)){
+    return die(naturalDeathText());
+  }
+  saveGame();
+}
+
+function deathRisk(){
+  var base=0;
+  if(G.age>=60)base=0.04+(G.age-60)*0.015;
+  else if(G.age>=40)base=0.01;
+  else base=0.004;
+  // low stamina raises risk
+  if(G.stam<=2)base+=0.08;
+  // luck reduces
+  base-=G.luck*0.002;
+  return clamp(base,0,0.9);
+}
+function naturalDeathText(){
+  if(G.age>=80)return T("life.death.old");
+  if(G.age>=60)return T("life.death.senior");
+  if(G.age>=40)return T("life.death.mid");
+  return T("life.death.young");
+}
+
+/* ============ choice events ============ */
+function presentChoice(ev){
+  pendingChoice=true;
+  var box=$("choices");box.innerHTML="";
+  var banner=document.createElement("div");
+  banner.className="evtext";banner.textContent="❓ "+choiceQuestion(ev);
+  box.appendChild(banner);
+  var opts=ev.choices.filter(function(c){
+    if(!c.cond)return true;
+    var s={};STAT_KEYS.forEach(function(k){s[k]=G[k];});s.age=G.age;
+    return c.cond(s);
+  });
+  if(!opts.length)opts=ev.choices;
+  opts.forEach(function(c){
+    var oi=ev.choices.indexOf(c);
+    var btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent="› "+choiceOpt(ev,oi,c.t);
+    btn.onclick=function(){chooseOption(ev,c,oi);};
+    box.appendChild(btn);
+  });
+  box.style.display="flex";
+  $("btn-next").style.display="none";
+  beep(500,.08,"sine",.12);
+}
+function chooseOption(ev,c,oi){
+  pendingChoice=false;
+  $("choices").style.display="none";
+  $("choices").innerHTML="";
+  $("btn-next").style.display="block";
+  applyEff(c.eff);
+  var sc=scoreEff(c.eff);
+  var kind=c.kind||(sc>0?"good":sc<0?"bad":"normal");
+  pushLog(G.age,kind,T("life.choose_prefix",{t:choiceOpt(ev,oi,c.t)}),c.eff);
+  beep(kind==="bad"?240:640,.07,kind==="bad"?"sawtooth":"sine",.1);
+  afterEvent();
+}
+function scoreEff(eff){var t=0;for(var k in eff)t+=eff[k];return t;}
+
+/* ============ death & summary ============ */
+function die(reason){
+  G.dead=true;
+  clearSave();
+  pushLog(G.age,"big","⚰️ "+reason,{});
+  var rankInfo=evaluate();
+  unlockAch("first");
+  if(G.age>=80)unlockAch("longevity");
+  if(G.money>=25)unlockAch("rich");
+  if(G.int>=20)unlockAch("genius");
+  if(G.charm>=20)unlockAch("star");
+  if(G.stam>=20)unlockAch("iron");
+  if(G.luck>=20)unlockAch("lucky");
+  if(rankInfo.rank==="SSS")unlockAch("perfect");
+  if(G.age<18)unlockAch("tragic");
+  if(STAT_KEYS.every(function(k){return G[k]>=12;}))unlockAch("balanced");
+  meta.lives=(meta.lives||0)+1;
+  if(meta.lives>=10)unlockAch("reborn");
+  saveMeta();
+  setTimeout(function(){renderEnd(rankInfo);show("end");},900);
+}
+
+function evaluate(){
+  var total=G.money+G.int+G.charm+G.stam+G.luck;
+  var score=total+Math.floor(G.age/3);
+  var rank;
+  if(score>=95)rank="SSS";
+  else if(score>=80)rank="SS";
+  else if(score>=65)rank="S";
+  else if(score>=50)rank="A";
+  else if(score>=38)rank="B";
+  else if(score>=26)rank="C";
+  else rank="D";
+  return {rank:rank,words:T("life.rank."+rank),score:score,total:total};
+}
+
+function renderEnd(info){
+  $("end-rank").textContent=info.rank;
+  $("end-words").textContent=info.words;
+  var box=$("end-stats");box.innerHTML="";
+  function row(l,v){var d=document.createElement("div");d.className="end-stat";d.innerHTML=l+'<b>'+v+'</b>';box.appendChild(d);}
+  row(T("life.end_name"),G.name);
+  row(T("life.end_age"),G.age+" "+T("life.age_unit"));
+  STATS.forEach(function(st){row(st.ico+" "+statName(st.key),G[st.key]);});
+  row(T("life.end_score"),info.score);
+  var ach=$("end-ach");ach.innerHTML="";
+  if(newlyUnlocked.length){
+    var h=document.createElement("div");h.style.cssText="width:100%;text-align:center;color:var(--muted);font-size:12px;margin-bottom:4px";
+    h.textContent=T("life.end_unlocked");ach.appendChild(h);
+    newlyUnlocked.forEach(function(a){
+      var c=document.createElement("span");c.className="ach-chip";c.textContent=a.ico+" "+achName(a.id);ach.appendChild(c);
+    });
+  }
+  beep(info.rank.charAt(0)==="S"?880:520,.16,"sine",.18);
+}
+
+function checkLiveAchievements(){
+  if(G.money>=25)unlockAch("rich");
+  if(G.int>=20)unlockAch("genius");
+  if(G.charm>=20)unlockAch("star");
+  if(G.stam>=20)unlockAch("iron");
+  if(G.luck>=20)unlockAch("lucky");
+}
+
+/* ============ achievements panel ============ */
+function renderAchPanel(){
+  var got=ACHIEVEMENTS.filter(function(a){return meta.ach[a.id];}).length;
+  $("ach-progress").textContent=T("life.ach_progress",{got:got,total:ACHIEVEMENTS.length});
+  var grid=$("ach-grid");grid.innerHTML="";
+  ACHIEVEMENTS.forEach(function(a){
+    var on=!!meta.ach[a.id];
+    var el=document.createElement("div");
+    el.className="ach-item"+(on?"":" locked");
+    el.innerHTML='<span class="ai-ico">'+(on?a.ico:"🔒")+'</span>'+
+      '<div><div class="ai-nm">'+achName(a.id)+'</div><div class="ai-ds">'+achDesc(a.id)+'</div></div>'+
+      (on?'<span class="ai-tick">✓</span>':'');
+    grid.appendChild(el);
+  });
+}
+
+/* ============ start screen ============ */
+function refreshStart(){
+  var saved=loadGame();
+  $("btn-continue").style.display=(saved&&!saved.dead)?"block":"none";
+  $("life-count").textContent=meta.lives?T("life.lives_count",{n:meta.lives}):"";
+}
+
+/* ============ wiring ============ */
+$("btn-new").addEventListener("click",function(){resetCreate();show("create");});
+$("btn-continue").addEventListener("click",function(){
+  var saved=loadGame();
+  if(saved&&!saved.dead){
+    G=saved;newlyUnlocked=[];pendingChoice=false;show("play");
+    renderStats();renderWho();
+    $("log").innerHTML="";
+    pushLog(G.age,"normal",T("life.resume_line",{age:G.age}),{});
+    $("choices").style.display="none";$("btn-next").style.display="block";
+  }else{resetCreate();show("create");}
+});
+$("btn-begin").addEventListener("click",begin);
+$("btn-next").addEventListener("click",function(){beep(440,.04,"square",.07);nextYear();});
+$("btn-again").addEventListener("click",function(){resetCreate();show("create");});
+$("btn-ach-open").addEventListener("click",function(){renderAchPanel();show("ach");});
+$("btn-end-ach").addEventListener("click",function(){renderAchPanel();show("ach");});
+$("btn-ach-back").addEventListener("click",function(){refreshStart();show(G&&!G.dead?"play":"start");});
+
+window.addEventListener("keydown",function(e){
+  if((e.key===" "||e.key==="Enter")&&$("screen-play").classList.contains("active")&&!pendingChoice){
+    e.preventDefault();nextYear();
+  }
+});
+
+/* ============ boot ============ */
+function relocalize(){
+  if(window.WukongI18n)WukongI18n.applyDOM();
+  // re-render dynamic content for whichever screen is active
+  if($("screen-create").classList.contains("active")){renderAlloc();renderTalents();}
+  if($("screen-play").classList.contains("active")&&G){renderStats();renderWho();}
+  if($("screen-ach").classList.contains("active"))renderAchPanel();
+  refreshStart();
+}
+if(window.WukongI18n){
+  WukongI18n.init({packs:['common','life'],mount:'#lang-switch'}).then(function(){
+    refreshStart();show("start");
+  });
+  WukongI18n.onChange(relocalize);
+}else{
+  refreshStart();
+  show("start");
+}
+
+})();
+</script>
+</body>
+</html>

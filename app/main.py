@@ -54,6 +54,7 @@ from app.game_picks import live_wheel_picks, wheel_picks_json
 from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json
 from app.quark_promo import apply_drama_override, is_promo_active, load_quark_promo, promo_href
 from app.urls import drama_share_url, resource_share_url
+from app.wukong_games import WUKONG_DIR, WUKONG_SLUGS, wukong_games_available
 
 app = FastAPI(title=SITE_TITLE)
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
@@ -165,6 +166,7 @@ def _i18n_bundle(request: Request, *, channel: str = "", tag: str = "") -> dict:
         "admin_base": admin_root(),
         "quark_promo_active": is_promo_active(),
         "quark_promo_href": promo_href(base),
+        "wukong_games_available": wukong_games_available(),
     }
 
 
@@ -633,3 +635,12 @@ def admin_delete(request: Request, resource_id: int):
         return RedirectResponse(admin_href("login"), status_code=303)
     database.delete_resource(resource_id)
     return RedirectResponse(f"{admin_href()}?msg={quote('已删除')}", status_code=303)
+
+
+if wukong_games_available():
+    for slug in WUKONG_SLUGS:
+        app.mount(
+            f"/game/{slug}",
+            StaticFiles(directory=WUKONG_DIR / slug, html=True),
+            name=f"game-{slug}",
+        )

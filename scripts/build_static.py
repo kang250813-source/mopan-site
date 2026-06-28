@@ -58,6 +58,7 @@ from app.qr_util import quark_qr_data_url  # noqa: E402
 from app import jupan_bridge  # noqa: E402
 from app.site_wheel import build_home_wheel_picks, build_site_wheel_picks, home_wheel_json, site_wheel_json  # noqa: E402
 from app.game_picks import build_wheel_picks, wheel_picks_json  # noqa: E402
+from app.wukong_games import WUKONG_DIR, WUKONG_SLUGS, wukong_games_available  # noqa: E402
 from app.pagination import page_window, total_pages as calc_total_pages  # noqa: E402
 from app.quark_promo import apply_drama_override, is_promo_active, load_quark_promo, promo_href  # noqa: E402
 from app.static_urls import category_href, channel_href, drama_href, drama_tag_href, resource_href  # noqa: E402
@@ -356,6 +357,7 @@ def _make_env(i18n: I18n, base_path: str, channel_counts: dict[str, int]) -> Env
         ),
         quark_promo_active=is_promo_active(),
         quark_promo_href=promo_href(base_path),
+        wukong_games_available=wukong_games_available(),
     )
     return env
 
@@ -648,6 +650,18 @@ def _copy_covers() -> None:
             return
 
 
+def _deploy_wukong_games() -> None:
+    if not wukong_games_available():
+        return
+    for slug in WUKONG_SLUGS:
+        src = WUKONG_DIR / slug / "index.html"
+        for root in (DOCS_DIR, DOCS_DIR / "en"):
+            dst = root / "game" / slug / "index.html"
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+    print(f"  wukong games: {', '.join(WUKONG_SLUGS)}")
+
+
 def build(base_path: str = "") -> None:
     _ = base_path.rstrip("/")
     payload = load_payload()
@@ -666,6 +680,8 @@ def build(base_path: str = "") -> None:
         for key in totals:
             totals[key] += stats[key]
         print(f"  locale {locale}: resources={stats['resources']}, dramas={stats['dramas']}, lists={stats['list_pages']}")
+
+    _deploy_wukong_games()
 
     print(f"Built static site -> {DOCS_DIR}")
     print(f"  channels: {', '.join(f'{k}={v}' for k, v in channel_counts.items())}")
