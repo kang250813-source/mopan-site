@@ -51,6 +51,10 @@ def sync() -> None:
     (TARGET / "assets" / "i18n" / "locales").mkdir(parents=True)
 
     shutil.copy2(source / "assets" / "i18n" / "i18n.js", TARGET / "assets" / "i18n" / "i18n.js")
+    js_src = source / "assets" / "js" / "leaderboard.js"
+    if js_src.exists():
+        (TARGET / "assets" / "js").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(js_src, TARGET / "assets" / "js" / "leaderboard.js")
     for locale in LOCALES:
         for pack in PACKS:
             src = source / "assets" / "i18n" / "locales" / locale / f"{pack}.json"

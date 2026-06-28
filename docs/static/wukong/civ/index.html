@@ -113,7 +113,7 @@ body{
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="logo"><span class="mark">明</span><span><b data-i18n="civ.title">文明之主</b><small>CIVILIZATION MASTER</small></span></div>
+    <div class="logo"><span class="mark">魔</span><span><b data-i18n="civ.title">文明之主</b><small>魔盘 · 跨纪元文明</small></span></div>
     <div style="display:flex;align-items:center;gap:10px">
       <span id="lang-switch"></span>
       <a class="top-link" href="/game/" data-i18n="common.back_hub">← 游戏大厅</a>
@@ -127,7 +127,7 @@ body{
     </div>
     <div class="era-prog"><i id="era-fill"></i><span id="era-prog-txt">0%</span></div>
     <div class="era-advance">
-      <button class="btn ghost" id="btn-advance" style="display:none">⏫ 进入下一时代</button>
+      <button class="btn ghost" id="btn-advance" style="display:none" data-i18n="civ.advance_era">⏫ 进入下一时代</button>
     </div>
   </div>
 
@@ -140,7 +140,7 @@ body{
 
   <div class="tabs" id="tabs"></div>
   <div class="panel">
-    <div class="panel-title" id="panel-title">建筑</div>
+    <div class="panel-title" id="panel-title" data-i18n="civ.ui.panel_build">建筑</div>
     <div class="list" id="panel-body"></div>
     <div class="fusion-note" id="fusion-note"></div>
   </div>
@@ -156,6 +156,7 @@ body{
 <div class="toast" id="toast" hidden></div>
 
 <script src="/static/wukong/assets/i18n/i18n.js"></script>
+<script src="/static/wukong/assets/js/leaderboard.js"></script>
 <script>
 "use strict";
 (function(){
@@ -362,7 +363,8 @@ function freshState(){
     expedition:null,       // {id, endAt, win} active expedition
     dungeonWins:{},        // id -> count
     last:Date.now(),
-    seenEra:{0:true}
+    seenEra:{0:true},
+    peakPower:0
   };
 }
 function load(){try{var r=JSON.parse(localStorage.getItem(SAVE));return r||null;}catch(e){return null;}}
@@ -435,6 +437,13 @@ function powerScore(){
   return r.gold + r.goods*0.5 + r.food*0.3 + r.qi*5 + r.tech*8 + r.star*20
     + Object.keys(G.buildings).reduce(function(s,id){return s+G.buildings[id]*50;},0);
 }
+function syncPeakPower(){
+  var s=powerScore();
+  if(!G.peakPower||s>G.peakPower)G.peakPower=s;
+}
+function eraScore(){
+  return Math.max(G.peakPower||0, powerScore());
+}
 
 /* army battle power: scales with buildings + all multipliers (so every system feeds combat) */
 function armyPower(){
@@ -450,11 +459,12 @@ function armyPower(){
 /* ============ render ============ */
 var curTab="build";
 function renderEra(){
+  syncPeakPower();
   var era=ERAS[G.era];
   $("era-em").textContent=era.em;
   $("era-name").textContent=eraName(G.era);
   $("era-tier").textContent=tierName(G.era,Math.min(G.tier,era.tiers.length-1));
-  var prog=clamp(powerScore()/era.need,0,1);
+  var prog=clamp(eraScore()/era.need,0,1);
   $("era-fill").style.width=(prog*100).toFixed(1)+"%";
   $("era-prog-txt").textContent=Math.floor(prog*100)+"%";
   // tier within era based on progress
@@ -488,6 +498,7 @@ function renderTabs(){
   if(G.era>=3)tabs.push({id:"cultivate",era:3});
   if(G.era>=4)tabs.push({id:"tech",era:4});
   if(G.era>=5)tabs.push({id:"star",era:5});
+  tabs.push({id:"rank",era:0});
   var box=$("tabs");box.innerHTML="";
   tabs.forEach(function(t){
     var el=document.createElement("button");
@@ -617,8 +628,85 @@ function renderPanel(){
         '',btn);
       body.appendChild(el);
     });
+  }else if(curTab==="rank"){
+    renderRank(body,title);
   }
 }
+
+/* ============ leaderboard (global) ============ */
+var rankCache=null, rankLoading=false;
+function renderRank(body,title){
+  title.textContent=T("civ.rank_panel");
+  var myPower=eraScore();
+  var LB=window.WukongLeaderboard;
+  // header: my power + nickname + submit
+  var head=document.createElement("div");head.className="ds";head.style.cssText="margin-bottom:10px;color:var(--muted)";
+  head.innerHTML=T("civ.rank_note",{power:fmt(myPower)});
+  body.appendChild(head);
+
+  var nick=LB?LB.nickname():"";
+  var row=document.createElement("div");row.style.cssText="display:flex;gap:8px;margin-bottom:12px";
+  row.innerHTML='<input id="rk-nick" maxlength="16" placeholder="'+T("civ.rank_nick_ph")+'" value="'+(nick||"").replace(/"/g,"")+'" '+
+      'style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:14px;outline:none">'+
+      '<button class="buy special" id="rk-submit">'+T("civ.rank_submit")+'</button>';
+  body.appendChild(row);
+
+  var listWrap=document.createElement("div");listWrap.id="rk-list";listWrap.className="list";
+  listWrap.innerHTML='<div class="ds" style="text-align:center;padding:20px;color:var(--muted)">'+T("civ.rank_loading")+'</div>';
+  body.appendChild(listWrap);
+
+  $("rk-submit").onclick=function(){
+    if(!LB){toast(T("civ.rank_offline"));return;}
+    var n=($("rk-nick").value||"").trim();
+    if(!n){toast(T("civ.rank_need_nick"));return;}
+    LB.setNickname(n);
+    $("rk-submit").disabled=true;
+    LB.submit({name:n,score:myPower,era:G.era}).then(function(){
+      toast(T("civ.rank_submitted"));beep(720,.1,"sine",.16,160);
+      rankCache=null;loadRankList(listWrap);
+      $("rk-submit").disabled=false;
+    }).catch(function(){
+      toast(T("civ.rank_offline"));$("rk-submit").disabled=false;
+    });
+  };
+
+  loadRankList(listWrap);
+}
+function loadRankList(wrap){
+  var LB=window.WukongLeaderboard;
+  if(!LB){wrap.innerHTML='<div class="ds" style="text-align:center;padding:20px;color:var(--bad)">'+T("civ.rank_offline")+'</div>';return;}
+  if(rankCache){return paintRank(wrap,rankCache);}
+  LB.top({limit:100}).then(function(rows){
+    rankCache=LB.dedupeBest(rows).slice(0,100);
+    paintRank(wrap,rankCache);
+  }).catch(function(){
+    wrap.innerHTML='<div class="ds" style="text-align:center;padding:20px;color:var(--bad)">'+T("civ.rank_offline")+'</div>';
+  });
+}
+function paintRank(wrap,rows){
+  var LB=window.WukongLeaderboard;
+  var myPid=LB?LB.playerId():"";
+  var myPower=eraScore();
+  if(!rows.length){
+    wrap.innerHTML='<div class="ds" style="text-align:center;padding:20px;color:var(--muted)">'+T("civ.rank_empty")+'</div>';
+    return;
+  }
+  // compute my rank among global (by power, even if not submitted)
+  var better=0;rows.forEach(function(r){if(r.score>myPower)better++;});
+  var myRank=better+1;
+  var html='<div class="ds" style="text-align:center;margin-bottom:8px;color:var(--accent)">'+T("civ.rank_mine",{rank:myRank,power:fmt(myPower)})+'</div>';
+  rows.forEach(function(r,i){
+    var medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
+    var mine=(r.player_id===myPid)?' style="border-color:var(--accent);box-shadow:0 0 10px rgba(255,205,76,.25)"':'';
+    var eraNm=eraName(r.era||0);
+    html+='<div class="item"'+mine+'>'+
+      '<div class="ico" style="font-size:18px;min-width:34px">'+medal+'</div>'+
+      '<div><div class="nm">'+escapeHtml(r.name)+'</div><div class="ds">'+eraNm+'</div></div>'+
+      '<div style="font-weight:900;color:var(--accent)">'+fmt(r.score)+'</div></div>';
+  });
+  wrap.innerHTML=html;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
 function payResourceFor(b){
   // buildings cost gold by default; some advanced cost their main resource? keep gold for simplicity
@@ -732,7 +820,8 @@ function resolveExpedition(){
 function advanceEra(){
   if(G.era>=ERAS.length-1)return;
   var era=ERAS[G.era];
-  if(powerScore()<era.need)return;
+  syncPeakPower();
+  if(eraScore()<era.need)return;
   G.era++;G.tier=0;G.seenEra[G.era]=true;
   var ne=ERAS[G.era];
   showModal(ne.em+" "+eraName(G.era),eraIntro(G.era),[{t:T("civ.next_era_btn"),cls:"btn",fn:function(){closeModal();}}]);
@@ -821,10 +910,12 @@ window.addEventListener("beforeunload",save);
 G=load()||freshState();
 var def=freshState();for(var dk in def){if(G[dk]===undefined)G[dk]=def[dk];}
 for(var rk in def.res){if(G.res[rk]===undefined)G.res[rk]=def.res[rk];}
+if(G.peakPower===undefined)G.peakPower=powerScore();
 function bootRender(){
   $("tap-hint-label").textContent=T("civ.ui.tap_hint");
   $("foot-save").textContent=T("civ.ui.auto_save");
   $("btn-reset").textContent=T("civ.ui.reset_btn");
+  if(window.WukongI18n)WukongI18n.applyDOM();
   renderAll();
 }
 if(window.WukongI18n){
