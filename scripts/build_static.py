@@ -689,6 +689,8 @@ def build(base_path: str = "") -> None:
     print(f"  drama pages: {totals['dramas']}")
     print(f"  list pages: {totals['list_pages']}")
     domain = os.getenv("CUSTOM_DOMAIN", "").strip()
+    if not domain and (ROOT / "CNAME").exists():
+        domain = (ROOT / "CNAME").read_text(encoding="utf-8").strip()
     if domain:
         (DOCS_DIR / "CNAME").write_text(domain + "\n", encoding="utf-8")
         print(f"  CNAME: {domain}")
