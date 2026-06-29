@@ -18,6 +18,24 @@
   var TIMEOUT = 8000;
 
   var configured = !!(URL && ANON && URL.indexOf('supabase.co') > 0);
+  var PROD_HOSTS = { 'www.mopan.lol': true, 'mopan.lol': true };
+
+  function environment() {
+    var loc = global.location || {};
+    var host = (loc.hostname || '').toLowerCase();
+    if (PROD_HOSTS[host]) return 'prod';
+    if (!host || host === 'localhost' || host === '127.0.0.1' || host === '::1' || loc.protocol === 'file:') return 'local';
+    return 'dev';
+  }
+
+  function canSubmit() {
+    return configured && environment() === 'prod';
+  }
+
+  function submitReason() {
+    if (!configured) return 'not-configured';
+    return canSubmit() ? '' : 'non-production';
+  }
 
   function headers(extra) {
     var h = { apikey: ANON, Authorization: 'Bearer ' + ANON };
@@ -66,6 +84,7 @@
   /* submit a score (insert-only; client dedupes by player_id for display) */
   function submit(opts) {
     if (!configured) return Promise.reject(new Error('not-configured'));
+    if (!canSubmit()) return Promise.reject(new Error('submit-disabled:' + submitReason()));
     var body = {
       name: (opts.name || nickname() || 'Anonymous').slice(0, 16),
       score: Math.max(0, Math.floor(opts.score || 0)),
@@ -96,6 +115,9 @@
 
   global.WukongLeaderboard = {
     configured: configured,
+    environment: environment,
+    canSubmit: canSubmit,
+    submitReason: submitReason,
     top: top,
     submit: submit,
     dedupeBest: dedupeBest,
