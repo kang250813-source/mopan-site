@@ -69,17 +69,27 @@ body{
   border-radius:16px;padding:14px;flex:1;min-height:260px}
 .panel-title{font-size:14px;color:var(--accent);letter-spacing:2px;margin-bottom:10px;border-left:3px solid var(--accent2);padding-left:10px}
 .list{display:flex;flex-direction:column;gap:9px}
-.item{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;
+.item{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;
   background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .item .ico{font-size:26px;text-align:center}
+.item .main{min-width:0}
 .item .nm{font-size:14px;font-weight:800}
 .item .ds{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
 .item .lv{font-size:11px;color:#6fd0ff}
 .buy{background:linear-gradient(180deg,var(--good),#16ad61);color:#06281a;border:none;border-radius:10px;
   padding:9px 13px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;box-shadow:0 4px 0 #0a6e3c}
 .buy:active{transform:translateY(3px);box-shadow:0 1px 0 #0a6e3c}
-.buy:disabled{background:#3a4258;color:#7a8499;box-shadow:none;cursor:not-allowed}
+.buy:disabled{background:#2b334a;color:#8d96ad;box-shadow:none;cursor:not-allowed}
 .buy.special{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#1a1206;box-shadow:0 4px 0 #9c5a12}
+.build-card{grid-template-columns:40px minmax(0,1fr) minmax(116px,auto)}
+.build-action{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:0}
+.buy.build-btn{min-width:76px;text-align:center}
+.cost-list{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap;max-width:188px}
+.cost-chip{display:inline-flex;align-items:center;gap:2px;min-width:50px;justify-content:center;
+  border-radius:999px;padding:4px 7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);
+  color:#cfd8f6;font-size:11px;line-height:1;font-weight:900}
+.cost-chip.miss{background:rgba(255,92,92,.12);border-color:rgba(255,92,92,.28);color:#ffb3b3}
+.build-action.locked .buy{opacity:.74}
 .chosen{border-color:var(--accent);box-shadow:0 0 12px rgba(255,205,76,.3)}
 .empty{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;line-height:1.7}
 
@@ -108,6 +118,18 @@ body{
 .float{position:absolute;font-weight:900;color:var(--accent);pointer-events:none;animation:fu .9s ease-out forwards;text-shadow:0 2px 5px #000}
 @keyframes fu{from{transform:translateY(0);opacity:1}to{transform:translateY(-60px);opacity:0}}
 .fusion-note{font-size:11px;color:var(--era);text-align:center;margin-top:8px;font-style:italic}
+@media (max-width:560px){
+  body{padding:10px}
+  .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;overflow:visible;padding-bottom:0}
+  .tab{min-width:0;padding:9px 4px;border-radius:9px;font-size:13px;text-align:center}
+  .item{grid-template-columns:34px minmax(0,1fr);align-items:start;padding:10px}
+  .item .ico{font-size:23px}
+  .item>.buy{grid-column:1 / -1;justify-self:stretch;width:100%;margin-top:4px;text-align:center;padding:10px 12px}
+  .build-card{grid-template-columns:34px minmax(0,1fr)}
+  .build-action{grid-column:1 / -1;display:grid;grid-template-columns:1fr auto;align-items:center;margin-top:4px}
+  .cost-list{justify-content:flex-start;max-width:none}
+  .buy.build-btn{min-width:72px;padding:8px 12px}
+}
 </style>
 </head>
 <body>
@@ -176,6 +198,8 @@ var techName=function(id){return T("civ.tech."+id);};
 var techDesc=function(id){return T("civ.tech_desc."+id);};
 var starName=function(id){return T("civ.star."+id);};
 var starDesc=function(id){return T("civ.star_desc."+id);};
+var evoName=function(ev){return T("civ.evolution."+ev.id+".name")||ev.name;};
+var evoDesc=function(ev){return T("civ.evolution."+ev.id+".desc")||ev.desc;};
 var dunName=function(id){return T("civ.dungeon."+id);};
 var dunDesc=function(id){return T("civ.dungeon_desc."+id);};
 var realmName=function(id){return T("civ.realm."+id);};
@@ -188,11 +212,18 @@ var TIER_KEYS=[
   ["beast_dawn","tame","legion","beastlord"],
   ["qi_revival","core","nascent","spirit","ascend"],
   ["steam","industry","info","ai_age"],
-  ["orbit","colony","dyson","starsea"]
+  ["orbit","colony","dyson","starsea"],
+  ["gene_decode","blood_rewrite","species_archive","evolution_court"],
+  ["time_seed","timeline","retrocausal","chronolord"],
+  ["dark_matter","branch_universe","multiverse","void_network"],
+  ["upload","spirit_net","digital_core","mind_ascend"],
+  ["origin_seed","law_weave","world_restart","creator"],
+  ["dao_seed","season_law","infinite_loop","dao_fruit"]
 ];
 var tierName=function(eraIdx,tierIdx){var a=TIER_KEYS[eraIdx]||[];return T("civ.tiers."+(a[tierIdx]||a[a.length-1]));};
 var fusionNote=function(eraIdx){return eraIdx>=2?T("civ.fusion."+eraIdx):"";};
 var rarKey=function(rzh){return rzh==="神话"?"myth":rzh==="传说"?"legend":"epic";};
+var buildActionLabel=function(){return (window.WukongI18n&&WukongI18n.getLocale&&WukongI18n.getLocale()!=="zh-CN")?"Build":"建造";};
 function toast(m){var e=$("toast");e.textContent=m;e.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){e.hidden=true;},2200);}
 function beep(f,d,t,v){try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;beep._c=beep._c||new AC();var c=beep._c;if(c.state==="suspended")c.resume();var n=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type=t||"sine";o.frequency.setValueAtTime(f,n);g.gain.setValueAtTime(v||.1,n);g.gain.exponentialRampToValueAtTime(.0001,n+(d||.1));o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+(d||.1)+.02);}catch(e){}}
 function fmt(n){n=Math.floor(n);if(n<1e4)return ""+n;
@@ -217,7 +248,13 @@ var RES=[
   {key:"gold", name:"金币", ico:"💰", era:0},
   {key:"qi",   name:"灵气", ico:"🌫️", era:3},
   {key:"tech", name:"科技", ico:"🔬", era:4},
-  {key:"star", name:"星能", ico:"🌌", era:5}
+  {key:"star", name:"星能", ico:"🌌", era:5},
+  {key:"gene", name:"基因点", ico:"🧬", era:6},
+  {key:"time", name:"时序", ico:"⏳", era:7},
+  {key:"dark", name:"暗能", ico:"🕳️", era:8},
+  {key:"mind", name:"意识", ico:"🧠", era:9},
+  {key:"origin", name:"源质", ico:"🌱", era:10},
+  {key:"dao", name:"道果", ico:"♾️", era:11}
 ];
 
 /* ===== eras ===== */
@@ -233,11 +270,23 @@ var ERAS=[
   {id:4,name:"AI科技时代",em:"🤖",tiers:["蒸汽","工业","信息","人工智能"],need:5e10,
    intro:"科技爆发！从蒸汽机到人工智能，研发黑科技，打造自动化文明。"},
   {id:5,name:"星际文明时代",em:"🚀",tiers:["近地轨道","星球殖民","戴森球","星海帝国"],need:5e12,
-   intro:"宇宙在你脚下展开。月球、火星、戴森球……建立横跨神话与科技的超级文明！"}
+   intro:"宇宙在你脚下展开。月球、火星、戴森球……建立横跨神话与科技的超级文明！"},
+  {id:6,name:"基因进化时代",em:"🧬",tiers:["基因解码","血脉重写","物种档案","进化王庭"],need:5e15,
+   intro:"星际文明开始反向改造生命本身。生肖血脉与神兽军团获得第二形态，旧时代的积累重新变成力量。"},
+  {id:7,name:"时间文明时代",em:"⏳",tiers:["时间种子","时间线分支","逆因果工程","时序主宰"],need:5e18,
+   intro:"文明掌握时序之力。加速、回溯与分支时间线将让漫长等待变成可经营的策略。"},
+  {id:8,name:"多元宇宙时代",em:"🕳️",tiers:["暗物质开采","分支宇宙","多元远征","虚空网络"],need:5e21,
+   intro:"你不再只统治一个宇宙。平行文明、暗能远征与多线收益将铺开新的版图。"},
+  {id:9,name:"意识上传时代",em:"🧠",tiers:["意识上传","灵网节点","数字金丹","合道飞升"],need:5e24,
+   intro:"AI 与修仙终于合体。器灵、数字金丹与量子飞剑从文案变成真正的文明系统。"},
+  {id:10,name:"造物主时代",em:"🌱",tiers:["源质凝结","法则编织","宇宙重启","造物主"],need:5e27,
+   intro:"消耗源质重启宇宙，换取永久法则。一次结束，会成为下一轮更强的开始。"},
+  {id:11,name:"道果循环时代",em:"♾️",tiers:["道种","赛季法则","无限循环","道果圆满"],need:5e30,
+   intro:"文明不再有硬终点。道果、赛季法则与新的排行榜目标，会让每一轮循环都有新追求。"}
 ];
 
 /* ===== buildings per era (produce resources) =====
-   {id,era,ico,name,desc,res,base(cost gold/food),baseProd,growth} */
+   {id,era,ico,name,desc,res,base cost,baseProd,growth} */
 var BUILDINGS=[
   // 原始
   {id:"farm", era:0, ico:"🌾", name:"农田",   desc:"产出食物",     res:"food", cost:15,   prod:0.5, growth:1.15},
@@ -258,7 +307,54 @@ var BUILDINGS=[
   {id:"factory",era:4,ico:"🏭", name:"自动工厂", desc:"产出物资+科技", res:"goods",cost:5e8,  prod:5e4,growth:1.22},
   // 星际
   {id:"station",era:5,ico:"🛰️", name:"空间站",   desc:"产出星能",     res:"star", cost:1e10, prod:100,growth:1.22},
-  {id:"dyson", era:5, ico:"🌟", name:"戴森球",   desc:"产出海量星能", res:"star", cost:1e12, prod:1e4,growth:1.25}
+  {id:"dyson", era:5, ico:"🌟", name:"戴森球",   desc:"产出海量星能", res:"star", cost:1e12, prod:1e4,growth:1.25},
+  // 基因进化
+  {id:"gene_lab",era:6,ico:"🧬", name:"基因实验室", desc:"产出基因点", res:"gene", cost:5e13, prod:120,growth:1.22},
+  {id:"archive", era:6,ico:"📚", name:"物种档案馆", desc:"产出基因点", res:"gene", cost:2e14, prod:520,growth:1.23},
+  // 后续时代资源入口
+  {id:"chronicle",era:7,ico:"⏳",name:"时间方尖碑", desc:"产出时序", res:"time", cost:5e16, prod:180,growth:1.22},
+  {id:"darkwell",era:8,ico:"🕳️",name:"暗能井", desc:"产出暗能", res:"dark", cost:5e19, prod:220,growth:1.23},
+  {id:"mindcloud",era:9,ico:"🧠",name:"意识云", desc:"产出意识", res:"mind", cost:5e22, prod:260,growth:1.23},
+  {id:"originforge",era:10,ico:"🌱",name:"源质熔炉", desc:"产出源质", res:"origin", cost:5e25, prod:300,growth:1.24},
+  {id:"daotree",era:11,ico:"♾️",name:"道果树", desc:"产出道果", res:"dao", cost:5e28, prod:360,growth:1.25}
+];
+
+/* Building costs use the same growth curve as before, then split the base
+   cost into resources. This keeps pacing stable while making food/goods matter. */
+var BUILD_COSTS={
+  farm:{gold:1},
+  mine:{gold:1},
+  market:{food:0.65,goods:0.45},
+  barrack:{food:0.90,goods:0.75},
+  shrine:{gold:0.85,goods:0.45},
+  totem:{gold:0.35,goods:1.00},
+  den:{gold:0.90,food:0.45,goods:0.35},
+  altar:{gold:0.30,goods:1.10},
+  vein:{gold:0.80,goods:0.70},
+  sect:{gold:0.95,food:0.40,goods:0.55},
+  lab:{gold:0.80,goods:0.70},
+  factory:{gold:0.35,goods:1.20,tech:0.08},
+  station:{gold:0.75,goods:0.70,tech:0.20},
+  dyson:{gold:0.55,goods:1.00,tech:0.35,star:0.08},
+  gene_lab:{gold:0.55,goods:0.80,tech:0.40,star:0.18},
+  archive:{gold:0.40,goods:0.70,tech:0.35,star:0.28},
+  chronicle:{gold:0.40,star:0.55,gene:0.35},
+  darkwell:{gold:0.35,star:0.60,gene:0.25,time:0.30},
+  mindcloud:{tech:0.55,star:0.35,gene:0.25,dark:0.30},
+  originforge:{star:0.45,time:0.25,dark:0.25,mind:0.35},
+  daotree:{origin:0.60,mind:0.25,dark:0.20}
+};
+
+/* ===== gene evolution (era6): revive zodiac and beasts ===== */
+var EVOLUTIONS=[
+  {id:"z_dragon",type:"zodiac",target:"dragon",ico:"🐲",cost:8e4,mult:{all:0.35},name:"星鳞龙族",desc:"龙族血脉二阶，全产量 +35%。"},
+  {id:"z_snake",type:"zodiac",target:"snake",ico:"🐍",cost:5e4,mult:{qi:0.80,gene:0.30},name:"玄基蛇族",desc:"蛇族血脉二阶，灵气 +80%，基因点 +30%。"},
+  {id:"z_monkey",type:"zodiac",target:"monkey",ico:"🐒",cost:5e4,mult:{tech:0.80,gene:0.25},name:"智猿族",desc:"猴族血脉二阶，科技 +80%，基因点 +25%。"},
+  {id:"z_goat",type:"zodiac",target:"goat",ico:"🐐",cost:4e4,mult:{food:0.80,goods:0.25},name:"丰饶羊族",desc:"羊族血脉二阶，食物 +80%，物资 +25%。"},
+  {id:"b_azure",type:"beast",target:"azure",ico:"🐉",cost:1.2e5,mult:{qi:0.45,star:0.25},name:"星穹青龙",desc:"青龙变异，灵气 +45%，星能 +25%。"},
+  {id:"b_phoenix",type:"beast",target:"phoenix",ico:"🔥",cost:1.4e5,mult:{tech:0.35,star:0.40},name:"量子凤凰",desc:"凤凰变异，科技 +35%，星能 +40%。"},
+  {id:"b_qilin",type:"beast",target:"qilin",ico:"🦌",cost:1.4e5,mult:{all:0.25,gene:0.35},name:"赛博麒麟",desc:"麒麟变异，全产量 +25%，基因点 +35%。"},
+  {id:"b_taotie",type:"beast",target:"taotie",ico:"👹",cost:2.2e5,mult:{gold:0.80,goods:0.45},name:"虚空饕餮",desc:"饕餮变异，金币 +80%，物资 +45%。"}
 ];
 
 /* ===== zodiac races (era1) ===== */
@@ -342,7 +438,10 @@ var DUNGEONS=[
   {id:"secret",era:3, ico:"🏔️", name:"上古秘境",   desc:"宗门弟子探索灵气秘境。",      power:2e6,   dur:45, reward:{qi:3e5,gold:2e6}, egg:0.25},
   {id:"tribul",era:3, ico:"⚡", name:"天劫之地",   desc:"在雷劫中夺取天地灵机。",      power:2e7,   dur:60, reward:{qi:3e6,gold:1e7}, egg:0.3},
   {id:"ai",    era:4, ico:"🛸", name:"AI 要塞",    desc:"机器人军团攻坚战。",          power:5e8,   dur:60, reward:{tech:2e6,gold:5e8}, egg:0.3},
-  {id:"void",  era:5, ico:"🌀", name:"虫洞深渊",   desc:"星海帝国的终极远征。",        power:5e10,  dur:90, reward:{star:5e6,gold:1e11}, egg:0.4}
+  {id:"void",  era:5, ico:"🌀", name:"虫洞深渊",   desc:"星海帝国的终极远征。",        power:5e10,  dur:90, reward:{star:5e6,gold:1e11}, egg:0.4},
+  {id:"dna",   era:6, ico:"🧬", name:"远古 DNA 遗迹", desc:"从失落物种遗迹中回收可改写血脉的基因样本。", power:5e12, dur:100, reward:{gene:8e4,star:2e7}, egg:0.35},
+  {id:"time",  era:7, ico:"⏳", name:"断裂时间线", desc:"进入破碎时间线，夺取可压缩等待的时序。", power:5e14, dur:110, reward:{time:8e4,gene:2e5}, egg:0.25},
+  {id:"dark",  era:8, ico:"🕳️", name:"暗物质裂隙", desc:"跨越平行宇宙边界，采集暗能。", power:5e16, dur:120, reward:{dark:8e4,time:2e5}, egg:0.25}
 ];
 
 /* ============ state ============ */
@@ -351,11 +450,12 @@ var G=null;
 function freshState(){
   return {
     era:0, tier:0, eraProgress:0,
-    res:{food:0,goods:0,gold:10,qi:0,tech:0,star:0},
+    res:{food:0,goods:0,gold:10,qi:0,tech:0,star:0,gene:0,time:0,dark:0,mind:0,origin:0,dao:0},
     buildings:{},          // id -> count
     bloodline:null,        // zodiac id (primary)
     zodiacRecruited:{},     // id -> true (stacking small)
     beasts:{},             // id -> count
+    evolutions:{},         // id -> true
     realm:0,               // cultivation index
     techs:{},              // id -> true
     starProj:{},           // id -> true
@@ -387,6 +487,11 @@ function globalMult(resKey){
   var bm=0;
   for(var id in G.beasts){var b=BEASTS.find(function(x){return x.id===id;});if(b)bm+=b.mult*Math.min(G.beasts[id],5);}
   m*=(1+bm);
+  // gene evolutions
+  for(var e in G.evolutions){
+    var ev=EVOLUTIONS.find(function(x){return x.id===e;});
+    if(ev&&ev.mult){ if(ev.mult.all)m*=(1+ev.mult.all); if(ev.mult[resKey])m*=(1+ev.mult[resKey]); }
+  }
   // cultivation realm
   m*=REALMS[G.realm].mult;
   // techs
@@ -415,8 +520,29 @@ function offlineMult(){
 /* building cost & production */
 function bCount(id){return G.buildings[id]||0;}
 function bCost(b){return Math.floor(b.cost*Math.pow(b.growth,bCount(b.id))*(1-costCut()));}
+function buildingCost(b){
+  var base=bCost(b),mix=BUILD_COSTS[b.id]||{gold:1},out={};
+  for(var k in mix)out[k]=Math.max(1,Math.floor(base*mix[k]));
+  return out;
+}
+function canPay(cost){
+  for(var k in cost){if((G.res[k]||0)<cost[k])return false;}
+  return true;
+}
+function payCost(cost){
+  if(!canPay(cost))return false;
+  for(var k in cost)G.res[k]-=cost[k];
+  return true;
+}
+function costLabel(cost){
+  return '<span class="cost-list">'+Object.keys(cost).map(function(k){
+    var r=RES.find(function(x){return x.key===k;});
+    var miss=(G.res[k]||0)<cost[k];
+    return '<span class="cost-chip'+(miss?' miss':'')+'">'+(r?r.ico:"")+fmt(cost[k])+'</span>';
+  }).join("")+'</span>';
+}
 function prodPerSec(){
-  var out={food:0,goods:0,gold:0,qi:0,tech:0,star:0};
+  var out={food:0,goods:0,gold:0,qi:0,tech:0,star:0,gene:0,time:0,dark:0,mind:0,origin:0,dao:0};
   BUILDINGS.forEach(function(b){
     var n=bCount(b.id);if(!n)return;
     out[b.res]+=b.prod*n;
@@ -435,6 +561,7 @@ function tapValue(){
 function powerScore(){
   var r=G.res;
   return r.gold + r.goods*0.5 + r.food*0.3 + r.qi*5 + r.tech*8 + r.star*20
+    + (r.gene||0)*60 + (r.time||0)*180 + (r.dark||0)*520 + (r.mind||0)*1400 + (r.origin||0)*4000 + (r.dao||0)*12000
     + Object.keys(G.buildings).reduce(function(s,id){return s+G.buildings[id]*50;},0);
 }
 function syncPeakPower(){
@@ -451,9 +578,13 @@ function armyPower(){
   BUILDINGS.forEach(function(x){b+=bCount(x.id)*(x.res==="gold"?2:1)*x.prod;});
   // barracks/sect/factory weigh more as "military"
   b+=bCount("barrack")*8+bCount("sect")*50+bCount("factory")*200+bCount("dyson")*2000;
+  b+=bCount("gene_lab")*450+bCount("archive")*800+bCount("chronicle")*1600+bCount("darkwell")*3200+bCount("mindcloud")*6400;
   var beastBonus=0;for(var id in G.beasts){var bb=BEASTS.find(function(z){return z.id===id;});if(bb)beastBonus+=bb.mult*Math.min(G.beasts[id],5);}
   var mult=globalMult("gold")*(1+beastBonus)*REALMS[G.realm].mult;
   return Math.floor((10+b)*mult);
+}
+function expeditionFoodCost(d){
+  return Math.max(20,Math.floor(d.power*0.08));
 }
 
 /* ============ render ============ */
@@ -498,6 +629,7 @@ function renderTabs(){
   if(G.era>=3)tabs.push({id:"cultivate",era:3});
   if(G.era>=4)tabs.push({id:"tech",era:4});
   if(G.era>=5)tabs.push({id:"star",era:5});
+  if(G.era>=6)tabs.push({id:"evolve",era:6});
   tabs.push({id:"rank",era:0});
   var box=$("tabs");box.innerHTML="";
   tabs.forEach(function(t){
@@ -510,7 +642,7 @@ function renderTabs(){
 }
 
 function itemHTML(ico,nm,ds,extra,btn){
-  return '<div class="ico">'+ico+'</div><div><div class="nm">'+nm+(extra||"")+'</div><div class="ds">'+ds+'</div></div>'+btn;
+  return '<div class="ico">'+ico+'</div><div class="main"><div class="nm">'+nm+(extra||"")+'</div><div class="ds">'+ds+'</div></div>'+btn;
 }
 
 function renderPanel(){
@@ -520,14 +652,12 @@ function renderPanel(){
     title.textContent=T("civ.ui.panel_build");
     BUILDINGS.forEach(function(b){
       if(b.era>G.era)return;
-      var n=bCount(b.id),c=bCost(b),res=RES.find(function(r){return r.key===b.res;});
-      var afford=G.res.gold>=c || (b.res!=="gold"&&false);
-      var payRes=payResourceFor(b); // which resource pays
-      var have=G.res[payRes.key];
-      var el=document.createElement("div");el.className="item";
+      var n=bCount(b.id),cost=buildingCost(b),res=RES.find(function(r){return r.key===b.res;});
+      var ok=canPay(cost);
+      var el=document.createElement("div");el.className="item build-card";
       el.innerHTML=itemHTML(b.ico,bName(b.id),bDesc(b.id)+" · "+T("civ.ui.unit_prod")+" "+fmt(b.prod*globalMult(b.res))+T("civ.ui.per_sec"),
         ' <span class="lv">×'+n+'</span>',
-        '<button class="buy" data-build="'+b.id+'"'+(have<c?' disabled':'')+'>'+payRes.ico+fmt(c)+'</button>');
+        '<div class="build-action'+(ok?'':' locked')+'">'+costLabel(cost)+'<button class="buy build-btn" data-build="'+b.id+'"'+(ok?'':' disabled')+'>'+buildActionLabel()+'</button></div>');
       body.appendChild(el);
     });
   }else if(curTab==="zodiac"){
@@ -599,6 +729,22 @@ function renderPanel(){
       el.innerHTML=itemHTML(p.ico,starName(p.id),starDesc(p.id),'',btn);
       body.appendChild(el);
     });
+  }else if(curTab==="evolve"){
+    title.textContent=T("civ.ui.panel_evolve");
+    var note=document.createElement("div");note.className="ds";note.style.cssText="margin-bottom:8px;color:var(--muted)";
+    note.textContent=T("civ.ui.evolve_note");
+    body.appendChild(note);
+    EVOLUTIONS.forEach(function(ev){
+      var owned=!!G.evolutions[ev.id];
+      var unlocked=ev.type==="zodiac"?!!G.zodiacRecruited[ev.target]:(G.beasts[ev.target]||0)>0;
+      var can=unlocked&&!owned&&G.res.gene>=ev.cost;
+      var el=document.createElement("div");el.className="item"+(owned?" chosen":"");
+      var state=owned?T("civ.ui.evolved"):(unlocked?T("civ.ui.need_gene",{n:fmt(ev.cost)}):T("civ.ui.need_old_collect"));
+      var btn=owned?'<button class="buy" disabled>'+T("civ.ui.evolved")+'</button>'
+        :'<button class="buy special" data-evolve="'+ev.id+'"'+(can?'':' disabled')+'>🧬'+fmt(ev.cost)+'</button>';
+      el.innerHTML=itemHTML(ev.ico,evoName(ev),evoDesc(ev),' <span class="lv">'+state+'</span>',btn);
+      body.appendChild(el);
+    });
   }else if(curTab==="war"){
     title.textContent=T("civ.ui.panel_war",{power:fmt(armyPower())});
     var note=document.createElement("div");note.className="ds";note.style.cssText="margin-bottom:8px;color:var(--muted)";
@@ -612,6 +758,8 @@ function renderPanel(){
       var winRate=clamp(ratio>=1?0.6+0.35*Math.min(1,(ratio-1)):0.6*ratio,0.02,0.97);
       var busy=!!G.expedition;
       var active=G.expedition&&G.expedition.id===d.id;
+      var foodCost=expeditionFoodCost(d);
+      var hasFood=G.res.food>=foodCost;
       var rewardStr=Object.keys(d.reward).map(function(k){var r=RES.find(function(x){return x.key===k;});return r.ico+fmt(d.reward[k]);}).join(" ")+(d.egg?" 🥚"+Math.round(d.egg*100)+"%":"");
       var el=document.createElement("div");el.className="item"+(active?" chosen":"");
       var btn;
@@ -621,10 +769,10 @@ function renderPanel(){
       }else if(busy){
         btn='<button class="buy" disabled>'+T("civ.ui.army_out")+'</button>';
       }else{
-        btn='<button class="buy special" data-war="'+d.id+'">'+T("civ.ui.go_expedition")+'</button>';
+        btn='<button class="buy special" data-war="'+d.id+'"'+(hasFood?'':' disabled')+'>🌾'+fmt(foodCost)+' · '+T("civ.ui.go_expedition")+'</button>';
       }
       el.innerHTML=itemHTML(d.ico,dunName(d.id)+' <span class="lv">'+T("civ.ui.win_count",{n:wins})+'</span>',
-        dunDesc(d.id)+"<br>"+T("civ.ui.need_power")+" "+fmt(d.power)+" · "+T("civ.ui.win_rate")+" "+Math.round(winRate*100)+"% · "+T("civ.ui.duration")+" "+d.dur+"s<br>"+T("civ.ui.reward")+" "+rewardStr,
+        dunDesc(d.id)+"<br>"+T("civ.ui.need_power")+" "+fmt(d.power)+" · 🌾"+fmt(foodCost)+" · "+T("civ.ui.win_rate")+" "+Math.round(winRate*100)+"% · "+T("civ.ui.duration")+" "+d.dur+"s<br>"+T("civ.ui.reward")+" "+rewardStr,
         '',btn);
       body.appendChild(el);
     });
@@ -645,11 +793,18 @@ function renderRank(body,title){
   body.appendChild(head);
 
   var nick=LB?LB.nickname():"";
+  var submitAllowed=!!(LB&&LB.canSubmit&&LB.canSubmit());
+  var submitTitle=submitAllowed?T("civ.rank_submit"):T("civ.rank_submit_local_disabled");
   var row=document.createElement("div");row.style.cssText="display:flex;gap:8px;margin-bottom:12px";
   row.innerHTML='<input id="rk-nick" maxlength="16" placeholder="'+T("civ.rank_nick_ph")+'" value="'+(nick||"").replace(/"/g,"")+'" '+
       'style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:14px;outline:none">'+
-      '<button class="buy special" id="rk-submit">'+T("civ.rank_submit")+'</button>';
+      '<button class="buy special" id="rk-submit"'+(submitAllowed?'':' disabled')+'>'+submitTitle+'</button>';
   body.appendChild(row);
+  if(LB&&!submitAllowed){
+    var guard=document.createElement("div");guard.className="ds";guard.style.cssText="margin:-4px 0 12px;color:var(--muted)";
+    guard.textContent=T("civ.rank_local_note");
+    body.appendChild(guard);
+  }
 
   var listWrap=document.createElement("div");listWrap.id="rk-list";listWrap.className="list";
   listWrap.innerHTML='<div class="ds" style="text-align:center;padding:20px;color:var(--muted)">'+T("civ.rank_loading")+'</div>';
@@ -657,6 +812,7 @@ function renderRank(body,title){
 
   $("rk-submit").onclick=function(){
     if(!LB){toast(T("civ.rank_offline"));return;}
+    if(LB.canSubmit&&!LB.canSubmit()){toast(T("civ.rank_local_toast"));return;}
     var n=($("rk-nick").value||"").trim();
     if(!n){toast(T("civ.rank_need_nick"));return;}
     LB.setNickname(n);
@@ -708,10 +864,6 @@ function paintRank(wrap,rows){
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
-function payResourceFor(b){
-  // buildings cost gold by default; some advanced cost their main resource? keep gold for simplicity
-  return RES.find(function(r){return r.key==="gold";});
-}
 function beastEggCost(){return Math.floor(2e5*Math.pow(1.5, totalBeasts()));}
 function totalBeasts(){var t=0;for(var k in G.beasts)t+=G.beasts[k];return t;}
 
@@ -720,9 +872,8 @@ function renderAll(){renderEra();renderRes();renderTabs();renderPanel();}
 /* ============ actions ============ */
 function buyBuilding(id){
   var b=BUILDINGS.find(function(x){return x.id===id;});
-  var c=bCost(b);var pay=payResourceFor(b);
-  if(G.res[pay.key]<c)return;
-  G.res[pay.key]-=c;
+  var cost=buildingCost(b);
+  if(!payCost(cost))return;
   G.buildings[id]=bCount(id)+1;
   beep(560,.05,"sine",.1);
   renderRes();renderPanel();renderEra();save();
@@ -780,11 +931,21 @@ function buyStar(id){
   if(id==="galaxy")setTimeout(winModal,400);
   renderAll();save();
 }
+function buyEvolution(id){
+  var ev=EVOLUTIONS.find(function(x){return x.id===id;});if(!ev||G.evolutions[id])return;
+  var unlocked=ev.type==="zodiac"?!!G.zodiacRecruited[ev.target]:(G.beasts[ev.target]||0)>0;
+  if(!unlocked||G.res.gene<ev.cost)return;
+  G.res.gene-=ev.cost;G.evolutions[id]=true;
+  toast(T("civ.ui.evolution_done",{name:evoName(ev)}));beep(880,.14,"sine",.16);
+  renderAll();save();
+}
 
 /* ===== expeditions ===== */
 function startExpedition(id){
   if(G.expedition)return;
   var d=DUNGEONS.find(function(x){return x.id===id;});if(!d)return;
+  var foodCost=expeditionFoodCost(d);if(G.res.food<foodCost)return;
+  G.res.food-=foodCost;
   var ap=armyPower();
   var ratio=ap/d.power;
   var winRate=clamp(ratio>=1?0.6+0.35*Math.min(1,(ratio-1)):0.6*ratio,0.02,0.97);
@@ -897,6 +1058,7 @@ $("panel-body").addEventListener("click",function(e){
   else if(t.dataset.realm)breakRealm(+t.dataset.realm);
   else if(t.dataset.tech)buyTech(t.dataset.tech);
   else if(t.dataset.star)buyStar(t.dataset.star);
+  else if(t.dataset.evolve)buyEvolution(t.dataset.evolve);
   else if(t.dataset.war)startExpedition(t.dataset.war);
 });
 $("btn-reset").addEventListener("click",function(){
@@ -910,6 +1072,7 @@ window.addEventListener("beforeunload",save);
 G=load()||freshState();
 var def=freshState();for(var dk in def){if(G[dk]===undefined)G[dk]=def[dk];}
 for(var rk in def.res){if(G.res[rk]===undefined)G.res[rk]=def.res[rk];}
+if(!G.evolutions)G.evolutions={};
 if(G.peakPower===undefined)G.peakPower=powerScore();
 function bootRender(){
   $("tap-hint-label").textContent=T("civ.ui.tap_hint");
