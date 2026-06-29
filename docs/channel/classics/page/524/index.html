@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="魔盘">
+  <title>古典藏书 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1782700829">
+  
+
+
+</head>
+<body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u6587\u6848&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u6587\u6848\uff0c\u7c98\u8d34\u5230\u5fae\u4fe1\u53d1\u7ed9\u597d\u53cb\uff1a&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u5206\u4eab\u6587\u6848\u5df2\u590d\u5236\uff0c\u6253\u5f00\u5fae\u4fe1\u7c98\u8d34\u53d1\u9001\u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u5206\u4eab\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u5df2\u5524\u8d77\u5206\u4eab&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="颜色主题">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="紫色" aria-label="紫色"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="海洋" aria-label="海洋"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="玫红" aria-label="玫红"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="森绿" aria-label="森绿"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="琥珀" aria-label="琥珀"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="靛蓝" aria-label="靛蓝"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/en/channel/classics/page/524/index.html" class="mp-lang-link" hreflang="en" lang="en">EN</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+
+
+<a href="/index.html" class="mp-nav-link">← 资源库</a>
+
+<a href="/channel/classics/index.html" class="mp-nav-link is-active">古典藏书</a>
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+<div class="mp-container">
+  
+  <nav class="mp-channels" aria-label="频道">
+    
+    <a href="/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">发现</span>
+      <span class="mp-channel-count">1281</span>
+    </a>
+    
+    <a href="/channel/drama/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">短剧</span>
+      <span class="mp-channel-count">2937</span>
+    </a>
+    
+    <a href="/channel/media/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">影视音乐</span>
+      <span class="mp-channel-count">671</span>
+    </a>
+    
+    <a href="/channel/other/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">其它</span>
+      <span class="mp-channel-count">1755</span>
+    </a>
+    
+    <a href="/channel/k12/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">K12</span>
+      <span class="mp-channel-count">167</span>
+    </a>
+    
+    <a href="/channel/ai_video/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">AI 学习</span>
+      <span class="mp-channel-count">692</span>
+    </a>
+    
+    <a href="/channel/classics/index.html"
+       class="mp-channel is-active">
+      <span class="mp-channel-label">古典藏书</span>
+      <span class="mp-channel-count">14185</span>
+    </a>
+    
+  </nav>
+
+  
+
+  <section class="mp-hero">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">古典藏书 · 夸克网盘</p>
+      <h1>经史子集 · 摘录预览</h1>
+      <p class="mp-hero-desc">每本书展示<strong>开篇摘录</strong>；完整 txt 可在 <strong>GitHub（kang250813-source）</strong> 查看或下载。列表<strong>每小时自动换序</strong>。</p>
+    </div>
+    <div class="mp-hero-stat">
+      <span class="mp-hero-stat-num">14185</span>
+      <span class="mp-hero-stat-label">本频道</span>
+    </div>
+  </section>
+  
+
+  <section class="mp-toolbar">
+    <form class="mp-search" action="/" method="get" role="search">
+      <input type="hidden" name="channel" value="classics">
+      <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" value="" placeholder="搜索标题、简介、正文…" autocomplete="off">
+      
+      <button type="submit">搜索</button>
+      
+    </form>
+  </section>
+
+  
+  <section class="mp-categories" aria-label="丛书筛选">
+    <a href="/channel/classics/index.html" class="mp-cat is-active">全部</a>
+    
+    <a href="/channel/classics/category/%E5%84%92%E8%97%8F/index.html"
+       class="mp-cat">儒藏<span>884</span></a>
+    
+    <a href="/channel/classics/category/%E8%AF%97%E8%97%8F/index.html"
+       class="mp-cat">诗藏<span>760</span></a>
+    
+    <a href="/channel/classics/category/%E9%81%93%E8%97%8F/index.html"
+       class="mp-cat">道藏<span>1637</span></a>
+    
+    <a href="/channel/classics/category/%E4%BD%9B%E8%97%8F/index.html"
+       class="mp-cat">佛藏<span>3885</span></a>
+    
+    <a href="/channel/classics/category/%E5%AD%90%E8%97%8F/index.html"
+       class="mp-cat">子藏<span>1356</span></a>
+    
+    <a href="/channel/classics/category/%E6%98%93%E8%97%8F/index.html"
+       class="mp-cat">易藏<span>342</span></a>
+    
+    <a href="/channel/classics/category/%E9%9B%86%E8%97%8F/index.html"
+       class="mp-cat">集藏<span>1944</span></a>
+    
+    <a href="/channel/classics/category/%E5%8F%B2%E8%97%8F/index.html"
+       class="mp-cat">史藏<span>2031</span></a>
+    
+    <a href="/channel/classics/category/%E5%8C%BB%E8%97%8F/index.html"
+       class="mp-cat">医藏<span>911</span></a>
+    
+    <a href="/channel/classics/category/%E8%89%BA%E8%97%8F/index.html"
+       class="mp-cat">艺藏<span>435</span></a>
+    
+  </section>
+  
+
+  
+
+  <section class="mp-feed mp-feed--hourly" data-classics-hourly="1">
+    
+    <article class="mp-card" data-resource-id="11231">
+      <a href="/resource/11231.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">集藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">柳非烟</h2>
+        
+        <p class="mp-card-excerpt">《柳非烟》 [清] 天虚我生 著 第一章 突来之客 姑苏城外，有一处极大的花园。其地面积可五亩，园内有池一泓，碧划玻璃，蓝拖绮彀，每值六月初旬，荷花盛开，仿佛变成了个香海。两岸垂杨绿的可爱，掩映着飞楼高阁，看去不知有多少处数。 往来游人，都是些华贵眷属，云裳水佩，各斗鲜妍。凡是到…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="9659">
+      <a href="/resource/9659.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">易藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">六壬灵觉经</h2>
+        
+        <p class="mp-card-excerpt">《大六壬灵觉经》 吴师青手抄 家藏大六壬灵觉经卷一 家藏大六壬灵觉经卷一目录 元首 重审 比用 涉害 遥克 昴星 八专 虽责 伏吟 返吟 天禄秘典大六壬灵觉经神课卷之一 七体门 古经九宗门乃一贼克，二比用，三涉害，四遥克，五昴星，六八专，七别责，八伏吟，九返吟，今折反伏二体入下卷…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="14018">
+      <a href="/resource/14018.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">医藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">史载之方</h2>
+        
+        <p class="mp-card-excerpt">史载之方 宋 史堪 卷上 四时正脉 春 春脉弦，其气来柔软弱虚而滑，端直以长，名之曰弦，反此者病，其气来实而强，名为太过，病在外，其气来不实而微，此为不及，病在中，太过则令人善忘忽忽。冒眩巅疾，不及则令人胸痛引背下，两胁 满。 卷上 四时正脉 夏 夏脉钩，其气来盛去衰，反此者病，…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="7030">
+      <a href="/resource/7030.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">妙法莲华经玄义</h2>
+        
+        <p class="mp-card-excerpt">妙法莲华经玄义 隋 智顗说 法华私记缘起 沙门灌顶述 大法东渐僧史所载。讵有几人不曾听讲。自解佛乘者乎。纵令发悟。复能入定得陀罗尼者不。纵具定慧复帝京弘二法不。纵令盛席谢遣徒众隐居山谷不。纵避世守玄。被征为二国师不。纵帝者所尊。太极对御讲仁王般若不。纵正殿宣扬。为主上三礼不。纵令…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="10561">
+      <a href="/resource/10561.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">集藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">灌园集</h2>
+        
+        <p class="mp-card-excerpt">钦定四库全书 集部三 提要 灌园集二十巻 别集类二【宋】 【臣】等谨案灌园集二十巻宋吕南公撰南公字次儒南城人宋史文苑传称其于书无所不读于文不肯缀缉陈言熈宁中士方推崇马融王肃许慎之业【案熈宁中科举所用乃王安石三经新义及字説非马融王肃许慎之学此语殊为乖妄宋史荒陋此亦一端谨附纠其谬】剽…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="4095">
+      <a href="/resource/4095.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">道藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">西王母女修正余十则</h2>
+        
+        <p class="mp-card-excerpt">西王母女修正余十则 正余十则序 纯阳子誓渡众生，已有《九皇丹经注》，为男子修仙之津粱。不忍坐视女子具有夙根、素存道念者不得真传，误入歧途、沦于鬼趣。乃于已未盂冬朔日临焕彩楼，感不二仙子，诚将西王母口授魏元君真传，原名《女大金丹诀》阐之。申改女修正途九则，上仍冠以西王母三字，并请颁…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="13664">
+      <a href="/resource/13664.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">医藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">万氏秘传外科心法</h2>
+        
+        <p class="mp-card-excerpt">万氏秘传外科心法 目录 赠万密斋先生医书序 叙 叙万氏幼科源流 卷之一 总论大法 附方 卷之二 背图形八症（一） 脑发 腮 上背发 中背发 下背发 腰背发 暗发（骑马痈） 卷之三 背图形八症（二） 对口 正背发 上搭手 中搭手 囊发 蛇头疔 蛇头疔 天蛇头毒 膝发 卷之四 面图形…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="5760">
+      <a href="/resource/5760.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">先觉宗乘</h2>
+        
+        <p class="mp-card-excerpt">续藏经 先觉宗乘 清 圆信较定 郭凝之汇编 先觉宗乘 先觉宗乘目录 卷一 维摩大士 双林善慧大士傅翕 庞蕴居士(嗣法马祖一) 卷二 甘贽行者(嗣法南泉愿) 刺史陆亘(嗣法南泉愿) 相国裴休(嗣法黄檗运) 常侍王敬初(嗣法沩山佑) 尚书陈操(嗣法陈睦州) 驸马李遵勖(嗣法谷隐聪) …</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="13852">
+      <a href="/resource/13852.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">医藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">医理真传</h2>
+        
+        <p class="mp-card-excerpt">医理真传 清 郑钦安 郑钦安原叙 医学一途，不难于用药，而难于识症。亦不难于识症，而难于识阴阳。阴阳化生五行，其中消长盈虚，发为疾病，万变万化，岂易窥测？诊候之际，犹多似是而非之处，辨察不明，鲜有不误人者也。余蜀南临邛人也，迁居于成都省城，学医于止唐刘太老夫子，指示《黄帝内经》、…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="8791">
+      <a href="/resource/8791.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">子藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">苏氏演义</h2>
+        
+        <p class="mp-card-excerpt">苏氏演义 唐 苏鹗 提要 卷上 卷下 提要 《苏氏演义》二卷，唐苏鹗撰。鹗字德祥，武功人。宰相颋之族也。光启中登进士第。仕履无考。尝撰《杜阳杂编》，世有传本。此书久佚，今始据《永乐大典》所引裒辑成编。杂编特小说家言，此书则於典制名物具有考证。书中所言，与世传魏崔豹《古今注》、马缟…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="2816">
+      <a href="/resource/2816.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">道藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">洞玄灵宝道士受三洞经箓法箓择日历</h2>
+        
+        <p class="mp-card-excerpt">洞玄灵宝道士受三洞经诫法箓择日历 经名：洞玄灵宝道士受三洞经诫法箓译日历。原题张万福撰。一卷。底本出处：《正统道藏》正一部。 洞玄灵宝道士受三洞经诫法箓择日历 伏寻三洞经教，四辅法文，元始所说，道君传授，而众圣修行，群真礼诵，秘之三境，流布十方。代历尘沙，年踰浩劫，方乎日月，谕之…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="7119">
+      <a href="/resource/7119.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">百论疏</h2>
+        
+        <p class="mp-card-excerpt">百论疏 隋 吉藏撰 百论序疏 大业四年十月因讲次直疏出不事访也。肇公是京兆郡人。家贫常以佣书为业。因是历观经史。每读老子庄周之书。喟然叹曰。美则美矣。然期神冥累之方犹未尽矣。末见古维摩经观喜顶戴谓亲友曰。吾知所归极矣。罗什至京师因从请业。著不真空等四论。著注净名及诸经论序。什叹曰…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="7294">
+      <a href="/resource/7294.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">金刚经灵验传</h2>
+        
+        <p class="mp-card-excerpt">续藏经 金刚经灵验传 日本 净慧集 金刚般若经灵验传目录 卷上 五祖大师 六祖大师 明教大师 中峰和尚瑞雪崖 一溪 田子中 亭湖神 萧瑀 赵文若 赵文昌 张政 蒯武安 陈惠妻 杜之亮 慕容文策 王殷 王翰 张无是 陆怀素 王弘之 龙兴寺主 陈哲 丰州烽子 张镒 李廷光 陆康成 薛…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="14905">
+      <a href="/resource/14905.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">艺藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">琴诀</h2>
+        
+        <p class="mp-card-excerpt">《琴诀》唐 薛易简 《琴史》曰：薛易简以琴待诏翰林，盖在天宝中也。尝着《琴诀》七篇，辞虽近俚，义有可采，今掇有大槩着焉，曰：“琴之为乐，可以观风教，可以摄心魂，可以辨喜怒，可以悦情思，可以静神虑，可以壮胆勇，可以绝麠麈俗，可以格免神，此琴之善者也。鼓琴之士，志静气正，则听者易分，…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="13878">
+      <a href="/resource/13878.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">医藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">卫生宝鉴</h2>
+        
+        <p class="mp-card-excerpt">卫生宝鉴 元 罗天益 序 医自轩岐设教。其为天下斯民虑。至深远也。然去圣既远。教虽存而不免浸至失真。此所以必又待豪杰之士为之维持发越、而后可以永其传也。历代以来。若秦越人、淳于意、张仲景、华元化、孙思邈。盖皆其人焉。奈何自思邈而下。世代益远。所失益甚。士之习医业者。各尊所闻、行所…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="4222">
+      <a href="/resource/4222.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">佛说济诸方等学经</h2>
+        
+        <p class="mp-card-excerpt">佛说济诸方等学经 西晋 竺法护译 佛说济诸方等学经一卷 西晋月氏三藏竺法护译 闻如是。一时佛游王舍城灵鹫山。与大比丘众俱。比丘六万。菩萨八十亿。摩竭国中众优婆塞六百万。临灭度时最后末年至罗阅只初首新岁。于时世尊即如其像三昧正受。庄严于斯三千大千世界。悬缯幡彩竖诸幢盖。散华烧香布诸…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="12021">
+      <a href="/resource/12021.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">史藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">台湾舆图</h2>
+        
+        <p class="mp-card-excerpt">台湾舆图 自序 前后山总图 台湾县图 台湾县舆图说略 凤山县图 凤山县舆图说略 嘉义县图 嘉义县舆图说略 彰化县图 彰化县舆图说略 新竹县图 新竹县舆图说略 淡水县图 淡水县舆图说略 宜兰县图 宜兰县舆图说略 恒春县图 恒春县舆图说略 澎湖厅图 澎湖厅舆图说略 埔里社图 埔里六社…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="3118">
+      <a href="/resource/3118.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">道藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">洞玄灵宝诸天世界造化经</h2>
+        
+        <p class="mp-card-excerpt">洞玄灵宝诸天世界造化经 经名：洞玄灵宝诸天誉界造化经。撰人不详，约出於南北朝或隋唐。言劫运灾变及济度之法。一卷。底本出处：《正统道藏》 洞玄部本文类。 洞玄灵宝诸天世界造化经 天尊说经开叙品第一 太上天尊居灵鸟山中，与诸天人说十二部经。於是乃分四十万品，弟子书之，故曰妙道。尔时天…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="13642">
+      <a href="/resource/13642.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">史藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">渤海考</h2>
+        
+        <p class="mp-card-excerpt">渤海考 柳得恭 余尝西踰鸭绿道 阳 至辽阳 其间五六百里 大抵皆大山深谷 出狼子山 始见平原无际 混混茫茫 日月飞鸟升沈于野气之中 而回视东北 诸山环天塞地 若畵一 向所称大山深谷 皆辽东千里之外障也 乃 然而叹曰 此天限也 夫辽东天下之一隅也 然而英雄帝王之兴 莫盛于此 盖其地…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="14012">
+      <a href="/resource/14012.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">医藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">黄帝灵枢经</h2>
+        
+        <p class="mp-card-excerpt">古今图书集成医部全录卷四十七 黄帝灵枢经 【马莳曰：灵枢者，《内经》篇名。盖《内经》为总名，中有《素问》八十一篇，《灵枢》八十一篇。《素问》曾经唐宝应年间启元子王冰有注，其《灵枢》自古迄今，并无注释，晋 皇甫士安以《针经》名之。按本经首篇九针十二原中，有先立《针经》一语，又《素问…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="8713">
+      <a href="/resource/8713.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">子藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">笔梦叙</h2>
+        
+        <p class="mp-card-excerpt">古今皆梦也，自富贵逸乐以至贫贱困厄，境不同而梦则同。何也？当其富贵逸乐，则见为富贵逸乐矣。当其贫贱困厄，则见为贫贱困厄矣。一旦神与形离，冥然归于无何有之乡。彼又乌知夫富贵逸乐之为富贵逸乐，贫贱困厄之为贫贱困厄耶？是则古来境不同而同归于梦也。若钱侍御秀峰公，其可谓极富贵逸乐之境者乎…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="11913">
+      <a href="/resource/11913.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">史藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">郑氏关系文书</h2>
+        
+        <p class="mp-card-excerpt">郑氏关系文书 郑氏关系文书 石井本宗族谱 海外异传 郑氏关系文书 郑泰洪旭黄廷咨靖南王耿继茂总督李率泰文 钦命总督闽浙水陆官兵督理恢剿军务、赐坐蟒玉带、便宜行事、特进光禄大夫上柱国太保兼太子太傅建平侯郑，钦命少傅兼太子太师兵部尚书忠振侯洪，钦命提督水陆军务、少师兼太子太保永安侯黄…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="6988">
+      <a href="/resource/6988.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">佛藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">摄大乘论释-陈-真谛</h2>
+        
+        <p class="mp-card-excerpt">摄大乘论释 世亲菩萨释 陈 真谛译 摄大乘论释序(十五卷成) 大唐桑门道基撰 摄大乘论者。盖是希声大教。至理幽微。超众妙之门。闭邪论之轨。大士所作。其在兹乎。若夫实相宗极。言亡而虑断。真如体妙。道玄而理邈。壮哉法界。廓尔无为。信矣大方。超然域外。是以王城三止。宝殿三加。至人垂范。…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card" data-resource-id="3451">
+      <a href="/resource/3451.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">道藏</span>
+          
+          <span class="mp-tag mp-tag--github">GitHub</span>
+          
+          
+        </div>
+        <h2 class="mp-card-title">太上洞玄灵宝无量度人上品妙经注</h2>
+        
+        <p class="mp-card-excerpt">太上洞玄灵宝无量度人上品妙经注 经名：太上洞玄灵宝无量度人上品妙经注。元代道士陈致虚（字观吾）撰。三卷。底本出处：《正统道藏》洞真部玉诀类。 太上洞玄灵宝元始无量度人上品妙经注解序 太乙含真气，实为妙道仙宗。《灵宝度人经》，是谓洞玄上品。生育天地，阖辟阴阳，造化得以运行，元功恃而…</p>
+        
+        
+        <span class="mp-card-more">查看预览 →</span>
+      </a>
+    </article>
+    
+  </section>
+
+  
+  <nav class="mp-pagination" aria-label="分页">
+    
+    <a href="/channel/classics/page/523/index.html" class="mp-page-btn">上一页</a>
+    
+    <div class="mp-page-nums">
+      
+        <a href="/channel/classics/index.html" class="mp-page-num">1</a>
+      
+        <span class="mp-page-gap">…</span>
+        
+      
+        <a href="/channel/classics/page/522/index.html" class="mp-page-num">522</a>
+      
+        <a href="/channel/classics/page/523/index.html" class="mp-page-num">523</a>
+      
+        <span class="mp-page-current">524</span>
+        
+      
+        <a href="/channel/classics/page/525/index.html" class="mp-page-num">525</a>
+      
+        <a href="/channel/classics/page/526/index.html" class="mp-page-num">526</a>
+      
+        <span class="mp-page-gap">…</span>
+        
+      
+        <a href="/channel/classics/page/592/index.html" class="mp-page-num">592</a>
+      
+    </div>
+    
+    <a href="/channel/classics/page/525/index.html" class="mp-page-btn">下一页</a>
+    
+  </nav>
+  
+</div>
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · 资源索引站，转载请注明来源</p>
+      <p class="mp-footer-promo"><a href="/promo/quark/" data-promo-entry="footer">夸克网盘资料领取 →</a></p>
+      <p class="mp-footer-games"><a href="/game/">魔盘小游戏 →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1782700829"></script>
+  
+
+<script src="/static/classics-shuffle.js?v=1782700829"></script>
+
+
+</body>
+</html>

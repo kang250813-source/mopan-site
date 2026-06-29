@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="Mopan">
+  <title>Online Tools - Discover - Mopan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1782700829">
+  
+
+
+</head>
+<body class="" data-locale="en" data-i18n="{&#34;collapse&#34;: &#34;Show less&#34;, &#34;copied&#34;: &#34;Copied&#34;, &#34;copied_paste&#34;: &#34;Copied \u2014 paste to send&#34;, &#34;copy_prompt&#34;: &#34;Copy the text from the dialog&#34;, &#34;expand_more&#34;: &#34;Show more ({n})&#34;, &#34;games_bobing_award_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_award_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;Five of a Kind&#34;, &#34;games_bobing_award_five_red&#34;: &#34;Five Reds&#34;, &#34;games_bobing_award_four_red&#34;: &#34;Four Reds&#34;, &#34;games_bobing_award_golden&#34;: &#34;Golden Zhuangyuan&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_award_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_award_six_black&#34;: &#34;Six Black&#34;, &#34;games_bobing_award_six_red&#34;: &#34;Six Reds&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_miss&#34;: &#34;No prize&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 no prize&#34;, &#34;games_bobing_name_label&#34;: &#34;Player {n}&#34;, &#34;games_bobing_over&#34;: &#34;All prizes claimed \u2014 game over&#34;, &#34;games_bobing_player_default&#34;: &#34;Player {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_prize_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;Zhuangyuan&#34;, &#34;games_bobing_roll&#34;: &#34;Roll&#34;, &#34;games_bobing_rolling&#34;: &#34;Rolling six dice\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} is gone&#34;, &#34;games_bobing_start&#34;: &#34;Pick players, then take turns rolling&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}!&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award} (pending)&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} wins Zhuangyuan \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;Keep guessing \u2014 narrow the range&#34;, &#34;games_bomb_boom&#34;: &#34;Boom! The bomb was {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;Boom!&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u2014 too high&#34;, &#34;games_bomb_invalid&#34;: &#34;Enter a number in range&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u2014 too low&#34;, &#34;games_bomb_out&#34;: &#34;Stay between {low} and {high}&#34;, &#34;games_bomb_start&#34;: &#34;Guess a number \u2014 hit the bomb and you lose&#34;, &#34;games_chore_done&#34;: &#34;{who} \u2192 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;Already added&#34;, &#34;games_chore_max&#34;: &#34;Max 10 items&#34;, &#34;games_chore_min_people&#34;: &#34;Keep at least 2 people&#34;, &#34;games_chore_min_tasks&#34;: &#34;Keep at least 2 chores&#34;, &#34;games_cleared&#34;: &#34;Out of moves&#34;, &#34;games_croc_lose&#34;: &#34;Player {n} got bitten!&#34;, &#34;games_croc_safe&#34;: &#34;Lucky round \u2014 no one got bitten&#34;, &#34;games_croc_turn&#34;: &#34;Player {n} \u2014 pick a tooth&#34;, &#34;games_dice_rolling&#34;: &#34;Rolling\u2026&#34;, &#34;games_dice_total&#34;: &#34;Total: {n}&#34;, &#34;games_finger_pick&#34;: &#34;Player {n} \u2014 your turn!&#34;, &#34;games_game_over&#34;: &#34;Game over&#34;, &#34;games_no_match&#34;: &#34;No match&#34;, &#34;games_open_pick&#34;: &#34;Open pick&#34;, &#34;games_perfect&#34;: &#34;Perfect!&#34;, &#34;games_site_open&#34;: &#34;Visit site&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;A handy site worth bookmarking.&#34;, &#34;games_stack_start&#34;: &#34;Tap to start&#34;, &#34;games_stack_start_sub&#34;: &#34;Tap the board or button to drop&#34;, &#34;games_tictactoe_draw&#34;: &#34;Draw&#34;, &#34;games_tictactoe_start&#34;: &#34;X goes first&#34;, &#34;games_tictactoe_turn&#34;: &#34;{mark} to play&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} wins!&#34;, &#34;games_topic_ready&#34;: &#34;Tap to draw a topic card&#34;, &#34;games_who_default_task&#34;: &#34;do chores&#34;, &#34;no_share_url&#34;: &#34;Cannot get share link&#34;, &#34;prompt_copy&#34;: &#34;Select and copy the text below to share:&#34;, &#34;share&#34;: &#34;Share&#34;, &#34;share_copied_wechat&#34;: &#34;Share text copied&#34;, &#34;share_failed&#34;: &#34;Share failed \u2014 copy the page link manually&#34;, &#34;share_invoked&#34;: &#34;Share opened&#34;, &#34;share_page&#34;: &#34;Page link&#34;, &#34;share_quark&#34;: &#34;Quark Drive&#34;, &#34;site_drama&#34;: &#34;Quark Drama&#34;, &#34;site_resource&#34;: &#34;Site Resource&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/en/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>Mopan</strong>
+          <small>AI Tools · Learning Resources · Short Drama Index</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="Color theme">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="Purple" aria-label="Purple"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="Forest" aria-label="Forest"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="Amber" aria-label="Amber"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/category/在线工具/page/13/index.html" class="mp-lang-link" hreflang="zh" lang="zh">中文</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+
+<a href="/en/index.html" class="mp-nav-link">← Discover</a>
+<span class="mp-nav-current">Online Tools</span>
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+<div class="mp-container">
+  
+  <nav class="mp-channels" aria-label="Channels">
+    
+    <a href="/en/index.html"
+       class="mp-channel is-active">
+      <span class="mp-channel-label">Discover</span>
+      <span class="mp-channel-count">1281</span>
+    </a>
+    
+    <a href="/en/channel/drama/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">Short Drama</span>
+      <span class="mp-channel-count">2937</span>
+    </a>
+    
+    <a href="/en/channel/media/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">Media</span>
+      <span class="mp-channel-count">671</span>
+    </a>
+    
+    <a href="/en/channel/other/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">Other</span>
+      <span class="mp-channel-count">1755</span>
+    </a>
+    
+    <a href="/en/channel/k12/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">K-12</span>
+      <span class="mp-channel-count">167</span>
+    </a>
+    
+    <a href="/en/channel/ai_video/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">AI Learning</span>
+      <span class="mp-channel-count">692</span>
+    </a>
+    
+    <a href="/en/channel/classics/index.html"
+       class="mp-channel">
+      <span class="mp-channel-label">Chinese Classics</span>
+      <span class="mp-channel-count">14185</span>
+    </a>
+    
+  </nav>
+
+  
+
+  <section class="mp-hero">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">Discover · Quark Drive</p>
+      <h1>AI Tools · Productivity Software</h1>
+      <p class="mp-hero-desc">Explore AI tools, productivity software, and developer projects. Read on-site or download from cloud drive.</p>
+    </div>
+    <div class="mp-hero-stat">
+      <span class="mp-hero-stat-num">1281</span>
+      <span class="mp-hero-stat-label">in channel</span>
+    </div>
+  </section>
+  
+
+  <section class="mp-toolbar">
+    <form class="mp-search" action="/en/" method="get" role="search">
+      <input type="hidden" name="channel" value="discover">
+      <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" value="" placeholder="Search title, summary, content…" autocomplete="off">
+      <input type="hidden" name="category" value="在线工具">
+      <button type="submit">Search</button>
+      <a href="" class="mp-search-clear">Clear</a>
+    </form>
+  </section>
+
+  
+  <section class="mp-categories" aria-label="Categories">
+    <a href="/en/index.html" class="mp-cat">All</a>
+    
+    <a href="/en/category/%E5%8F%91%E7%8E%B0/index.html"
+       class="mp-cat">Discover<span>444</span></a>
+    
+    <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat is-active">Online Tools<span>405</span></a>
+    
+    <a href="/en/category/AI%20%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat">AI Tools<span>219</span></a>
+    
+    <a href="/en/category/macOS%20%E8%BD%AF%E4%BB%B6/index.html"
+       class="mp-cat">macOS Software<span>53</span></a>
+    
+    <a href="/en/category/Windows%20%E8%BD%AF%E4%BB%B6/index.html"
+       class="mp-cat">Windows Software<span>29</span></a>
+    
+    <a href="/en/category/Android%20%E5%BA%94%E7%94%A8/index.html"
+       class="mp-cat">Android Apps<span>25</span></a>
+    
+    <a href="/en/category/%E8%BD%AF%E4%BB%B6%E5%BA%94%E7%94%A8/index.html"
+       class="mp-cat">Software &amp; Apps<span>22</span></a>
+    
+    <a href="/en/category/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%89%A9%E5%B1%95/index.html"
+       class="mp-cat">Browser Extensions<span>19</span></a>
+    
+    <a href="/en/category/%E5%BC%80%E5%8F%91%E8%80%85%E9%A1%B9%E7%9B%AE/index.html"
+       class="mp-cat">Developer Projects<span>11</span></a>
+    
+    <a href="/en/category/%E7%9F%AD%E8%A7%86%E9%A2%91%E8%BF%90%E8%90%A5/index.html"
+       class="mp-cat">短视频运营<span>9</span></a>
+    
+    <a href="/en/category/%E5%BD%B1%E8%A7%86%E9%9F%B3%E4%B9%90/index.html"
+       class="mp-cat">Film &amp; Music<span>8</span></a>
+    
+    <a href="/en/category/%E5%88%9B%E4%B8%9A%E5%95%86%E4%B8%9A/index.html"
+       class="mp-cat">创业商业<span>6</span></a>
+    
+    <a href="/en/category/%E7%94%B5%E5%AD%90%E4%B9%A6/index.html"
+       class="mp-cat">电子书<span>5</span></a>
+    
+    <a href="/en/category/iOS%20%E5%BA%94%E7%94%A8/index.html"
+       class="mp-cat">iOS Apps<span>5</span></a>
+    
+    <a href="/en/category/%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC/index.html"
+       class="mp-cat">Userscripts<span>4</span></a>
+    
+    <a href="/en/category/PDF%20%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat">PDF Tools<span>4</span></a>
+    
+    <a href="/en/category/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat">软件工具<span>3</span></a>
+    
+    <a href="/en/category/%E6%95%99%E7%A8%8B%E6%8C%87%E5%8D%97/index.html"
+       class="mp-cat">Tutorials &amp; Guides<span>3</span></a>
+    
+    <a href="/en/category/%E7%B3%BB%E7%BB%9F%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat">System Utilities<span>2</span></a>
+    
+    <a href="/en/category/%E6%9C%AC%E5%9C%B0%E5%8C%96%20AI/index.html"
+       class="mp-cat">Local AI<span>1</span></a>
+    
+    <a href="/en/category/%E6%95%88%E7%8E%87%E8%BD%AF%E4%BB%B6/index.html"
+       class="mp-cat">Productivity Software<span>1</span></a>
+    
+    <a href="/en/category/%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7/index.html"
+       class="mp-cat">Developer Tools<span>1</span></a>
+    
+    <a href="/en/category/%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/index.html"
+       class="mp-cat">Media Tools<span>1</span></a>
+    
+    <a href="/en/category/%E5%85%B6%E4%BB%96/index.html"
+       class="mp-cat">Other<span>1</span></a>
+    
+  </section>
+  
+
+  
+  <p class="mp-result-hint">405 results</p>
+  
+
+  <section class="mp-feed">
+    
+    <article class="mp-card">
+      <a href="/en/resource/600.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-06</time>
+        </div>
+        <h2 class="mp-card-title">txt小说网：全本完结TXT小说免费下载，精校全集畅享阅读</h2>
+        
+        <p class="mp-card-excerpt">txt小说网简介 txt小说网是一个专业提供全本TXT小说下载与完结版下载的免费网站，旨在为读者搜集网络上高质</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/601.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-06</time>
+        </div>
+        <h2 class="mp-card-title">ToolHub：万能免费在线工具箱 一站式图片、文本、列表、生成器与转换平台</h2>
+        
+        <p class="mp-card-excerpt">ToolHub介绍 ToolHub（toolhub.club）是一个面向日常与轻量开发场景的免费在线工具集合，</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/602.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-06</time>
+        </div>
+        <h2 class="mp-card-title">Blur Image Online – 免费在线照片模糊工具</h2>
+        
+        <p class="mp-card-excerpt">Blur Image Online简介 Blur Image Online 是一款免费在线图片模糊工具，支持S</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/604.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-05</time>
+        </div>
+        <h2 class="mp-card-title">Bibz：B站弹幕查询与批量导出工具 一键获取全量弹幕，支持UID追踪与直播弹幕导出</h2>
+        
+        <p class="mp-card-excerpt">Bibz简介 Bibz是一款在线免费的 B站弹幕查询与提取平台，帮助用户快速获取哔哩哔哩视频的全部弹幕数据。支</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/605.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-05</time>
+        </div>
+        <h2 class="mp-card-title">CpuTronic – CPU、GPU 与 SoC 性能对比与评分平台</h2>
+        
+        <p class="mp-card-excerpt">CpuTronic概览 CpuTronic 是一个专注于台式机、笔记本和移动设备处理器（CPU）、图形处理器（</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/606.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-04</time>
+        </div>
+        <h2 class="mp-card-title">How To Say：免费AI多语言表达助手，三种模式一键切换，20 种语言轻松跨文化沟通</h2>
+        
+        <p class="mp-card-excerpt">一段话概览 How To Say 是一款在线免费的 AI 多语言表达助手，集“表达、翻译、理解”三大模式于一身</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/607.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-04</time>
+        </div>
+        <h2 class="mp-card-title">What Time Is Sunset：全球日落时间查询全攻略 精准预测、黄金时段与拍摄指南</h2>
+        
+        <p class="mp-card-excerpt">What Time Is Sunset介绍 What Time Is Sunset 是一款全球性的日落／日出时</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/608.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-04</time>
+        </div>
+        <h2 class="mp-card-title">神器级「BAGen」：一分钟生成专业前后对比图，四种布局、无水印导出</h2>
+        
+        <p class="mp-card-excerpt">BAGen 概览 BAGen（Before After Photo Maker）是一款完全基于浏览器的前后对比</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/609.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-03</time>
+        </div>
+        <h2 class="mp-card-title">Sutom Game – 法语版 Wordle 式猜词游戏</h2>
+        
+        <p class="mp-card-excerpt">Sutom Game简介 🧠💬 Sutom Game 是一款法语版 Wordle 式猜词游戏，灵感来源于 Wo</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/610.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-03</time>
+        </div>
+        <h2 class="mp-card-title">Invert‑colors：免费在线反转图片颜色工具 一键创建专业负片效果</h2>
+        
+        <p class="mp-card-excerpt">什么是反转图片颜色工具Invert‑colors？ Invert‑colors 是一款专注于颜色反转处理的网页</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/614.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-02</time>
+        </div>
+        <h2 class="mp-card-title">seal_generation：免费在线印章生成与提取工具 一键制作做旧防伪印章</h2>
+        
+        <p class="mp-card-excerpt">seal_generation概况 seal_generation是一款免费在线印章生成与提取工具，该工具来自</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/617.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-01</time>
+        </div>
+        <h2 class="mp-card-title">PixTrim：免费在线无损压缩与裁剪图像神器</h2>
+        
+        <p class="mp-card-excerpt">PixTrim 是什么？ PixTrim 是一款纯浏览器端图片处理工具，用户可在无需安装软件的情况下完成尺寸调</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/619.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-08-01</time>
+        </div>
+        <h2 class="mp-card-title">SandboxFinder：HarmonyOS 沙箱文件浏览器，浏览器里就能管控应用文件</h2>
+        
+        <p class="mp-card-excerpt">SandboxFinder简介 SandboxFinder是一个专为 HarmonyOS 应用开发者设计的沙箱</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/622.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-30</time>
+        </div>
+        <h2 class="mp-card-title">数智学术：研究生必备的一站式全国科研与学术资源平台</h2>
+        
+        <p class="mp-card-excerpt">数智学术概述 数智学术是面向全国用户的科研与学术资源服务平台，旨在帮助学习、工作和生活中需要获取、加工、管理与</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/628.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-29</time>
+        </div>
+        <h2 class="mp-card-title">Color Generator Kigen：颜色生成器 一键打造专业级设计系统配色方案</h2>
+        
+        <p class="mp-card-excerpt">在配色效率与一致性日益重要的今天，Kigen 颜色生成器为设计师与前端开发者提供了快速、可扩展且语义清晰的调色</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/629.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-28</time>
+        </div>
+        <h2 class="mp-card-title">Setup Check：全面在线设备检测平台 一键检测摄像头、麦克风与网络的免费在线工具</h2>
+        
+        <p class="mp-card-excerpt">Setup Check平台概览 Setup Check 是一款基于浏览器的硬件兼容性检测平台， 为用户提供免费</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/633.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-27</time>
+        </div>
+        <h2 class="mp-card-title">iRingo：一键打破地域限制，完整激活 Apple 原生服务</h2>
+        
+        <p class="mp-card-excerpt">iRingo介绍 iRingo 是 GitHub 开发者 VirgilClyne 主导的开源脚本项目，借助重写</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/635.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-27</time>
+        </div>
+        <h2 class="mp-card-title">CartoonGames：免费畅玩经典卡通网络游戏的天堂</h2>
+        
+        <p class="mp-card-excerpt">CartoonGames介绍 CartoonGames.IO（cartoongames.io）专注于提供多样化</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/637.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-26</time>
+        </div>
+        <h2 class="mp-card-title">pyJianYingDraft：轻量灵活的Python剪映草稿工具 全自动视频剪辑流水线</h2>
+        
+        <p class="mp-card-excerpt">pyJianYingDraft概述 pyJianYingDraft是一款轻量、灵活且易上手的Python库，可</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/638.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-26</time>
+        </div>
+        <h2 class="mp-card-title">VERT.sh：快速免费且开源的全能文件转换工具</h2>
+        
+        <p class="mp-card-excerpt">VERT究竟是什么 VERT.sh 是一款基于 WebAssembly 构建的全能文件转换器，能够在浏览器中直</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/641.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-25</time>
+        </div>
+        <h2 class="mp-card-title">PDF Differ：Mac 上专业级 PDF 差异对比利器</h2>
+        
+        <p class="mp-card-excerpt">PDF Differ介绍 PDF Differ是一款专为设计师、编辑和艺术总监打造的Mac应用，能够快速、精确</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/642.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-25</time>
+        </div>
+        <h2 class="mp-card-title">TrackWeight：让 MacBook 触控板秒变精准电子秤</h2>
+        
+        <p class="mp-card-excerpt">TrackWeight 简介 TrackWeight 是一款适用于 macOS 的轻量级工具，能够借助现代 M</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/643.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-24</time>
+        </div>
+        <h2 class="mp-card-title">AACMix：一键免费收听全球54000+无广告电台 免登陆</h2>
+        
+        <p class="mp-card-excerpt">AACMix介绍 AACMix 是一个极简而高效的在线电台聚合平台，汇集了来自全球超过 54,000 个电台流</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+    <article class="mp-card">
+      <a href="/en/resource/645.html" class="mp-card-link">
+        <div class="mp-card-top">
+          
+          <span class="mp-tag">Online Tools</span>
+          
+          
+          <time class="mp-date">2025-07-24</time>
+        </div>
+        <h2 class="mp-card-title">Rubik’s Cube Solver：在线魔方求解器 输入颜色即可获得完整复原方案</h2>
+        
+        <p class="mp-card-excerpt">线魔方求解器（Rubik’s Cube Solver）介绍 Rubik’s Cube</p>
+        
+        
+        <span class="mp-card-more">Read more →</span>
+      </a>
+    </article>
+    
+  </section>
+
+  
+  <nav class="mp-pagination" aria-label="Pagination">
+    
+    <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/12/index.html" class="mp-page-btn">Previous</a>
+    
+    <div class="mp-page-nums">
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/index.html" class="mp-page-num">1</a>
+      
+        <span class="mp-page-gap">…</span>
+        
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/11/index.html" class="mp-page-num">11</a>
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/12/index.html" class="mp-page-num">12</a>
+      
+        <span class="mp-page-current">13</span>
+        
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/14/index.html" class="mp-page-num">14</a>
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/15/index.html" class="mp-page-num">15</a>
+      
+        <span class="mp-page-gap">…</span>
+        
+      
+        <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/17/index.html" class="mp-page-num">17</a>
+      
+    </div>
+    
+    <a href="/en/category/%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7/page/14/index.html" class="mp-page-btn">Next</a>
+    
+  </nav>
+  
+</div>
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>Mopan · AI Tools · Learning Resources · Short Drama Index</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · Resource index — please credit the source</p>
+      <p class="mp-footer-promo"><a href="/en/promo/quark/" data-promo-entry="footer">Quark Drive free resources →</a></p>
+      <p class="mp-footer-games"><a href="/en/game/">Mopan Mini Games →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1782700829"></script>
+  
+
+
+</body>
+</html>
