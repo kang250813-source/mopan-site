@@ -1577,13 +1577,15 @@ function buildingCard(y, icon, name, desc, cost, enabled, action, data) {
   if (sy > game.scrollTopY - h && sy < game.scrollBottomY + h) {
     drawRoundRect(pad, sy, game.width - pad * 2, h - 7, 10, 'rgba(0,0,0,0.24)', 'rgba(255,255,255,0.1)')
     text(icon, pad + 12, sy + 21, 21, '#fff')
-    const btnX = game.width - pad - 76
+    const btnW = 82
+    const btnH = 40
+    const btnX = game.width - pad - btnW
     const textW = btnX - pad - 72
     fittedText(name, pad + 56, sy + 12, textW * 0.48, 15, '#ffffff', '900')
     fittedText(cost, pad + 56 + textW * 0.5, sy + 12, textW * 0.5, 14, '#ffcd4c', '900')
     fittedText(desc, pad + 56, sy + 36, textW, 12, '#9aa6cc', '400')
-    if (enabled) addHit(`buyBuilding-zone-${data}`, btnX - 8, sy, 84, h - 7, action, data)
-    button('建造', btnX, sy + 18, 66, 32, enabled, action, data, false)
+    if (enabled) addHit(`buyBuilding-zone-${data}`, btnX - 14, sy - 4, btnW + 28, h + 1, action, data)
+    button('建造', btnX, sy + 14, btnW, btnH, enabled, action, data, false)
     addHit(`showBuildingDetail-${data}`, pad, sy, btnX - pad - 10, h - 7, 'showBuildingDetail', data)
   }
   return y + h
