@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="Mopan">
+  <title>PlayBridge：跨平台开源本地投屏工具，支持 Android TV、Apple TV 与 DLNA - Mopan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1784284407">
+  
+</head>
+<body class="" data-locale="en" data-i18n="{&#34;collapse&#34;: &#34;Show less&#34;, &#34;copied&#34;: &#34;Copied&#34;, &#34;copied_paste&#34;: &#34;Copied \u2014 paste to send&#34;, &#34;copy_prompt&#34;: &#34;Copy the text from the dialog&#34;, &#34;expand_more&#34;: &#34;Show more ({n})&#34;, &#34;games_bobing_award_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_award_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;Five of a Kind&#34;, &#34;games_bobing_award_five_red&#34;: &#34;Five Reds&#34;, &#34;games_bobing_award_four_red&#34;: &#34;Four Reds&#34;, &#34;games_bobing_award_golden&#34;: &#34;Golden Zhuangyuan&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_award_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_award_six_black&#34;: &#34;Six Black&#34;, &#34;games_bobing_award_six_red&#34;: &#34;Six Reds&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_miss&#34;: &#34;No prize&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 no prize&#34;, &#34;games_bobing_name_label&#34;: &#34;Player {n}&#34;, &#34;games_bobing_over&#34;: &#34;All prizes claimed \u2014 game over&#34;, &#34;games_bobing_player_default&#34;: &#34;Player {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_prize_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;Zhuangyuan&#34;, &#34;games_bobing_roll&#34;: &#34;Roll&#34;, &#34;games_bobing_rolling&#34;: &#34;Rolling six dice\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} is gone&#34;, &#34;games_bobing_start&#34;: &#34;Pick players, then take turns rolling&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}!&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award} (pending)&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} wins Zhuangyuan \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;Keep guessing \u2014 narrow the range&#34;, &#34;games_bomb_boom&#34;: &#34;Boom! The bomb was {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;Boom!&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u2014 too high&#34;, &#34;games_bomb_invalid&#34;: &#34;Enter a number in range&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u2014 too low&#34;, &#34;games_bomb_out&#34;: &#34;Stay between {low} and {high}&#34;, &#34;games_bomb_start&#34;: &#34;Guess a number \u2014 hit the bomb and you lose&#34;, &#34;games_chore_done&#34;: &#34;{who} \u2192 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;Already added&#34;, &#34;games_chore_max&#34;: &#34;Max 10 items&#34;, &#34;games_chore_min_people&#34;: &#34;Keep at least 2 people&#34;, &#34;games_chore_min_tasks&#34;: &#34;Keep at least 2 chores&#34;, &#34;games_cleared&#34;: &#34;Out of moves&#34;, &#34;games_croc_lose&#34;: &#34;Player {n} got bitten!&#34;, &#34;games_croc_safe&#34;: &#34;Lucky round \u2014 no one got bitten&#34;, &#34;games_croc_turn&#34;: &#34;Player {n} \u2014 pick a tooth&#34;, &#34;games_dice_rolling&#34;: &#34;Rolling\u2026&#34;, &#34;games_dice_total&#34;: &#34;Total: {n}&#34;, &#34;games_finger_pick&#34;: &#34;Player {n} \u2014 your turn!&#34;, &#34;games_game_over&#34;: &#34;Game over&#34;, &#34;games_no_match&#34;: &#34;No match&#34;, &#34;games_open_pick&#34;: &#34;Open pick&#34;, &#34;games_perfect&#34;: &#34;Perfect!&#34;, &#34;games_site_open&#34;: &#34;Visit site&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;A handy site worth bookmarking.&#34;, &#34;games_stack_start&#34;: &#34;Tap to start&#34;, &#34;games_stack_start_sub&#34;: &#34;Tap the board or button to drop&#34;, &#34;games_tictactoe_draw&#34;: &#34;Draw&#34;, &#34;games_tictactoe_start&#34;: &#34;X goes first&#34;, &#34;games_tictactoe_turn&#34;: &#34;{mark} to play&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} wins!&#34;, &#34;games_topic_ready&#34;: &#34;Tap to draw a topic card&#34;, &#34;games_who_default_task&#34;: &#34;do chores&#34;, &#34;no_share_url&#34;: &#34;Cannot get share link&#34;, &#34;prompt_copy&#34;: &#34;Select and copy the text below to share:&#34;, &#34;share&#34;: &#34;Share&#34;, &#34;share_copied_wechat&#34;: &#34;Share text copied&#34;, &#34;share_failed&#34;: &#34;Share failed \u2014 copy the page link manually&#34;, &#34;share_invoked&#34;: &#34;Share opened&#34;, &#34;share_page&#34;: &#34;Page link&#34;, &#34;share_quark&#34;: &#34;Quark Drive&#34;, &#34;site_drama&#34;: &#34;Quark Drama&#34;, &#34;site_resource&#34;: &#34;Site Resource&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/en/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>Mopan</strong>
+          <small>AI Tools · Learning Resources · Short Drama Index</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="Color theme">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="Purple" aria-label="Purple"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="Forest" aria-label="Forest"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="Amber" aria-label="Amber"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/resource/18969.html" class="mp-lang-link" hreflang="zh" lang="zh">中文</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/en/index.html" class="mp-nav-link">← Discover</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">开源替代</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="PlayBridge：跨平台开源本地投屏工具，支持 Android TV、Apple TV 与 DLNA"
+  data-share-page="/en/resource/18969.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="Share this page"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share</span>
+</button>
+    </div>
+    <h1>PlayBridge：跨平台开源本地投屏工具，支持 Android TV、Apple TV 与 DLNA</h1>
+    
+    <p class="detail-meta">Published 2026-07-13</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p><strong>PlayBridge 是一款开源本地投屏工具，可以通过局域网将手机内容发送到 Android TV、Apple TV、桌面电脑以及支持 DLNA 的电视设备。</strong></p>
+<p></p>
+<p>将手机视频、网页内容或本地媒体投屏到电视，看似只是连接设备的问题，但实际体验往往还会受到广告展示、会员限制以及账号绑定等因素影响。对于寻找<strong>开源本地投屏工具</strong>的用户来说，PlayBridge 提供了一种不同的选择：通过局域网连接手机与接收设备，减少对云端服务的依赖，让 Android TV、Apple TV、桌面电脑以及支持 DLNA 的设备之间可以建立更直接的投屏方式。</p>
+<p></p>
+<div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;"><strong>PlayBridge 的部署门槛在哪里？</strong><br />
+PlayBridge 目前仍处于 Alpha 阶段，并不是传统意义上的“一键安装”投屏 App。Android TV / Fire TV 用户需要手动安装 APK；Apple TV 目前没有直接可用的安装包，需要通过 Mac 使用 Xcode 编译部署。对于没有相关经验的用户来说，首次配置可能需要一定学习成本。</div>
+<h2>不走云端，这个开源本地投屏工具和常见方案有何不同？</h2>
+<p>PlayBridge 和常见商业方案最大的区别，在于“局域网优先”和“跨设备兼容”。</p>
+<p>它不需要依赖云端账号体系。当手机连接电视或电脑时，设备之间主要通过本地网络建立连接，并通过配对码完成验证。通信过程使用 <code>wss://</code> 加密连接，这种设计更适合希望了解数据流向、减少第三方服务参与的用户。</p>
+<p></p>
+<div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;"><strong>开源许可与播放兼容</strong><br />
+PlayBridge 遵循 GPLv3 开源协议，项目代码公开维护。它支持标准 DLNA/UPnP 设备发现，也提供独立接收端以获得更完整的投屏体验。接收端集成 ExoPlayer 和 MPV 播放引擎，可以在部分媒体格式兼容问题上提供更多处理空间。</div>
+<h2>PlayBridge 支持哪些设备？Android TV、Apple TV 与 DLNA 兼容情况</h2>
+<p>作为一个跨平台开源本地投屏工具，PlayBridge 的优势之一是覆盖了多个常见设备环境，不需要用户被限制在单一生态中。</p>
+<ul>
+<li><strong>Android TV / Fire TV：</strong>提供 APK 安装方式，可以作为电视接收端使用。</li>
+<li><strong>Apple TV：</strong>目前需要通过 Xcode 自行编译部署，对普通用户来说门槛较高。</li>
+<li><strong>桌面电脑：</strong>支持 Windows、macOS 和 Linux 平台，可以将电脑作为投屏接收端。</li>
+<li><strong>DLNA / UPnP 电视：</strong>部分支持标准协议的智能电视无需额外安装接收端即可被发现。</li>
+</ul>
+<p>需要注意的是，不同设备的兼容程度会受到系统版本、网络环境以及设备厂商实现差异影响。Alpha 阶段项目通常还会持续调整功能和兼容性，实际体验建议以官方版本说明为准。</p>
+<p></p>
+<h2>PlayBridge 如何实现局域网投屏？手机和电视之间的数据如何传输</h2>
+<p>传统投屏服务通常需要结合账号体系、云端服务或特定生态，而 PlayBridge 的核心思路是让设备之间直接建立连接。</p>
+<p></p>
+<p>简单来说，整个流程大致如下：</p>
+<ol>
+<li>手机端发现同一局域网中的可用接收设备。</li>
+<li>接收端显示配对信息，手机输入验证码完成设备授权。</li>
+<li>双方建立通信连接，将播放控制信息和媒体内容发送到目标设备。</li>
+<li>电视或桌面接收端负责实际播放和渲染。</li>
+</ol>
+<p>这种局域网模式的优势是减少了外部服务依赖，但同时也意味着设备通常需要处于同一个 Wi-Fi 网络环境中，无法像部分云端方案一样跨网络远程连接。</p>
+<h2>PlayBridge 和 AirPlay、Chromecast、DLNA 投屏方案有什么区别？</h2>
+<p>如果你之前使用过 AirPlay、Chromecast 或传统 DLNA，那么 PlayBridge 的定位会更容易理解。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>账号依赖</th>
+<th>跨平台能力</th>
+<th>主要特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AirPlay</td>
+<td>Apple 生态</td>
+<td>主要覆盖 Apple 设备</td>
+<td>系统集成度高，iPhone 和 Mac 使用体验成熟</td>
+</tr>
+<tr>
+<td>Chromecast</td>
+<td>通常结合 Google 服务</td>
+<td>Android 设备支持较好</td>
+<td>生态成熟，适合 Google 设备用户</td>
+</tr>
+<tr>
+<td>DLNA</td>
+<td>无需统一账号</td>
+<td>兼容设备较多</td>
+<td>协议开放，但不同厂商之间体验差异较大</td>
+</tr>
+<tr>
+<td>PlayBridge</td>
+<td>不要求依赖统一账号体系</td>
+<td>Android、Apple、桌面设备</td>
+<td>开源、本地化、多接收端，适合喜欢折腾和自定义的用户</td>
+</tr>
+</tbody>
+</table>
+<p>PlayBridge 并不是为了完全取代成熟商业方案。AirPlay 和 Chromecast 经过多年优化，在稳定性、设备适配和普通用户体验方面仍然具有优势。</p>
+<p></p>
+<p>它更适合希望使用开源方案搭建家庭媒体环境，并愿意接受一定部署成本的用户。</p>
+<h2>PlayBridge 还有哪些适合极客用户的功能？</h2>
+<p>除了基础的视频和媒体投屏，PlayBridge 还针对一些高级使用场景提供了额外能力。</p>
+<ul>
+<li><strong>M3U / IPTV 播放列表：</strong>支持加载个人维护的媒体播放列表，方便管理已有的直播或媒体源。</li>
+<li><strong>网页媒体播放：</strong>内置网页浏览能力，可以处理部分网页视频内容，并将支持的媒体资源发送到投屏设备。</li>
+<li><strong>手机遥控模式：</strong>投屏后可以将手机作为触控板、方向控制器以及键盘输入设备使用，减少电视端输入操作的麻烦。</li>
+<li><strong>媒体库管理：</strong>支持类似媒体中心的软件组织方式，适合整理个人影音内容和家庭媒体库。</li>
+<li><strong>本地媒体处理：</strong>支持对部分未加密公开 HLS 视频流进行本地处理，并转换保存为 MP4。</li>
+<li><strong>家庭媒体场景：</strong>适合搭配 NAS、本地视频库等环境使用。</li>
+</ul>
+<p>这些功能并不是普通投屏用户的刚需，但对于已经搭建家庭媒体中心、喜欢研究本地影音方案的用户来说，会增加工具的可玩性。</p>
+<h2>PlayBridge 适合哪些用户？</h2>
+<p>PlayBridge 并不是所有人的最佳选择，它更像是一款面向特定用户群体的开源工具。</p>
+<h3>比较适合：</h3>
+<ul>
+<li>希望减少第三方账号和云端依赖的用户。</li>
+<li>已经使用 NAS、家庭媒体中心等本地影音方案的人。</li>
+<li>喜欢开源软件，愿意接受 Alpha 阶段产品的人。</li>
+<li>需要 Android、Apple、桌面设备之间跨平台连接的人。</li>
+</ul>
+<h3>可能不适合：</h3>
+<ul>
+<li>希望安装后立即稳定使用的普通家庭用户。</li>
+<li>不愿意进行 APK 侧载或开发环境配置的人。</li>
+<li>需要跨互联网远程投屏的人。</li>
+</ul>
+<p>简单来说，PlayBridge 不是为了替代所有商业投屏工具，而是为希望使用开源、本地化投屏方案的用户提供了另一条路径。它更适合 NAS 用户、家庭媒体爱好者以及愿意接受配置成本的技术用户。</p>
+<h2>PlayBridge 常见问题</h2>
+<h3>PlayBridge 是免费的吗？</h3>
+<p>PlayBridge 是开源项目，采用 GPLv3 许可证。用户可以查看项目源码，并根据官方说明进行安装和部署。由于项目目前仍处于 Alpha 阶段，具体功能和版本状态建议以 GitHub 仓库更新为准。</p>
+<h3>PlayBridge 需要联网才能使用吗？</h3>
+<p>PlayBridge 主要依赖局域网连接设备，手机和接收端通常需要处于同一个 Wi-Fi 网络环境。它不依赖云端账号完成设备连接，但也因此不适合跨网络远程投屏。</p>
+<h3>PlayBridge 支持 Android TV 和 Apple TV 吗？</h3>
+<p>PlayBridge 支持 Android TV / Fire TV 作为投屏接收端使用，也支持 Apple TV。不过 Apple TV 目前没有直接可安装版本，需要通过 Mac 使用 Xcode 自行编译部署。</p>
+<h3>PlayBridge 可以替代 AirPlay 或 Chromecast 吗？</h3>
+<p>PlayBridge 提供了一种开源本地投屏方案，但并不是成熟商业投屏服务的完全替代品。AirPlay 和 Chromecast 在系统集成、设备适配以及稳定性方面仍然具有优势，而 PlayBridge 更适合希望使用开源方案、关注本地控制的用户。</p>
+<h3>PlayBridge 适合普通用户使用吗？</h3>
+<p>目前 PlayBridge 仍处于 Alpha 阶段，更适合愿意尝试开源工具、能够接受一定配置过程的用户。如果希望安装后直接稳定使用，成熟的商业投屏方案可能更适合。</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>PlayBridge 官网、源码与客户端下载</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px; margin-bottom: 36px;">
+<p><!-- 唯一的蓝色主视觉卡片 --><br />
+<a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://playbridge.app/" target="_blank" rel="nofollow noopener"><br />
+🌐 PlayBridge 官方网站<br />
+<span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">查看项目介绍、功能说明以及官方使用文档。</span><br />
+</a></p>
+<p><!-- 灰色次视觉卡片 1 --><br />
+<a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://github.com/playbridgeapp/playbridge" target="_blank" rel="nofollow noopener"><br />
+🐙 PlayBridge GitHub 项目主页<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">查看项目源码、各端编译指南（含 Apple TV 部署说明），以及 GPLv3 许可证详情。</span><br />
+</a></p>
+<p><!-- 灰色次视觉卡片 2 --><br />
+<a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://github.com/playbridgeapp/playbridge/releases" target="_blank" rel="nofollow noopener"><br />
+⬇️ PlayBridge Releases 下载页<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">下载 Android 手机发送端、Android TV 安装包，以及 Windows/macOS/Linux 桌面客户端。</span><br />
+</a></p>
+</div>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="Content source">
+  <p class="mp-source-stamp-main">
+    Curated on <strong>Mopan</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">Feel free to share — please keep the source link</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">Share this page</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="PlayBridge：跨平台开源本地投屏工具，支持 Android TV、Apple TV 与 DLNA"
+  data-share-page="/en/resource/18969.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share with friends</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>Related</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/en/resource/17160.html" class="drama-card">原地打坐 - 文田心：Final Cut Pro X 剪辑自学教程</a>
+    
+    <a href="/en/resource/17161.html" class="drama-card">M_Studio麦扣教程合集</a>
+    
+    <a href="/en/resource/17173.html" class="drama-card">UE5虚幻引擎迷你地图指南针和标记系统制作视频教程</a>
+    
+    <a href="/en/resource/17179.html" class="drama-card">七分学堂《恋爱核武器》课程</a>
+    
+    <a href="/en/resource/17202.html" class="drama-card">原生的力量——原生JavaScript开发高级课程 -带源码课件</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>Mopan · AI Tools · Learning Resources · Short Drama Index</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · Resource index — please credit the source</p>
+      <p class="mp-footer-promo"><a href="/en/promo/quark/" data-promo-entry="footer">Quark Drive free resources →</a></p>
+      <p class="mp-footer-games"><a href="/en/game/">Mopan Mini Games →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1784284407"></script>
+  
+</body>
+</html>
