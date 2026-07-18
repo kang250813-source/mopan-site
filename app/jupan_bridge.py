@@ -10,6 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from app.config import (
+    COVER_ASSET_BASE,
     JUPAN_COVER_VERSION,
     JUPAN_HOT_TAGS,
     JUPAN_MAIN_SHARE_CACHE,
@@ -250,7 +251,8 @@ def cover_src(cover_url: str | None) -> str | None:
     name = cover_url.rsplit("/", 1)[-1]
     if not name:
         return None
-    return f"/jupan-covers/{name}?v={JUPAN_COVER_VERSION}"
+    base = COVER_ASSET_BASE or "/jupan-covers"
+    return f"{base}/{name}?v={JUPAN_COVER_VERSION}"
 
 
 _EPISODE_RE = re.compile(r"[（(](\d+)集[）)]")

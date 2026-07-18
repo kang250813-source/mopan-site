@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -73,6 +74,7 @@ DISCOVER_JSON = ROOT / "data" / "discover.json"
 COVERS_DATA_DIR = ROOT / "data" / "jupan-covers"
 
 RESOURCE_CHANNELS = ("discover", "media", "other", "k12", "ai_video", "classics")
+_RAW_HTML_BLOCK_RE = re.compile(r"<(pre|script|style|textarea)\\b[^>]*>.*?</\\1\\s*>", re.IGNORECASE | re.DOTALL)
 
 
 @dataclass
@@ -370,14 +372,27 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
     docs_root.mkdir(parents=True, exist_ok=True)
     env = _make_env(i18n, base_path, channel_counts)
     stats = {"resources": 0, "list_pages": 0, "dramas": 0}
+    minify_html = os.getenv("STATIC_MINIFY_HTML", "").strip() == "1"
+
+    def compact_html(html: str) -> str:
+        blocks: list[str] = []
+
+        def stash(match: re.Match[str]) -> str:
+            blocks.append(match.group(0))
+            return f"@@RAW_{len(blocks) - 1}@@"
+
+        compact = _RAW_HTML_BLOCK_RE.sub(stash, html)
+        compact = re.sub(r"\\s+", " ", compact)
+        compact = re.sub(r">\\s+<", "><", compact)
+        for index, block in enumerate(blocks):
+            compact = compact.replace(f"@@RAW_{index}@@", block)
+        return compact
 
     def write(name: str, path: Path, **ctx) -> None:
         tpl = env.get_template(name)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            tpl.render(locale_switch_href=i18n.locale_switch_href(_page_url_path(base_path, path, docs_root)), **ctx),
-            encoding="utf-8",
-        )
+        html = tpl.render(locale_switch_href=i18n.locale_switch_href(_page_url_path(base_path, path, docs_root)), **ctx)
+        path.write_text(compact_html(html) if minify_html else html, encoding="utf-8")
 
     for channel in RESOURCE_CHANNELS:
         resources = _resources_for_channel(payload, channel)
@@ -639,6 +654,8 @@ def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) 
 
 
 def _copy_covers() -> None:
+    if os.getenv("COVER_ASSET_BASE", "").strip():
+        return
     dst = DOCS_DIR / "jupan-covers"
     dst.mkdir(parents=True, exist_ok=True)
     # Merge both sources; later src overwrites same filename (duanjuku is fresher).

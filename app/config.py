@@ -104,3 +104,4 @@ def jupan_cover_version() -> str:
 
 STATIC_VERSION = static_version()
 JUPAN_COVER_VERSION = jupan_cover_version()
+COVER_ASSET_BASE = os.getenv("COVER_ASSET_BASE", "").rstrip("/")
