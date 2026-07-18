@@ -79,12 +79,38 @@
     onUnload: function (callback) { callbacks.unload.push(callback); }
   };
 
-  canvas.addEventListener('touchstart', function (event) { event.preventDefault(); emit('start', touchEvent(event)); }, { passive: false });
-  canvas.addEventListener('touchmove', function (event) { event.preventDefault(); emit('move', touchEvent(event)); }, { passive: false });
-  canvas.addEventListener('touchend', function (event) { event.preventDefault(); emit('end', touchEvent(event)); }, { passive: false });
-  canvas.addEventListener('mousedown', function (event) { emit('start', { touches: [event], changedTouches: [event] }); });
-  window.addEventListener('mousemove', function (event) { if (event.buttons) emit('move', { touches: [event], changedTouches: [event] }); });
-  window.addEventListener('mouseup', function (event) { emit('end', { touches: [], changedTouches: [event] }); });
+  function pointerEvent(event, ended) {
+    return { touches: ended ? [] : [event], changedTouches: [event] };
+  }
+
+  if (window.PointerEvent) {
+    canvas.addEventListener('pointerdown', function (event) {
+      event.preventDefault();
+      canvas.setPointerCapture(event.pointerId);
+      emit('start', pointerEvent(event, false));
+    });
+    canvas.addEventListener('pointermove', function (event) {
+      if (!canvas.hasPointerCapture(event.pointerId)) return;
+      event.preventDefault();
+      emit('move', pointerEvent(event, false));
+    });
+    canvas.addEventListener('pointerup', function (event) {
+      event.preventDefault();
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      emit('end', pointerEvent(event, true));
+    });
+    canvas.addEventListener('pointercancel', function (event) {
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      emit('end', pointerEvent(event, true));
+    });
+  } else {
+    canvas.addEventListener('touchstart', function (event) { event.preventDefault(); emit('start', touchEvent(event)); }, { passive: false });
+    canvas.addEventListener('touchmove', function (event) { event.preventDefault(); emit('move', touchEvent(event)); }, { passive: false });
+    canvas.addEventListener('touchend', function (event) { event.preventDefault(); emit('end', touchEvent(event)); }, { passive: false });
+    canvas.addEventListener('mousedown', function (event) { emit('start', { touches: [event], changedTouches: [event] }); });
+    window.addEventListener('mousemove', function (event) { if (event.buttons) emit('move', { touches: [event], changedTouches: [event] }); });
+    window.addEventListener('mouseup', function (event) { emit('end', { touches: [], changedTouches: [event] }); });
+  }
   window.addEventListener('resize', function () { emit('resize'); });
   window.addEventListener('pagehide', function () { emit('hide'); emit('unload'); });
 }());
