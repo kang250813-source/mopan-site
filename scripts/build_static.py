@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -641,20 +642,44 @@ def _copy_covers() -> None:
     dst = DOCS_DIR / "jupan-covers"
     dst.mkdir(parents=True, exist_ok=True)
     # Merge both sources; later src overwrites same filename (duanjuku is fresher).
+    covers: dict[str, Path] = {}
     for src in (COVERS_DATA_DIR, JUPAN_COVERS_DIR):
         if not src.is_dir():
             continue
         for file in src.iterdir():
             if file.is_file():
-                shutil.copy2(file, dst / file.name)
+                covers[file.name] = file
+
+    optimize_bytes = max(0, int(os.getenv("COVER_OPTIMIZE_KB", "0"))) * 1024
+
+    def publish(item: tuple[str, Path]) -> None:
+        name, src = item
+        output = dst / name
+        if not optimize_bytes or src.stat().st_size <= optimize_bytes:
+            shutil.copy2(src, output)
+            return
+        try:
+            from PIL import Image
+
+            with Image.open(src) as image:
+                image.thumbnail((480, 686), Image.Resampling.LANCZOS)
+                image.convert("RGB").save(output, "WEBP", quality=74, method=2)
+        except Exception as exc:
+            print(f"  cover optimize failed ({name}): {exc}", file=sys.stderr)
+            shutil.copy2(src, output)
+
+    workers = min(8, os.cpu_count() or 1) if optimize_bytes else 1
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(publish, covers.items()))
 
 
-def _deploy_wukong_games() -> None:
+def _deploy_wukong_games(locales: tuple[str, ...]) -> None:
     if not wukong_games_available():
         return
     for slug in WUKONG_SLUGS:
         src = WUKONG_DIR / slug / "index.html"
-        for root in (DOCS_DIR, DOCS_DIR / "en"):
+        for locale in locales:
+            root = DOCS_DIR if locale == "zh" else DOCS_DIR / locale
             dst = root / "game" / slug / "index.html"
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
@@ -665,6 +690,8 @@ def build(base_path: str = "") -> None:
     _ = base_path.rstrip("/")
     payload = load_payload()
     channel_counts = dict(payload.channel_counts)
+    if payload.dramas:
+        channel_counts["drama"] = len(payload.dramas)
 
     if DOCS_DIR.exists():
         shutil.rmtree(DOCS_DIR)
@@ -673,14 +700,19 @@ def build(base_path: str = "") -> None:
     (DOCS_DIR / ".nojekyll").touch()
     _copy_covers()
 
+    requested_locales = tuple(
+        locale.strip()
+        for locale in os.getenv("STATIC_LOCALES", ",".join(LOCALES)).split(",")
+        if locale.strip() in LOCALES
+    ) or ("zh",)
     totals = {"resources": 0, "list_pages": 0, "dramas": 0}
-    for locale in LOCALES:
+    for locale in requested_locales:
         stats = _build_locale(get_i18n(locale), payload, channel_counts)
         for key in totals:
             totals[key] += stats[key]
         print(f"  locale {locale}: resources={stats['resources']}, dramas={stats['dramas']}, lists={stats['list_pages']}")
 
-    _deploy_wukong_games()
+    _deploy_wukong_games(requested_locales)
 
     print(f"Built static site -> {DOCS_DIR}")
     print(f"  channels: {', '.join(f'{k}={v}' for k, v in channel_counts.items())}")
