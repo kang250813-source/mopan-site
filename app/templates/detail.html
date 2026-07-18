@@ -13,6 +13,7 @@
 {% block content %}
 {% set share_title = resource.title %}
 {% set share_quark = resource.pan_url if resource.has_download else '' %}
+{% set share_password = resource.pan_password if resource.has_download else '' %}
 {% set share_github = resource.github.blob if resource.has_github and resource.github else '' %}
 {% set share_kind = 'drama' if resource.channel == 'drama' else 'resource' %}
 <article class="detail-page">
@@ -83,6 +84,9 @@
       {% include "_share_btn.html" %}
     </div>
     <p class="cta-link-preview">{{ resource.pan_url }}</p>
+    {% if resource.pan_password %}
+    <p class="mp-pan-password"><span>{{ t('detail.pan_password') }}</span><code>{{ resource.pan_password }}</code><button type="button" data-copy="{{ resource.pan_password }}">{{ t('detail.copy_password') }}</button></p>
+    {% endif %}
     <div class="qr-block">
       <img src="{{ resource.pan_url | qr_data_url }}" alt="{{ t('detail.qr_alt') }}" width="160" height="160">
       <p>{{ t('detail.scan_pan', pan=pan_label) }}</p>

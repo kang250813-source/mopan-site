@@ -95,6 +95,7 @@ def _resource_from_dict(raw: dict) -> Resource:
         id=int(raw["id"]),
         title=raw["title"],
         pan_url=raw.get("pan_url", ""),
+        pan_password=raw.get("pan_password", ""),
         pan_type=raw.get("pan_type", "quark"),
         channel=raw.get("channel", "discover"),
         wp_id=raw.get("wp_id"),

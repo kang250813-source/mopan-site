@@ -150,6 +150,7 @@
   function buildShareText(title, pageUrl, btn) {
     var kind = btn.getAttribute('data-share-kind') || 'resource';
     var quarkUrl = (btn.getAttribute('data-share-quark') || '').trim();
+    var password = (btn.getAttribute('data-share-password') || '').trim();
     var githubUrl = (btn.getAttribute('data-share-github') || '').trim();
     var label = kind === 'drama'
       ? siteTitle() + ' · ' + msg('site_drama', '夸克短剧')
@@ -157,6 +158,7 @@
 
     var lines = ['【' + title + '】' + label, '👉 ' + msg('share_page', '本页链接') + '：' + pageUrl];
     if (quarkUrl) lines.push('📦 ' + msg('share_quark', '夸克网盘') + '：' + quarkUrl);
+    if (password) lines.push('🔑 ' + msg('share_password', '网盘密码') + '：' + password);
     if (githubUrl) lines.push('📚 GitHub：' + githubUrl);
     return lines.join('\n');
   }

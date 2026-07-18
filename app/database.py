@@ -32,6 +32,7 @@ class Resource:
     id: int
     title: str
     pan_url: str = ""
+    pan_password: str = ""
     pan_type: str = "quark"
     channel: str = DEFAULT_CHANNEL
     wp_id: int | None = None
@@ -124,6 +125,7 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
     additions = [
         ("wp_id", "INTEGER"),
         ("pan_url", "TEXT NOT NULL DEFAULT ''"),
+        ("pan_password", "TEXT NOT NULL DEFAULT ''"),
         ("pan_type", "TEXT NOT NULL DEFAULT 'quark'"),
         ("category", "TEXT"),
         ("excerpt", "TEXT"),
@@ -175,6 +177,7 @@ def _row_to_resource(row: sqlite3.Row) -> Resource:
         id=int(row["id"]),
         title=row["title"],
         pan_url=pan_url or "",
+        pan_password=row["pan_password"] if "pan_password" in keys else "",
         pan_type=row["pan_type"] if "pan_type" in keys else PAN_TYPE,
         channel=row["channel"] if "channel" in keys and row["channel"] else DEFAULT_CHANNEL,
         wp_id=int(row["wp_id"]) if "wp_id" in keys and row["wp_id"] is not None else None,
@@ -196,6 +199,7 @@ def upsert_resource(
     title: str,
     content_html: str | None = None,
     pan_url: str = "",
+    pan_password: str = "",
     pan_type: str | None = None,
     category: str | None = None,
     excerpt: str | None = None,
@@ -212,6 +216,7 @@ def upsert_resource(
     init_db(db_path)
     published_at = _normalize_published_at(published_at)
     pan = pan_url.split("?")[0].strip() if pan_url else ""
+    password = (pan_password or "").strip()
     ptype = pan_type or PAN_TYPE
     ch = channel or DEFAULT_CHANNEL
     now = _now()
@@ -241,6 +246,7 @@ def upsert_resource(
                 UPDATE resources
                 SET title = ?, {content_sql},
                     pan_url = CASE WHEN ? != '' THEN ? ELSE pan_url END,
+                    pan_password = CASE WHEN ? != '' THEN ? ELSE pan_password END,
                     pan_type = ?, category = COALESCE(?, category),
                     excerpt = COALESCE(?, excerpt),
                     published_at = COALESCE(?, published_at),
@@ -256,6 +262,8 @@ def upsert_resource(
                     content_html,
                     pan,
                     pan,
+                    password,
+                    password,
                     ptype,
                     category,
                     excerpt,
@@ -275,15 +283,16 @@ def upsert_resource(
         conn.execute(
             """
             INSERT INTO resources (
-              wp_id, title, pan_url, pan_type, channel, category, excerpt,
+              wp_id, title, pan_url, pan_password, pan_type, channel, category, excerpt,
               content_html, source_ref, pan_save_path, pan_branches, published_at,
               link_status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 wp_id,
                 title.strip(),
                 pan,
+                password,
                 ptype,
                 ch,
                 category,
