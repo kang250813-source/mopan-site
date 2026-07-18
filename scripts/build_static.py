@@ -321,6 +321,12 @@ def _page_url_path(base_path: str, out_file: Path, docs_root: Path) -> str:
     return url.replace("//", "/")
 
 
+def _share_url(path: str) -> str:
+    if PUBLIC_SITE_URL:
+        return f"{PUBLIC_SITE_URL.rstrip('/')}{path}"
+    return path
+
+
 def _docs_root(locale: str) -> Path:
     return DOCS_DIR if locale == "zh" else DOCS_DIR / "en"
 
@@ -464,7 +470,7 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 request=_fake_request(f"/resource/{resource.id}"),
                 resource=resource,
                 related=related,
-                share_page_url=resource_href(base_path, resource.id, static_site=True),
+                share_page_url=_share_url(resource_href(base_path, resource.id, static_site=True)),
             )
             stats["resources"] += 1
 
@@ -537,7 +543,7 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 drama=drama_page,
                 drama_promo=drama_promo,
                 related=related,
-                share_page_url=drama_href(base_path, drama.id, static_site=True),
+                share_page_url=_share_url(drama_href(base_path, drama.id, static_site=True)),
             )
             stats["dramas"] += 1
 

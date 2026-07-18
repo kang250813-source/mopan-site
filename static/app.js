@@ -129,10 +129,17 @@
 
   function resolveSharePageUrl(btn) {
     var fromBtn = (btn.getAttribute('data-share-page') || '').trim();
-    if (fromBtn) return fromBtn;
-
     var meta = document.querySelector('meta[name="public-site-url"]');
     var publicRoot = meta ? meta.getAttribute('content') : '';
+    var base = publicRoot || window.location.origin;
+    if (fromBtn) {
+      try {
+        return new URL(fromBtn, base).href;
+      } catch (err) {
+        return fromBtn;
+      }
+    }
+
     if (publicRoot) {
       return publicRoot.replace(/\/$/, '') + window.location.pathname;
     }
@@ -152,12 +159,6 @@
     if (quarkUrl) lines.push('📦 ' + msg('share_quark', '夸克网盘') + '：' + quarkUrl);
     if (githubUrl) lines.push('📚 GitHub：' + githubUrl);
     return lines.join('\n');
-  }
-
-  function kindLabel(btn, title) {
-    var kind = btn.getAttribute('data-share-kind') || 'resource';
-    var suffix = kind === 'drama' ? msg('site_drama', '夸克短剧') : siteTitle();
-    return title + ' - ' + suffix;
   }
 
   function markShared(btn) {
@@ -190,22 +191,6 @@
     function fallbackPrompt() {
       window.prompt(msg('prompt_copy', '请复制以下文案'), text);
       showToast(msg('copy_prompt', '请复制弹窗中的文案'), 'success');
-    }
-
-    if (!isMobile()) {
-      return copyText(text).then(doneCopy).catch(fallbackPrompt);
-    }
-
-    if (navigator.share) {
-      return navigator.share({
-        title: kindLabel(btn, title),
-        text: text,
-      }).then(function () {
-        showToast(msg('share_invoked', '已唤起分享'), 'success');
-      }).catch(function (err) {
-        if (err && err.name === 'AbortError') return;
-        return copyText(text).then(doneCopy).catch(fallbackPrompt);
-      });
     }
 
     return copyText(text).then(doneCopy).catch(fallbackPrompt);
