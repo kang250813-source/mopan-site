@@ -894,6 +894,8 @@ function drawPackReveal() {
 function drawDetailOverlay() {
   const detail = game.detailOverlay
   if (!detail) return
+  // A full-screen dismiss target makes modal closing tolerant of mobile touch drift.
+  addHit('detail-overlay-dismiss', 0, 0, game.width, game.height, 'closeDetailOverlay')
   const item = detail.item
   if (detail.type === 'journey') {
     ctx.save()
