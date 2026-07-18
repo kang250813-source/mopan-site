@@ -9,6 +9,8 @@ import re
 import shutil
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -220,7 +222,22 @@ def _resources_for_channel(payload: SitePayload, channel: str) -> list[Resource]
             out.append(item)
         else:
             out.append(_resource_from_dict(item))
-    return out
+    def published_timestamp(resource: Resource) -> float:
+        raw = (resource.published_at or "").strip()
+        if not raw:
+            return 0.0
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = parsedate_to_datetime(raw)
+            except (TypeError, ValueError):
+                return 0.0
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.timestamp()
+
+    return sorted(out, key=lambda resource: (published_timestamp(resource), resource.id), reverse=True)
 
 
 def _dramas(payload: SitePayload) -> list[jupan_bridge.JupanDrama]:

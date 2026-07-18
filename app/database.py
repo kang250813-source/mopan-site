@@ -7,6 +7,7 @@ import sqlite3
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Iterator
 
@@ -86,6 +87,23 @@ class Resource:
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _normalize_published_at(value: str | None) -> str | None:
+    """Store timestamps in a format SQLite can sort chronologically."""
+    raw = (value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = parsedate_to_datetime(raw)
+        except (TypeError, ValueError):
+            return raw
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 
 @contextmanager
@@ -192,6 +210,7 @@ def upsert_resource(
     db_path: Path | None = None,
 ) -> str:
     init_db(db_path)
+    published_at = _normalize_published_at(published_at)
     pan = pan_url.split("?")[0].strip() if pan_url else ""
     ptype = pan_type or PAN_TYPE
     ch = channel or DEFAULT_CHANNEL
