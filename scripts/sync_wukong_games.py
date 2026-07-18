@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy three large Wukong games into mopan-site/static/wukong/."""
+"""Copy the Wukong games while preserving the Mopan-native civilization game."""
 
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 TARGET = ROOT / "static" / "wukong"
-GAMES = ("civ", "life", "army")
-PACKS = ("common", "civ", "life", "army")
+GAMES = ("life", "army")
+PACKS = ("common", "life", "army")
 LOCALES = ("zh-CN", "en-US")
 
 
@@ -46,8 +46,15 @@ def patch_common_json(text: str) -> str:
 
 def sync() -> None:
     source = source_root()
+    # civ is maintained in this repository because it is the browser port of
+    # the Mopan mini game, rather than an upstream Wukong page.
     if TARGET.exists():
-        shutil.rmtree(TARGET)
+        for child in TARGET.iterdir():
+            if child.name != "civ":
+                if child.is_dir():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
     (TARGET / "assets" / "i18n" / "locales").mkdir(parents=True)
 
     shutil.copy2(source / "assets" / "i18n" / "i18n.js", TARGET / "assets" / "i18n" / "i18n.js")
@@ -75,7 +82,7 @@ def sync() -> None:
         dst_dir.mkdir(parents=True, exist_ok=True)
         (dst_dir / "index.html").write_text(patch_html(src_html.read_text(encoding="utf-8")), encoding="utf-8")
 
-    print(f"Synced {len(GAMES)} Wukong games -> {TARGET}")
+    print(f"Synced {len(GAMES)} Wukong games; preserved Mopan civ -> {TARGET}")
 
 
 if __name__ == "__main__":
