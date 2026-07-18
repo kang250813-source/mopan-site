@@ -640,14 +640,13 @@ def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) 
 def _copy_covers() -> None:
     dst = DOCS_DIR / "jupan-covers"
     dst.mkdir(parents=True, exist_ok=True)
+    # Merge both sources; later src overwrites same filename (duanjuku is fresher).
     for src in (COVERS_DATA_DIR, JUPAN_COVERS_DIR):
         if not src.is_dir():
             continue
         for file in src.iterdir():
             if file.is_file():
                 shutil.copy2(file, dst / file.name)
-        if any(dst.iterdir()):
-            return
 
 
 def _deploy_wukong_games() -> None:
