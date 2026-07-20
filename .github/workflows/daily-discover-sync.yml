@@ -39,6 +39,9 @@ jobs:
           PUSH_GITHUB: "0"
           BASE_PATH: /
           LINUXDO_PAGES: "3"
+          # 与 pages.yml 一致：封面走 jsDelivr，避免写入 /jupan-covers 撑爆仓库
+          COVER_ASSET_BASE: https://cdn.jsdelivr.net/gh/kang250813-source/mopan-covers@main
+          CUSTOM_DOMAIN: www.mopan.lol
         run: |
           cd mopan-sync
           python3 -m venv .venv
@@ -51,7 +54,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs data/discover.json data/export data/sync_meta.json data/jupan-covers
+          # 封面走外部 CDN，不要把 jupan-covers 二进制再提交进仓库
+          git add docs data/discover.json data/export data/sync_meta.json
           if git diff --staged --quiet; then
             echo "mopan-site: no changes"
           else
