@@ -23,11 +23,11 @@
   </script>
   <meta name="public-site-url" content="https://www.mopan.lol">
   <meta name="site-title" content="魔盘">
-  <title>Mac 内存优化：只有 5MB 的微信读书“极速”阅读方案 (开源) - 魔盘</title>
+  <title>2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成) - 魔盘</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/mopan.css?v=1784697847">
+  <link rel="stylesheet" href="/static/mopan.css?v=1784784593">
   
 </head>
 <body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
@@ -89,14 +89,14 @@
     <div class="detail-resource-tags">
       
       
-      <span class="pill">macOS 软件</span>
+      <span class="pill">AI 工具</span>
       
       
 
 <button
   type="button"
   class="pill pill-share js-share-page"
-  data-share-title="Mac 内存优化：只有 5MB 的微信读书“极速”阅读方案 (开源)"
+  data-share-title="2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)"
   data-share-page="https://www.mopan.lol/resource/681.html"
   data-share-quark=""
   data-share-password=""
@@ -108,9 +108,9 @@
   <span class="js-share-label">复制给 AI</span>
 </button>
     </div>
-    <h1>Mac 内存优化：只有 5MB 的微信读书“极速”阅读方案 (开源)</h1>
+    <h1>2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)</h1>
     
-    <p class="detail-meta">发布于 2026-01-19</p>
+    <p class="detail-meta">发布于 2026-01-20</p>
     
   </div>
 
@@ -119,51 +119,45 @@
     <div class="article-body">
       
       <div style="background-color: #f0f7ff; border-left: 5px solid #0066cc; padding: 20px; margin-bottom: 30px; color: #333;">
-<p style="margin: 0;"><strong>你的 Mac 风扇又在呼呼转了吗？</strong></p>
-<p style="margin-top: 15px;">很多朋友喜欢在电脑上看微信读书，但只有两个选择：要么用浏览器看（容易误关），要么装各种“外壳版”软件（体积大、占内存，电脑容易发烫）。</p>
-<p style="margin-top: 15px;">今天推荐一个 GitHub 上大火的<strong>开源“阅读神器”</strong>。它用了最新的 <strong>Tauri 技术</strong>，把软件体积压缩到了惊人的 <strong>5MB</strong>（还没一张照片大），却能给你带来丝般顺滑的阅读体验。</p>
+<p style="margin: 0;"><strong>让 AI 真正帮你操作电脑：</strong> 很多人都听过 Claude Code 的大名，它能像程序员一样写代码、改文件。但官方版本只能在黑乎乎的命令行（终端）里跑，而且必须绑定固定的月付订阅，门槛确实有点高。</p>
+<p style="margin-top: 15px;">今天推荐的 <strong>Open Claude Cowork</strong>，就像是给这个强大的 AI 引擎穿上了一件漂亮的<strong>“可视化外衣”</strong>。更棒的是，它支持你自己<strong>“换发动机”</strong>——比如接入 <strong>DeepSeek V3</strong> 等 API，实现按实际使用量计费，灵活又高效。</p>
 </div>
-<h2>一、 为什么它比别的软件快？(简单科普)</h2>
-<p>你不需要懂复杂的代码，只需要知道它和传统软件的区别：</p>
-<ul>
-<li>🐢 <strong>传统软件 (Electron)：</strong> 就像搬家带了一整套家具。不管你需不需要，它都往你电脑里塞一个庞大的谷歌浏览器内核，所以安装包动不动就 100MB+，运行起来很吃内存。</li>
-<li>⚡ <strong>这个神器 (Tauri + Rust)：</strong> 就像是“轻装上阵”。它直接借用 Mac 系统自带的浏览器能力 (WebKit)，自己只负责核心功能。所以它<strong>体积极小、启动秒开、几乎不占内存</strong>。</li>
-</ul>
 <p></p>
-<h2>二、 专为“懒人”设计的 3 大功能</h2>
-<p>它不仅仅是快，更是为了让我们看书更舒服。通过<strong>技术手段优化</strong>，它实现了网页版做不到的功能：</p>
-<h3>1. 真正的“暗黑模式” (护眼)</h3>
-<p>晚上看书觉得网页版太刺眼？这个工具内置了精心调教的<strong>深色模式</strong>。它不是简单地把颜色反转，而是把背景调成了舒适的暗灰色，文字更加柔和，熬夜看书也不累眼。</p>
-<h3>2. 解放双手的“自动翻页”</h3>
-<p>这绝对是懒人福音！支持<strong>智能自动滚动</strong>，你还能调节速度。一边喝咖啡，一边看着屏幕自动往下翻，手都不用动，阅读效率直接翻倍。</p>
-<h3>3. “隐形”的沉浸体验</h3>
-<p>它有一个很酷的<strong>“禅模式”</strong>。当你鼠标不动的时候，所有的菜单栏、边框都会自动消失，屏幕上只剩下书。这种没有任何干扰的感觉，能让你瞬间进入心流状态。</p>
-<hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;" />
-<h2>三、 大家最关心的问题：安全吗？</h2>
-<p>作为一款开源工具，它的安全性是完全透明的：</p>
+<h2>一、 为什么这个工具值得一试？</h2>
+<p>简单来说，它把一个“极客专用”的工具，变成了一个“普通人也能用”的桌面助理。</p>
+<h3>1. 告别“盲人摸象”，过程全透明</h3>
+<p>用过命令行的朋友都知道，AI 在后台干了啥经常两眼一抹黑。Open Claude Cowork 提供了一个像微信一样的<strong>可视化聊天界面</strong>。AI 正在读取哪个文件、正在思考什么逻辑，屏幕上显示得清清楚楚，看着就踏实。</p>
+<h3>2. 计费更灵活：API 按量付费</h3>
+<p>官方模式通常采用固定周期的订阅计费方式。而这个工具支持你直接对接模型服务商的 <strong>API 接口</strong>。这种 <strong>按量计费 (Pay-As-You-Go)</strong> 的模式非常适合个人开发者：用多少付多少，对于使用频率不高的用户来说，资源利用率更高。</p>
+<h3>3. 数据在本地，隐私更安全</h3>
+<p>它采用了 <strong>Local-First (本地优先)</strong> 的设计。你的所有对话记录、操作日志都保存在你自己的电脑里（SQLite 数据库），不会上传到第三方云端，对隐私数据更友好。</p>
+<h2>二、 它是怎么“自动干活”的？</h2>
+<p>接入 DeepSeek 或 Claude 的 API 后，它就不只是一个聊天机器人了，它拥有了<strong>操作文件的能力</strong>（也就是我们常说的 Agent）。</p>
 <ul>
-<li>🔒 <strong>原理简单：</strong> 你可以把它理解为一个<strong>“专门用来打开微信读书的浏览器”</strong>。</li>
-<li>✅ <strong>数据安全：</strong> 所有的登录、扫码、看书数据，都是<strong>直接连接腾讯官方服务器</strong>的。这个工具只是给网页穿了一层“好看的衣服”，不碰你的账号密码，也没有广告。</li>
-<li>📖 <strong>正版支持：</strong> 它完全遵循官方规则，不提供破解功能，请大家放心使用并支持正版书籍。</li>
+<li><strong>📂 帮你整理桌面：</strong> 你可以说：“扫描桌面所有的 PDF 发票，按日期重命名，然后移到‘财务’文件夹里。” 它会自动调用系统命令搞定，省得你自己一个个拖拽。</li>
+<li><strong>📝 帮你写文档：</strong> 给它一堆素材，让它分析后直接在本地生成一个 Markdown 格式的技术文档或 PPT 大纲。</li>
+<li><strong>🛡️ 安全门禁（这很重要）：</strong> 怕 AI 抽风删错文件？软件里有个<strong>“人机确认”</strong>机制。凡是涉及到修改或删除文件的操作，界面上都会弹窗问你：“我要执行这个操作了，批准吗？” 你点点头，它才敢动。</li>
 </ul>
-<h2>四、 怎么下载和使用？</h2>
-<p>这个小工具支持 M1/M2/M3 芯片的 Mac，也支持老款 Intel 芯片 Mac：</p>
-<ol>
-<li>去 GitHub 下载最新版（链接在下方）。</li>
-<li><strong>苹果芯片 (M系列)：</strong> 下载名字带 <code>_aarch64.dmg</code> 的文件。</li>
-<li><strong>Intel 芯片：</strong> 下载名字带 <code>_x64.dmg</code> 的文件。</li>
-</ol>
-<p style="font-size: 0.9em; color: #666;"><em>*小贴士：第一次打开如果提示“无法验证开发者”，去系统设置里点一下“仍要打开”就行，这是开源软件的常规操作。</em></p>
+<h2>三、 简单三步，搭建你的 AI 助理</h2>
+<p>这是一款开源软件，安装起来并不复杂。只要跟着步骤走，几分钟就能搞定。</p>
+<h3>Step 1：准备环境</h3>
+<p>你的电脑需要安装 <strong>Node.js (版本 22 以上)</strong>。去 Node.js 官网下载安装一下就行，这是运行环境的基础。</p>
+<h3>Step 2：获取软件</h3>
+<p>你可以访问 <strong><a style="color: #0066cc;" href="https://openclaudecowork.com" target="_blank" rel="nofollow noopener">软件官网</a></strong> 了解更多详情，或者直接前往 <strong><a style="color: #0066cc;" href="https://github.com/caiqinghua/open-claude-cowork" target="_blank" rel="nofollow noopener">GitHub 项目主页</a></strong> 的 Releases 页面，下载对应你系统（Windows 或 Mac）的安装包，像装 QQ 一样安装即可。</p>
+<h3>Step 3：接入“发动机” (DeepSeek/Claude)</h3>
+<p>打开软件设置，你需要填入 API Key。除了支持 Claude 官方，它最大的亮点是支持<strong>多模型接入</strong>。</p>
+<p><strong>💡 配置小技巧：</strong> 如果你想用 <strong>DeepSeek V3</strong>，记得在配置里的 <code>base_url</code> 填入兼容的 API 地址（通常需要通过 OneAPI 等中间件转换协议）。配置好之后，你就拥有了一个由国产大模型驱动的桌面 Agent。</p>
+<h2>四、 总结</h2>
+<p>Open Claude Cowork 是 2025 年让 AI Agent 落地桌面的一个优秀尝试。通过可视化界面和灵活的 API 接入，它降低了普通用户使用自动化工具的门槛，是提升个人生产力的好帮手。</p>
 <div style="background-color: #eef2f5; padding: 25px; border-radius: 8px; margin-top: 40px; margin-bottom: 30px;">
-<h3 style="margin-top: 0; color: #2c3e50;">📥 资源获取</h3>
-<p>给你的 Mac 减减负，体验一下 5MB 的极致极速。</p>
+<h3 style="margin-top: 0; color: #2c3e50;">📥 资源下载与文档</h3>
 <ul>
-<li><strong>开源项目地址：</strong> <a href="https://github.com/dengcb/weixin-reader-desktop" target="_blank" rel="nofollow noopener">GitHub – Tauri 版微信读书方案</a></li>
-<li>国内用户：<a href="https://pan.quark.cn/s/5aea5cfa685b" target="_blank" rel="nofollow noopener"><mark class="mp-pan-hl">网盘</mark></a></li>
+<li><strong>官方网站：</strong> <a href="https://openclaudecowork.com" target="_blank" rel="nofollow noopener">openclaudecowork.com</a></li>
+<li><strong>GitHub 开源地址：</strong> <a href="https://github.com/caiqinghua/open-claude-cowork" target="_blank" rel="nofollow noopener">caiqinghua/open-claude-cowork</a></li>
 </ul>
 </div>
-<div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ddd; font-size: 0.85em; color: #666;"><strong>⚠️ 免责声明：</strong><br />
-本文介绍的工具为开源的“网页浏览助手”，旨在优化桌面端的阅读体验。它不是腾讯官方软件，与微信读书官方无附属关系。</div>
+<div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ddd; font-size: 0.85em; color: #666;"><strong>⚠️ 技术提示：</strong><br />
+本文介绍的是开源第三方客户端。软件涉及文件操作权限，建议在操作重要数据前做好备份。请用户在使用 API 时遵守相关模型服务商的使用规范。</div>
     </div>
     
 <aside class="mp-source-stamp" aria-label="内容来源">
@@ -187,7 +181,7 @@
       <button
   type="button"
   class="btn btn-share btn-xl js-share-page"
-  data-share-title="Mac 内存优化：只有 5MB 的微信读书“极速”阅读方案 (开源)"
+  data-share-title="2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)"
   data-share-page="https://www.mopan.lol/resource/681.html"
   data-share-quark=""
   data-share-password=""
@@ -207,15 +201,15 @@
   <h2>同类资源</h2>
   <div class="drama-grid drama-grid--compact">
     
-    <a href="/resource/576.html" class="drama-card">Mac DFU 恢复教程：Revive 与 Restore 区别，以及开源辅助工具 DFU-Tools</a>
+    <a href="/resource/1.html" class="drama-card">CodexThemes：让 Agent 自动安装和切换 Codex 主题</a>
     
-    <a href="/resource/584.html" class="drama-card">Sniffnet：开源网络流量监控工具，Wireshark 之外的轻量选择</a>
+    <a href="/resource/25.html" class="drama-card">考搭子：开源 AI 备考工具，自动整理资料并生成复习路线</a>
     
-    <a href="/resource/607.html" class="drama-card">PasteMemo 评测：支持复制即文件的 macOS 剪贴板管理器，更适合 AI 工作流</a>
+    <a href="/resource/232.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
     
-    <a href="/resource/612.html" class="drama-card">MoePeek：轻量 macOS 划词翻译工具，支持 Ollama 与 DeepSeek</a>
+    <a href="/resource/269.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
     
-    <a href="/resource/621.html" class="drama-card">Airdata 替代方案：Open DroneLog 开源可自托管的 DJI飞行日志分析平台（2026）</a>
+    <a href="/resource/410.html" class="drama-card">Can I Run AI：检测电脑能不能运行本地大模型的网页工具</a>
     
   </div>
 </section>
@@ -233,7 +227,7 @@
     </div>
   </footer>
   <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
-  <script src="/static/app.js?v=1784697847"></script>
+  <script src="/static/app.js?v=1784784593"></script>
   
 </body>
 </html>
