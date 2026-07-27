@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="Mopan">
+  <title>Chat2DB 数据库客户端：支持 30+ 数据库，能替代 DBeaver 吗？ - Mopan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1785042056">
+  
+</head>
+<body class="" data-locale="en" data-i18n="{&#34;collapse&#34;: &#34;Show less&#34;, &#34;copied&#34;: &#34;Copied&#34;, &#34;copied_paste&#34;: &#34;Copied \u2014 paste to send&#34;, &#34;copy_prompt&#34;: &#34;Copy the text from the dialog&#34;, &#34;expand_more&#34;: &#34;Show more ({n})&#34;, &#34;games_bobing_award_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_award_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;Five of a Kind&#34;, &#34;games_bobing_award_five_red&#34;: &#34;Five Reds&#34;, &#34;games_bobing_award_four_red&#34;: &#34;Four Reds&#34;, &#34;games_bobing_award_golden&#34;: &#34;Golden Zhuangyuan&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_award_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_award_six_black&#34;: &#34;Six Black&#34;, &#34;games_bobing_award_six_red&#34;: &#34;Six Reds&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_miss&#34;: &#34;No prize&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 no prize&#34;, &#34;games_bobing_name_label&#34;: &#34;Player {n}&#34;, &#34;games_bobing_over&#34;: &#34;All prizes claimed \u2014 game over&#34;, &#34;games_bobing_player_default&#34;: &#34;Player {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_prize_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;Zhuangyuan&#34;, &#34;games_bobing_roll&#34;: &#34;Roll&#34;, &#34;games_bobing_rolling&#34;: &#34;Rolling six dice\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} is gone&#34;, &#34;games_bobing_start&#34;: &#34;Pick players, then take turns rolling&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}!&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award} (pending)&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} wins Zhuangyuan \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;Keep guessing \u2014 narrow the range&#34;, &#34;games_bomb_boom&#34;: &#34;Boom! The bomb was {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;Boom!&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u2014 too high&#34;, &#34;games_bomb_invalid&#34;: &#34;Enter a number in range&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u2014 too low&#34;, &#34;games_bomb_out&#34;: &#34;Stay between {low} and {high}&#34;, &#34;games_bomb_start&#34;: &#34;Guess a number \u2014 hit the bomb and you lose&#34;, &#34;games_chore_done&#34;: &#34;{who} \u2192 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;Already added&#34;, &#34;games_chore_max&#34;: &#34;Max 10 items&#34;, &#34;games_chore_min_people&#34;: &#34;Keep at least 2 people&#34;, &#34;games_chore_min_tasks&#34;: &#34;Keep at least 2 chores&#34;, &#34;games_cleared&#34;: &#34;Out of moves&#34;, &#34;games_croc_lose&#34;: &#34;Player {n} got bitten!&#34;, &#34;games_croc_safe&#34;: &#34;Lucky round \u2014 no one got bitten&#34;, &#34;games_croc_turn&#34;: &#34;Player {n} \u2014 pick a tooth&#34;, &#34;games_dice_rolling&#34;: &#34;Rolling\u2026&#34;, &#34;games_dice_total&#34;: &#34;Total: {n}&#34;, &#34;games_finger_pick&#34;: &#34;Player {n} \u2014 your turn!&#34;, &#34;games_game_over&#34;: &#34;Game over&#34;, &#34;games_no_match&#34;: &#34;No match&#34;, &#34;games_open_pick&#34;: &#34;Open pick&#34;, &#34;games_perfect&#34;: &#34;Perfect!&#34;, &#34;games_site_open&#34;: &#34;Visit site&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;A handy site worth bookmarking.&#34;, &#34;games_stack_start&#34;: &#34;Tap to start&#34;, &#34;games_stack_start_sub&#34;: &#34;Tap the board or button to drop&#34;, &#34;games_tictactoe_draw&#34;: &#34;Draw&#34;, &#34;games_tictactoe_start&#34;: &#34;X goes first&#34;, &#34;games_tictactoe_turn&#34;: &#34;{mark} to play&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} wins!&#34;, &#34;games_topic_ready&#34;: &#34;Tap to draw a topic card&#34;, &#34;games_who_default_task&#34;: &#34;do chores&#34;, &#34;no_share_url&#34;: &#34;Cannot get share link&#34;, &#34;prompt_copy&#34;: &#34;Select and copy the text below to share:&#34;, &#34;share&#34;: &#34;Share&#34;, &#34;share_copied_wechat&#34;: &#34;Share text copied&#34;, &#34;share_failed&#34;: &#34;Share failed \u2014 copy the page link manually&#34;, &#34;share_invoked&#34;: &#34;Share opened&#34;, &#34;share_page&#34;: &#34;Page link&#34;, &#34;share_quark&#34;: &#34;Quark Drive&#34;, &#34;site_drama&#34;: &#34;Quark Drama&#34;, &#34;site_resource&#34;: &#34;Site Resource&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/en/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>Mopan</strong>
+          <small>AI Tools · Learning Resources · Short Drama Index</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="Color theme">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="Purple" aria-label="Purple"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="Forest" aria-label="Forest"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="Amber" aria-label="Amber"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/resource/18977.html" class="mp-lang-link" hreflang="zh" lang="zh">中文</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/en/index.html" class="mp-nav-link">← Discover</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">Developer Projects</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="Chat2DB 数据库客户端：支持 30+ 数据库，能替代 DBeaver 吗？"
+  data-share-page="/en/resource/18977.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="Share this page"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share</span>
+</button>
+    </div>
+    <h1>Chat2DB 数据库客户端：支持 30+ 数据库，能替代 DBeaver 吗？</h1>
+    
+    <p class="detail-meta">Published 2026-07-26</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 14px; color: #4b5563;"><strong>编辑透明度说明：</strong>本文依据 Chat2DB Community 5.3.0 仓库说明与官方文档整理，未逐项实测特定数据库高压场景下的 SQL 补全准确率与驱动兼容性。如需在企业环境中使用，请仔细核对最新授权条款。</div>
+<p><strong>Chat2DB 数据库客户端</strong>是一款支持 30 多种数据库的开源工具，提供自然语言生成 SQL、数据管理、ER 图和网页端访问等功能。它更适合需要 AI 辅助查询、统一管理多种数据库或自行部署的用户。与 DBeaver 相比，Chat2DB 的 AI 功能和 Web 使用方式更突出，但高级数据库管理能力和插件生态仍有差距。</p>
+<p></p>
+<p>Chat2DB 面向需要管理多个数据库的开发者、数据分析师和独立站长，支持 Windows、macOS、Linux 桌面客户端及 Docker 部署，可连接 MySQL、PostgreSQL、Oracle、SQL Server、ClickHouse、SQLite 等 30 多种数据库。Community 版支持接入 OpenAI 兼容服务及本地模型，连接配置和操作记录可保存在本地环境；如果使用云端大模型，相关请求仍可能发送至对应的模型服务商。</p>
+<p></p>
+<h2>Chat2DB 数据库客户端能解决什么问题？</h2>
+<p>传统数据库客户端功能虽然全面，但对于不熟悉复杂 SQL 语法的运营或初学者来说门槛较高；而单独打开网页版 AI 工具生成 SQL，又需要频繁复制表结构和粘贴查询结果，过程非常繁琐。</p>
+<p>Chat2DB 主要是把这两套流程整合到了一个工具中，核心解决几个具体的开发与分析场景：</p>
+<p><strong>1、自然语言生成 SQL：</strong>直接输入“帮我统计上个月消费前 10 的用户”，AI 会结合当前数据库的 Schema 结构自动生成对应的 SQL。</p>
+<p></p>
+<p><strong>2、读懂旧代码与复杂表结构：</strong>接手遗留项目时，可以让 AI 解释复杂 SQL 的执行逻辑，或查看表结构与 ER 关系，辅助理解数据库之间的关联。</p>
+<p></p>
+<p><strong>3、SQL 性能优化与报错排查：</strong>对执行缓慢的语句给出索引添加建议，对报错的语法提供修正提示。</p>
+<p><strong>4、统一多数据库管理：</strong>在一个工具里同时管理关系型数据库和列式数据库，省去安装多个专用客户端的麻烦。</p>
+<p></p>
+<p>如果只是临时生成或解析一段 SQL，不需要连接和管理真实数据库，也可以看看站内介绍的 SQL Genius 在线 AI SQL 生成器和解析器。它使用起来更轻量；Chat2DB 则更适合需要结合数据库 Schema、长期编写和执行 SQL 的场景。</p>
+<div style="background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;"><strong>使用 AI 生成 SQL 时要注意：</strong>生成的语句不一定准确，执行前应先检查。涉及 <code>DELETE</code>、<code>UPDATE</code> 或表结构变更等操作时，建议先确认影响范围并备份数据，不要直接交给 AI 自动执行。</div>
+<h2>Chat2DB 与 DBeaver、DataGrip 有什么区别？</h2>
+<p>多数据库客户端的选择并不少，不同产品在 AI 集成方式、生态成熟度以及商业模式上存在明显差异：</p>
+<div style="overflow-x: auto; margin-bottom: 20px;">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+<thead>
+<tr style="background-color: #f3f4f6; border-bottom: 2px solid #e5e7eb;">
+<th style="padding: 10px; border: 1px solid #e5e7eb;">对比维度</th>
+<th style="padding: 10px; border: 1px solid #e5e7eb;">Chat2DB Community</th>
+<th style="padding: 10px; border: 1px solid #e5e7eb;">DBeaver Community</th>
+<th style="padding: 10px; border: 1px solid #e5e7eb;">JetBrains DataGrip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold;">软件许可</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">Source-Available（源码可用）</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">开源社区版（Apache 2.0）</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">商业付费软件（订阅制）</td>
+</tr>
+<tr>
+<td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold;">AI SQL 辅助</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">Community 版原生整合，支持接入自定义 AI 模型</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">提供官方 AI Assistant，部分功能和模型接入仅限付费版本</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">内置 JetBrains AI 与数据库 Agent 能力，提供有限免费额度及付费方案</td>
+</tr>
+<tr>
+<td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold;">驱动与扩展生态</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">支持 30+ 常用数据库</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">覆盖范围广，JDBC 驱动扩展生态成熟</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">覆盖主流关系型与 NoSQL 数据库</td>
+</tr>
+<tr>
+<td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold;">团队与权限管理</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">不提供成员、角色、审批与审计功能</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">桌面单机使用（无团队协作）</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">结合 IDE 团队生态使用</td>
+</tr>
+<tr>
+<td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold;">适用场景</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">依赖 AI 帮写 SQL 的个人开发者/分析师</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">通用数据库管理、复杂 DB 运维与排障</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb;">重视代码补全、导航与重构体验的专业开发者</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>简单来说，Chat2DB 更偏向 AI SQL、网页访问和团队化使用；DBeaver 的数据库管理能力、插件生态和高级操作更成熟。轻量查询和 AI 辅助场景可以尝试 Chat2DB，复杂数据库运维仍更适合 DBeaver。</p>
+<h2>Chat2DB 能否替代 DBeaver？</h2>
+<p><strong>Chat2DB 可以替代 DBeaver 的部分日常功能，但暂时不适合复杂的数据库运维场景。</strong>具体怎么选，主要取决于你的使用需求。</p>
+<p><strong>如果主要用于编写 SQL、浏览表数据和解释查询语句，Chat2DB Community 可以作为候选。</strong>DBeaver 和 DataGrip 目前也具备官方 AI 能力，Chat2DB 的区别在于：Community 版已经把自定义 AI 模型接入与 SQL 工作台放在一起，个人用户无需额外购买 AI 功能即可使用自己的模型服务。</p>
+<p><strong>如果涉及复杂的 DBA 运维、数据库迁移或代码重构，DBeaver 和 DataGrip 仍有优势。</strong>DBeaver 拥有更成熟的数据库驱动、插件生态和运维工具；DataGrip 在代码补全、上下文理解、导航与重构方面也更完整。因此，Chat2DB 更适合作为带有 AI 功能的日常数据库客户端，而不是全面替代 DBeaver 或 DataGrip。</p>
+<h2>Docker 部署 Chat2DB 时要注意什么？</h2>
+<p>如果准备通过 Docker 运行 Chat2DB，有三件事需要在启动或升级前确认。根据 <a href="https://github.com/OtterMind/Chat2DB/security" target="_blank" rel="noopener">Chat2DB Community 官方安全说明</a>，该版本没有账号系统，也不提供不同用户之间的权限隔离。</p>
+<ul>
+<li><strong>先保存好加密密钥：</strong>首次启动 Docker 容器前，需要初始化用于加密数据库密码和 AI API Key 的密钥文件。这个文件一旦丢失，之前保存的连接凭据将无法继续解密，建议和数据目录一起做好备份。</li>
+<li><strong>旧版数据不会自动迁移：</strong>Chat2DB 5.3.0 调整了底层架构和数据目录，不能直接把 0.3.7 等早期 Community 版本的数据目录原样交给新版使用。升级前应先备份，并按官方说明确认迁移方式。</li>
+<li><strong>不要把端口开放到局域网或公网：</strong>Community 版的 Web 服务应只绑定 <code>127.0.0.1</code> 或 <code>::1</code>。官方不支持将其部署为局域网共享服务或公网多人入口；如需团队访问、权限管理和操作审计，应评估 Chat2DB Enterprise。</li>
+</ul>
+<h2>Chat2DB Community 还是开源软件吗？</h2>
+<p><strong>Chat2DB Community 5.3.0 及后续版本属于源码可用软件，不再使用标准的 Apache 2.0 开源许可证。</strong>根据项目根目录的 <a href="https://github.com/OtterMind/Chat2DB/blob/main/LICENSE" target="_blank" rel="noopener">Chat2DB LICENSE 文件</a>，个人和组织可以在许可范围内使用源码及二进制文件，但如果准备将其改造成公网托管服务、SaaS 产品或白标服务，需要进一步核对许可证条款及商业授权要求。</p>
+<p><strong>Community 版也不适合直接作为公司内部的多人数据库管理平台。</strong>该版本主要面向单用户和本地使用，没有账号系统、成员权限隔离及用户级 SQL 审计。团队如果需要多人访问、细粒度权限和操作审计，可以评估 Chat2DB Enterprise，或对比 Bytebase 等面向团队的数据库变更管理平台。</p>
+<div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;"><strong>怎么选：</strong>个人开发者可以优先使用 Community 桌面客户端；企业团队如果需要私有化部署和多人权限管理，应先确认 Enterprise 的功能与授权范围，不建议直接把 Community 版开放为团队入口。</div>
+<h2>Chat2DB 适合哪些用户？</h2>
+<p><strong>Chat2DB Community 更适合个人开发者、独立站长和数据分析师。</strong>如果你需要同时连接多种数据库，又希望直接在 SQL 工作台中使用自己的 AI 模型生成、解释或修改 SQL，它可以作为 DBeaver 等传统数据库客户端之外的一个选择。</p>
+<p><strong>它不适合直接搭建成多人共用的数据库管理后台。</strong>公司如果需要共享数据源、成员权限和操作审计，应评估 Chat2DB Enterprise，或选择面向团队的数据库管理平台。</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>Chat2DB 项目主页与官方资料</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px; margin-bottom: 36px;">
+<p><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://chat2db.ai/" target="_blank" rel="noopener"><br />
+🌐 Chat2DB 官方网站<br />
+<span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;"><br />
+查看桌面客户端下载入口、产品版本和商业授权信息。<br />
+</span><br />
+</a></p>
+<p><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none; border: 1px solid #e5e7eb;" href="https://github.com/OtterMind/Chat2DB" target="_blank" rel="noopener"><br />
+🐙 Chat2DB GitHub 项目主页<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;"><br />
+查看安装与 Docker 部署说明、版本发布记录、源码及许可证条款。<br />
+</span><br />
+</a></p>
+</div>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="Content source">
+  <p class="mp-source-stamp-main">
+    Curated on <strong>Mopan</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">Feel free to share — please keep the source link</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">Share this page</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="Chat2DB 数据库客户端：支持 30+ 数据库，能替代 DBeaver 吗？"
+  data-share-page="/en/resource/18977.html"
+  data-share-quark=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share with friends</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>Related</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/en/resource/18976.html" class="drama-card">OmniRoute：开源 AI Gateway，统一接入多模型 API，支持自动切换</a>
+    
+    <a href="/en/resource/18974.html" class="drama-card">Replay QA：AI 网站测试工具，输入网址自动查 Bug</a>
+    
+    <a href="/en/resource/18971.html" class="drama-card">OpenCut：开源 CapCut 替代，现在真的能用吗？</a>
+    
+    <a href="/en/resource/18966.html" class="drama-card">Branda：开源 AI 广告素材生成工具，输入域名自动生成品牌广告图</a>
+    
+    <a href="/en/resource/18967.html" class="drama-card">Osaurus：Mac 本地 AI Agent 开源框架，支持离线模型与长期记忆</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>Mopan · AI Tools · Learning Resources · Short Drama Index</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · Resource index — please credit the source</p>
+      <p class="mp-footer-promo"><a href="/en/promo/quark/" data-promo-entry="footer">Quark Drive free resources →</a></p>
+      <p class="mp-footer-games"><a href="/en/game/">Mopan Mini Games →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1785042056"></script>
+  
+</body>
+</html>
