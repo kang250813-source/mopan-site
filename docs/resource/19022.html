@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="魔盘">
+  <title>OpenSurge for Mac：开源 Mac 网关工具，用 mihomo 实现透明代理 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1785302822">
+  
+</head>
+<body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="颜色主题">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="紫色" aria-label="紫色"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="海洋" aria-label="海洋"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="玫红" aria-label="玫红"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="森绿" aria-label="森绿"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="琥珀" aria-label="琥珀"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="靛蓝" aria-label="靛蓝"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/en/resource/19022.html" class="mp-lang-link" hreflang="en" lang="en">EN</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/index.html" class="mp-nav-link">← 发现</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">开发者项目</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="OpenSurge for Mac：开源 Mac 网关工具，用 mihomo 实现透明代理"
+  data-share-page="https://www.mopan.lol/resource/19022.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="复制页面信息给 AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">复制给 AI</span>
+</button>
+    </div>
+    <h1>OpenSurge for Mac：开源 Mac 网关工具，用 mihomo 实现透明代理</h1>
+    
+    <p class="detail-meta">发布于 2026-07-28</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;"><strong>开源部署提醒：</strong><br />
+本项目为 GitHub 上的 GPL-3.0 开源工具，主要用于管理网络规则和流量策略。<strong>它不内置、也不提供任何代理节点或测速服务</strong>，相关网络配置需要用户自行准备。</div>
+<p>OpenSurge for Mac 目前仍属于开源社区项目，功能支持和稳定性会随着版本更新变化，实际使用前建议查看 GitHub 仓库中的最新说明。</p>
+<p><strong>OpenSurge for Mac 是一个开源的 macOS 网关工具，它可以让一台 Mac 承担局域网出口角色，并通过 mihomo 管理其他设备的网络策略。</strong></p>
+<p></p>
+<p>很多家庭设备，比如 Apple TV、PS5、Switch 或智能电视，并不能直接安装代理客户端。如果想让这些设备使用不同的网络规则，通常需要额外配置软路由，或者依赖支持网关模式的商业软件。</p>
+<p>OpenSurge for Mac 的做法是，把闲置 Mac 放在局域网中作为网络网关，通过 DHCP、DNS 和透明代理机制，让接入设备按照预设规则进行分流。</p>
+<p></p>
+<h2>OpenSurge for Mac 是如何实现局域网代理的？</h2>
+<p>这个项目没有重新实现底层网络能力，而是组合了多个开源组件来完成 Mac 网关功能。</p>
+<p>OpenSurge for Mac 使用 <code>dnsmasq</code> 负责局域网 DHCP 和 DNS 分发，并调用 <code>mihomo</code>（原 Clash Meta）作为代理策略引擎。同时结合 macOS 自带的 <code>pf</code> 防火墙和 IPv4 转发能力，让 Mac 承担局域网出口网关的角色。</p>
+<p></p>
+<p>在这种模式下，接入同一局域网的设备可以通过这台 Mac 获取网络配置，流量经过网关后再根据规则判断走直连或代理策略。对于 Apple TV、PS5 等无法直接安装客户端的设备，不需要额外部署代理程序即可使用统一的网络规则。</p>
+<h2>OpenSurge for Mac 可以解决哪些网络需求？</h2>
+<p>OpenSurge for Mac 的主要使用场景集中在多设备网络管理。当家庭或小型办公环境中存在 Apple TV、游戏主机、智能电视等无法直接安装客户端的设备时，可以通过一台 Mac 作为局域网网关，统一管理不同设备的网络策略。</p>
+<p></p>
+<p>相比单纯运行代理客户端，OpenSurge 更偏向于局域网出口管理，重点解决设备分流、网络状态查看以及已有 mihomo 配置复用等需求。</p>
+<ul>
+<li><strong>按设备配置分流：</strong><br />
+它可以识别局域网中的不同设备，并为不同终端设置独立策略。例如手机、Apple TV、游戏主机等设备可以使用不同的代理规则，避免所有设备共享同一套配置。</li>
+<li><strong>图形化查看网络状态：</strong><br />
+OpenSurge 提供 Web GUI 和状态栏管理方式，可以查看连接状态、流量信息以及出口链路，降低手动维护 Mac 网关配置的复杂度。</li>
+<li><strong>兼容已有 mihomo 配置：</strong><br />
+项目支持导入已有的 mihomo 配置，包括节点、代理组和分流规则，方便已经使用 Clash Meta / mihomo 生态的用户迁移现有规则。</li>
+</ul>
+<p>这些能力让 OpenSurge 更偏向于局域网出口管理，而不是单纯的代理客户端。它需要依赖稳定运行的 Mac 设备和一定网络配置基础，实际使用效果也取决于当前网络环境。</p>
+<h2>OpenSurge for Mac 部署要求与使用限制</h2>
+<p>虽然 OpenSurge 提供了图形化界面，但它仍然涉及 DHCP、DNS 和网络转发配置，更适合有一定局域网基础的用户使用。在部署前，需要了解几个实际限制。</p>
+<div style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 20px;">
+<p><strong>部署前需要注意：</strong></p>
+<ul>
+<li><strong>硬件常驻：</strong><br />
+如果将 Mac 作为局域网网关使用，需要保持设备开机并关闭自动休眠。比较适合长期运行的 Mac mini 或闲置 Mac 设备。如果网关设备关闭或休眠，下游设备可能无法继续通过该网关访问网络。</li>
+<li><strong>网络配置要求：</strong><br />
+项目涉及 DHCP 接管、DNS 分发以及旁路由配置，用户需要了解基础局域网结构和主路由设置方式，否则可能出现 IP 冲突或网络配置异常。</li>
+<li><strong>透明代理限制：</strong><br />
+当前透明代理方案依赖 mihomo 的 TUN 模式实现。部分旧版 pf TCP 重定向方案在当前 macOS 环境下并不适用，具体支持情况需要参考项目当前版本文档。</li>
+</ul>
+</div>
+<p></p>
+<p>如果需要进一步配置 DHCP 接管、mihomo 规则或透明代理参数，建议根据项目 GitHub 文档进行设置，不同家庭网络结构可能需要调整具体配置。</p>
+<h2>OpenSurge for Mac 适合哪些用户？</h2>
+<p>OpenSurge for Mac 更适合需要管理多台网络设备，并且愿意了解局域网配置的用户。它更适合希望管理多台网络设备，并且愿意了解局域网配置的用户。</p>
+<p>如果家里有 Apple TV、PS5、Switch 或智能电视等无法直接安装客户端的设备，同时手里有一台可以长期运行的 Mac，那么这种网关方案会比单独给每台设备配置网络更加灵活。</p>
+<p>不过，这种方案也增加了维护成本。运行 OpenSurge 的 Mac 需要保持在线，用户也需要了解 DHCP、DNS、旁路由等基础网络概念。如果只是单台 Mac 电脑使用代理，普通桌面客户端通常更加简单。</p>
+<h2>OpenSurge for Mac 项目主页与下载入口</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px; margin-bottom: 36px;">
+<p><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" href="https://github.com/YTwsy/OpenSurge-for-Mac" target="_blank" rel="nofollow noopener"><br />
+🐙 OpenSurge for Mac GitHub 项目主页<br />
+<span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">查看底层工作原理、每设备策略配置文档以及完整的局域网部署指南。</span><br />
+</a></p>
+<p><a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" href="https://github.com/YTwsy/OpenSurge-for-Mac/releases" target="_blank" rel="nofollow noopener"><br />
+⬇️ Releases 官方安装包下载页<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">获取适用于 Apple Silicon (arm64) 与 Intel (x86_64) 的最新未签名安装包。</span><br />
+</a></p>
+</div>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="内容来源">
+  <p class="mp-source-stamp-main">
+    整理收录于 <strong>魔盘</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">欢迎转载分享，保留出处即可</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="OpenSurge for Mac：开源 Mac 网关工具，用 mihomo 实现透明代理"
+  data-share-page="https://www.mopan.lol/resource/19022.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给 AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/resource/2.html" class="drama-card">Chat2DB 数据库客户端：支持 30+ 数据库，能替代 DBeaver 吗？</a>
+    
+    <a href="/resource/4.html" class="drama-card">OmniRoute：开源 AI Gateway，统一接入多模型 API，支持自动切换</a>
+    
+    <a href="/resource/6.html" class="drama-card">Replay QA：AI 网站测试工具，输入网址自动查 Bug</a>
+    
+    <a href="/resource/8.html" class="drama-card">OpenCut：开源 CapCut 替代，现在真的能用吗？</a>
+    
+    <a href="/resource/24.html" class="drama-card">Branda：开源 AI 广告素材生成工具，输入域名自动生成品牌广告图</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · 资源索引站，转载请注明来源</p>
+      <p class="mp-footer-promo"><a href="/promo/quark/" data-promo-entry="footer">夸克网盘资料领取 →</a></p>
+      <p class="mp-footer-games"><a href="/game/">魔盘小游戏 →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1785302822"></script>
+  
+</body>
+</html>
