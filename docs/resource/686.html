@@ -23,11 +23,11 @@
   </script>
   <meta name="public-site-url" content="https://www.mopan.lol">
   <meta name="site-title" content="魔盘">
-  <title>2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成) - 魔盘</title>
+  <title>2026 AI 基础设施：OpenSandbox 部署指南 (构建 Agent 安全隔离环境) - 魔盘</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/mopan.css?v=1785388400">
+  <link rel="stylesheet" href="/static/mopan.css?v=1785476399">
   
 </head>
 <body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
@@ -96,7 +96,7 @@
 <button
   type="button"
   class="pill pill-share js-share-page"
-  data-share-title="2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)"
+  data-share-title="2026 AI 基础设施：OpenSandbox 部署指南 (构建 Agent 安全隔离环境)"
   data-share-page="https://www.mopan.lol/resource/686.html"
   data-share-quark=""
   data-share-password=""
@@ -108,7 +108,7 @@
   <span class="js-share-label">复制给 AI</span>
 </button>
     </div>
-    <h1>2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)</h1>
+    <h1>2026 AI 基础设施：OpenSandbox 部署指南 (构建 Agent 安全隔离环境)</h1>
     
     <p class="detail-meta">发布于 2026-01-20</p>
     
@@ -119,45 +119,57 @@
     <div class="article-body">
       
       <div style="background-color: #f0f7ff; border-left: 5px solid #0066cc; padding: 20px; margin-bottom: 30px; color: #333;">
-<p style="margin: 0;"><strong>让 AI 真正帮你操作电脑：</strong> 很多人都听过 Claude Code 的大名，它能像程序员一样写代码、改文件。但官方版本只能在黑乎乎的命令行（终端）里跑，而且必须绑定固定的月付订阅，门槛确实有点高。</p>
-<p style="margin-top: 15px;">今天推荐的 <strong>Open Claude Cowork</strong>，就像是给这个强大的 AI 引擎穿上了一件漂亮的<strong>“可视化外衣”</strong>。更棒的是，它支持你自己<strong>“换发动机”</strong>——比如接入 <strong>DeepSeek V3</strong> 等 API，实现按实际使用量计费，灵活又高效。</p>
+<p style="margin: 0;"><strong>AI 落地的核心挑战：</strong> 随着大模型（LLM）能力的增强，让 AI 具备代码执行和系统操作能力已成为趋势。但这也引入了巨大的安全风险：模型生成的代码若在生产环境中<strong>非隔离运行</strong>，可能导致数据丢失或服务不可用。</p>
+<p style="margin-top: 15px;">解决方案是引入<strong>OpenSandbox</strong>。它为 AI 提供了一个<strong>“受控的隔离执行环境”</strong>。Agent 可以在其中进行全功能测试与任务执行，即使出现非预期指令，也能确保宿主机的绝对安全。</p>
 </div>
-<p></p>
-<h2>一、 为什么这个工具值得一试？</h2>
-<p>简单来说，它把一个“极客专用”的工具，变成了一个“普通人也能用”的桌面助理。</p>
-<h3>1. 告别“盲人摸象”，过程全透明</h3>
-<p>用过命令行的朋友都知道，AI 在后台干了啥经常两眼一抹黑。Open Claude Cowork 提供了一个像微信一样的<strong>可视化聊天界面</strong>。AI 正在读取哪个文件、正在思考什么逻辑，屏幕上显示得清清楚楚，看着就踏实。</p>
-<h3>2. 计费更灵活：API 按量付费</h3>
-<p>官方模式通常采用固定周期的订阅计费方式。而这个工具支持你直接对接模型服务商的 <strong>API 接口</strong>。这种 <strong>按量计费 (Pay-As-You-Go)</strong> 的模式非常适合个人开发者：用多少付多少，对于使用频率不高的用户来说，资源利用率更高。</p>
-<h3>3. 数据在本地，隐私更安全</h3>
-<p>它采用了 <strong>Local-First (本地优先)</strong> 的设计。你的所有对话记录、操作日志都保存在你自己的电脑里（SQLite 数据库），不会上传到第三方云端，对隐私数据更友好。</p>
-<h2>二、 它是怎么“自动干活”的？</h2>
-<p>接入 DeepSeek 或 Claude 的 API 后，它就不只是一个聊天机器人了，它拥有了<strong>操作文件的能力</strong>（也就是我们常说的 Agent）。</p>
+<h2>一、 为什么 AI 应用必须引入“沙箱机制”？</h2>
+<p>许多开发者在早期阶段，往往直接在服务器上运行 AI 代码，这种<strong>缺乏隔离保护</strong>的方式存在极大的隐患。OpenSandbox 这种开源方案（源自阿里技术团队），主要解决了三个层面的企业级安全需求：</p>
 <ul>
-<li><strong>📂 帮你整理桌面：</strong> 你可以说：“扫描桌面所有的 PDF 发票，按日期重命名，然后移到‘财务’文件夹里。” 它会自动调用系统命令搞定，省得你自己一个个拖拽。</li>
-<li><strong>📝 帮你写文档：</strong> 给它一堆素材，让它分析后直接在本地生成一个 Markdown 格式的技术文档或 PPT 大纲。</li>
-<li><strong>🛡️ 安全门禁（这很重要）：</strong> 怕 AI 抽风删错文件？软件里有个<strong>“人机确认”</strong>机制。凡是涉及到修改或删除文件的操作，界面上都会弹窗问你：“我要执行这个操作了，批准吗？” 你点点头，它才敢动。</li>
+<li>🛡️ <strong>环境隔离（Security Isolation）：</strong> 类似于将风险代码关进实验室。无论 AI 执行了何种高风险指令，受影响的永远只是那个临时的容器环境，绝不会波及核心业务系统。</li>
+<li>⚖️ <strong>资源配额（Resource Quota）：</strong> 通过限制 CPU 和内存用量，防止因死循环或高算力任务导致服务器资源耗尽（DoS）。</li>
+<li>🔄 <strong>环境一致性（Consistency）：</strong> 采用 Ephemeral（即用即毁）机制，每次任务都在纯净环境中运行，避免了依赖冲突。</li>
 </ul>
-<h2>三、 简单三步，搭建你的 AI 助理</h2>
-<p>这是一款开源软件，安装起来并不复杂。只要跟着步骤走，几分钟就能搞定。</p>
-<h3>Step 1：准备环境</h3>
-<p>你的电脑需要安装 <strong>Node.js (版本 22 以上)</strong>。去 Node.js 官网下载安装一下就行，这是运行环境的基础。</p>
-<h3>Step 2：获取软件</h3>
-<p>你可以访问 <strong><a style="color: #0066cc;" href="https://openclaudecowork.com" target="_blank" rel="nofollow noopener">软件官网</a></strong> 了解更多详情，或者直接前往 <strong><a style="color: #0066cc;" href="https://github.com/caiqinghua/open-claude-cowork" target="_blank" rel="nofollow noopener">GitHub 项目主页</a></strong> 的 Releases 页面，下载对应你系统（Windows 或 Mac）的安装包，像装 QQ 一样安装即可。</p>
-<h3>Step 3：接入“发动机” (DeepSeek/Claude)</h3>
-<p>打开软件设置，你需要填入 API Key。除了支持 Claude 官方，它最大的亮点是支持<strong>多模型接入</strong>。</p>
-<p><strong>💡 配置小技巧：</strong> 如果你想用 <strong>DeepSeek V3</strong>，记得在配置里的 <code>base_url</code> 填入兼容的 API 地址（通常需要通过 OneAPI 等中间件转换协议）。配置好之后，你就拥有了一个由国产大模型驱动的桌面 Agent。</p>
-<h2>四、 总结</h2>
-<p>Open Claude Cowork 是 2025 年让 AI Agent 落地桌面的一个优秀尝试。通过可视化界面和灵活的 API 接入，它降低了普通用户使用自动化工具的门槛，是提升个人生产力的好帮手。</p>
-<div style="background-color: #eef2f5; padding: 25px; border-radius: 8px; margin-top: 40px; margin-bottom: 30px;">
-<h3 style="margin-top: 0; color: #2c3e50;">📥 资源下载与文档</h3>
+<p></p>
+<h2>二、 核心能力：构建完备的 AI 基础设施</h2>
+<p>OpenSandbox 不仅仅是一个 Docker 容器，它提供了一套标准化的<strong>“Agent 执行层协议”</strong>。</p>
+<h3>1. 代码安全执行 (Code Interpreter)</h3>
+<p>对标 ChatGPT 的高级数据分析功能。支持在隔离环境中运行 Python、Java 或 JavaScript。无论是进行复杂的数据清洗、图表绘制，还是文件 I/O 操作，都能在安全边界内高效完成。</p>
+<h3>2. 浏览器自动化操作</h3>
+<p>针对需要联网的 Agent，OpenSandbox 内置了 Chrome 环境。AI 可以安全地进行网页数据采集或自动化测试，而无需担心恶意网页脚本对内网造成渗透风险。</p>
+<h3>3. 可视化桌面操作</h3>
+<p>支持启动 VNC 虚拟桌面。这意味着你的 AI Agent 可以拥有操作图形界面（GUI）的能力，适用于需要模拟人类操作的复杂业务场景。</p>
+<hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;" />
+<h2>三、 架构与实战：基于 Docker 的快速集成</h2>
+<p>OpenSandbox 采用了云原生的设计理念，你可以将其视为一个<strong>“可编程的执行环境服务”</strong>。</p>
+<h3>1. 部署服务端 (Server)</h3>
+<p>你需要一台安装了 Docker 的 Linux 服务器。启动服务端后，这台机器就变成了一个<strong>“环境调度中心”</strong>。它负责管理所有沙箱实例的生命周期（创建-监控-销毁）。</p>
+<h3>2. 业务调用流程 (Client SDK)</h3>
+<p>在业务代码中，调用沙箱的过程高度标准化：</p>
+<ol>
+<li><strong>申请环境：</strong> 请求一个指定版本（如 Python 3.10）的运行时。</li>
+<li><strong>任务执行：</strong> 将 AI 生成的脚本投递到沙箱中运行。</li>
+<li><strong>资源回收：</strong> 获取执行日志或生成的文件后，沙箱自动销毁，不残留任何数据垃圾。</li>
+</ol>
+<h2>四、 生产环境配置建议</h2>
+<p>为了确保系统的稳定性，建议遵循以下<strong>最佳实践（Best Practices）</strong>：</p>
+<div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin-top: 15px; font-size: 0.9em;">
 <ul>
-<li><strong>官方网站：</strong> <a href="https://openclaudecowork.com" target="_blank" rel="nofollow noopener">openclaudecowork.com</a></li>
-<li><strong>GitHub 开源地址：</strong> <a href="https://github.com/caiqinghua/open-claude-cowork" target="_blank" rel="nofollow noopener">caiqinghua/open-claude-cowork</a></li>
+<li><strong>硬限制资源：</strong> 务必在启动参数中配置 CPU 和 Memory Quota，防止单个异常任务挤占邻居节点资源。</li>
+<li><strong>零信任网络：</strong> 除非业务必需，建议在 Docker 网络层面限制沙箱的出站流量（Egress traffic）。</li>
+<li><strong>本地开发：</strong> Windows 用户推荐使用 WSL2 子系统运行 Docker，以获得最佳的 I/O 性能。</li>
+</ul>
+</div>
+<h2>五、 总结</h2>
+<p>OpenSandbox 为 AI 应用提供了标准化的安全底座。对于致力于构建 Autonomous Agent（自主智能体）的企业和开发者而言，直接复用这套成熟的开源架构，是平衡<strong>安全性</strong>与<strong>研发效率</strong>的最佳选择。</p>
+<div style="background-color: #eef2f5; padding: 25px; border-radius: 8px; margin-top: 40px; margin-bottom: 30px;">
+<h3 style="margin-top: 0; color: #2c3e50;">🔗 官方项目与技术资源</h3>
+<ul>
+<li><strong>GitHub 项目主页：</strong> <a href="https://github.com/alibaba/OpenSandbox" target="_blank" rel="nofollow noopener">点击前往 OpenSandbox 仓库</a></li>
+<li><strong>官方部署文档：</strong> <a href="https://github.com/alibaba/OpenSandbox/blob/main/docs/architecture.md" target="_blank" rel="nofollow noopener">查阅技术文档</a></li>
 </ul>
 </div>
 <div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ddd; font-size: 0.85em; color: #666;"><strong>⚠️ 技术提示：</strong><br />
-本文介绍的是开源第三方客户端。软件涉及文件操作权限，建议在操作重要数据前做好备份。请用户在使用 API 时遵守相关模型服务商的使用规范。</div>
+本文介绍的是开源基础设施软件。在生产环境中部署时，请务必根据业务需求配置防火墙与安全策略。</div>
     </div>
     
 <aside class="mp-source-stamp" aria-label="内容来源">
@@ -181,7 +193,7 @@
       <button
   type="button"
   class="btn btn-share btn-xl js-share-page"
-  data-share-title="2026 AI 桌面助理：Open Claude Cowork 部署指南 (可视化 Agent + DeepSeek 集成)"
+  data-share-title="2026 AI 基础设施：OpenSandbox 部署指南 (构建 Agent 安全隔离环境)"
   data-share-page="https://www.mopan.lol/resource/686.html"
   data-share-quark=""
   data-share-password=""
@@ -201,15 +213,15 @@
   <h2>同类资源</h2>
   <div class="drama-grid drama-grid--compact">
     
-    <a href="/resource/2.html" class="drama-card">Speech To Markdown：本地语音转 Markdown，Mac 与 iPhone 版有何不同？</a>
+    <a href="/resource/3.html" class="drama-card">Speech To Markdown：本地语音转 Markdown，Mac 与 iPhone 版有何不同？</a>
     
-    <a href="/resource/6.html" class="drama-card">CodexThemes：让 Agent 自动安装和切换 Codex 主题</a>
+    <a href="/resource/7.html" class="drama-card">CodexThemes：让 Agent 自动安装和切换 Codex 主题</a>
     
-    <a href="/resource/30.html" class="drama-card">考搭子：开源 AI 备考工具，自动整理资料并生成复习路线</a>
+    <a href="/resource/31.html" class="drama-card">考搭子：开源 AI 备考工具，自动整理资料并生成复习路线</a>
     
-    <a href="/resource/237.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
+    <a href="/resource/238.html" class="drama-card">Everywhere：屏幕感知桌面 AI 助手，减少复制粘贴与窗口切换</a>
     
-    <a href="/resource/274.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
+    <a href="/resource/275.html" class="drama-card">OpenBidKit 易标：开源 AI 写标书工具，支持企业知识库与废标项检查</a>
     
   </div>
 </section>
@@ -227,7 +239,7 @@
     </div>
   </footer>
   <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
-  <script src="/static/app.js?v=1785388400"></script>
+  <script src="/static/app.js?v=1785476399"></script>
   
 </body>
 </html>
