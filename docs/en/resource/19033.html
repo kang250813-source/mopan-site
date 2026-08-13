@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="Mopan">
+  <title>Battery Health Checker：Windows 电池健康检测工具，图形化查看电池损耗 - Mopan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1786594549">
+  
+</head>
+<body class="" data-locale="en" data-i18n="{&#34;collapse&#34;: &#34;Show less&#34;, &#34;copied&#34;: &#34;Copied&#34;, &#34;copied_paste&#34;: &#34;Copied \u2014 paste to send&#34;, &#34;copy_prompt&#34;: &#34;Copy the text from the dialog and paste it into AI&#34;, &#34;expand_more&#34;: &#34;Show more ({n})&#34;, &#34;games_bobing_award_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_award_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;Five of a Kind&#34;, &#34;games_bobing_award_five_red&#34;: &#34;Five Reds&#34;, &#34;games_bobing_award_four_red&#34;: &#34;Four Reds&#34;, &#34;games_bobing_award_golden&#34;: &#34;Golden Zhuangyuan&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_award_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_award_six_black&#34;: &#34;Six Black&#34;, &#34;games_bobing_award_six_red&#34;: &#34;Six Reds&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_miss&#34;: &#34;No prize&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 no prize&#34;, &#34;games_bobing_name_label&#34;: &#34;Player {n}&#34;, &#34;games_bobing_over&#34;: &#34;All prizes claimed \u2014 game over&#34;, &#34;games_bobing_player_default&#34;: &#34;Player {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_prize_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;Zhuangyuan&#34;, &#34;games_bobing_roll&#34;: &#34;Roll&#34;, &#34;games_bobing_rolling&#34;: &#34;Rolling six dice\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} is gone&#34;, &#34;games_bobing_start&#34;: &#34;Pick players, then take turns rolling&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}!&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award} (pending)&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} wins Zhuangyuan \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;Keep guessing \u2014 narrow the range&#34;, &#34;games_bomb_boom&#34;: &#34;Boom! The bomb was {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;Boom!&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u2014 too high&#34;, &#34;games_bomb_invalid&#34;: &#34;Enter a number in range&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u2014 too low&#34;, &#34;games_bomb_out&#34;: &#34;Stay between {low} and {high}&#34;, &#34;games_bomb_start&#34;: &#34;Guess a number \u2014 hit the bomb and you lose&#34;, &#34;games_chore_done&#34;: &#34;{who} \u2192 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;Already added&#34;, &#34;games_chore_max&#34;: &#34;Max 10 items&#34;, &#34;games_chore_min_people&#34;: &#34;Keep at least 2 people&#34;, &#34;games_chore_min_tasks&#34;: &#34;Keep at least 2 chores&#34;, &#34;games_cleared&#34;: &#34;Out of moves&#34;, &#34;games_croc_lose&#34;: &#34;Player {n} got bitten!&#34;, &#34;games_croc_safe&#34;: &#34;Lucky round \u2014 no one got bitten&#34;, &#34;games_croc_turn&#34;: &#34;Player {n} \u2014 pick a tooth&#34;, &#34;games_dice_rolling&#34;: &#34;Rolling\u2026&#34;, &#34;games_dice_total&#34;: &#34;Total: {n}&#34;, &#34;games_finger_pick&#34;: &#34;Player {n} \u2014 your turn!&#34;, &#34;games_game_over&#34;: &#34;Game over&#34;, &#34;games_no_match&#34;: &#34;No match&#34;, &#34;games_open_pick&#34;: &#34;Open pick&#34;, &#34;games_perfect&#34;: &#34;Perfect!&#34;, &#34;games_site_open&#34;: &#34;Visit site&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;A handy site worth bookmarking.&#34;, &#34;games_stack_start&#34;: &#34;Tap to start&#34;, &#34;games_stack_start_sub&#34;: &#34;Tap the board or button to drop&#34;, &#34;games_tictactoe_draw&#34;: &#34;Draw&#34;, &#34;games_tictactoe_start&#34;: &#34;X goes first&#34;, &#34;games_tictactoe_turn&#34;: &#34;{mark} to play&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} wins!&#34;, &#34;games_topic_ready&#34;: &#34;Tap to draw a topic card&#34;, &#34;games_who_default_task&#34;: &#34;do chores&#34;, &#34;no_share_url&#34;: &#34;Cannot get share link&#34;, &#34;prompt_copy&#34;: &#34;Select and copy the text below, then paste it into AI:&#34;, &#34;share&#34;: &#34;Share&#34;, &#34;share_copied_wechat&#34;: &#34;Page details copied. Paste them into AI.&#34;, &#34;share_failed&#34;: &#34;Copy failed \u2014 copy the page link manually&#34;, &#34;share_invoked&#34;: &#34;Page details copied&#34;, &#34;share_page&#34;: &#34;Page link&#34;, &#34;share_password&#34;: &#34;Access code&#34;, &#34;share_quark&#34;: &#34;Quark Drive&#34;, &#34;site_drama&#34;: &#34;Quark Drama&#34;, &#34;site_resource&#34;: &#34;Site Resource&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/en/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>Mopan</strong>
+          <small>AI Tools · Learning Resources · Short Drama Index</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="Color theme">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="Purple" aria-label="Purple"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="Forest" aria-label="Forest"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="Amber" aria-label="Amber"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/resource/19033.html" class="mp-lang-link" hreflang="zh" lang="zh">中文</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/en/index.html" class="mp-nav-link">← Discover</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">Software &amp; Apps</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="Battery Health Checker：Windows 电池健康检测工具，图形化查看电池损耗"
+  data-share-page="https://www.mopan.lol/en/resource/19033.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="Copy page details for AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Copy for AI</span>
+</button>
+    </div>
+    <h1>Battery Health Checker：Windows 电池健康检测工具，图形化查看电池损耗</h1>
+    
+    <p class="detail-meta">Published 2026-08-12</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p>Windows 笔记本用久了，续航明显下降时，很多人会想找一款 Windows 电池健康检测工具，看看电池到底损耗了多少。其实 Windows 本身可以通过 powercfg /batteryreport 查看电池容量和使用情况，而 Battery Health Checker 则把这份系统报告做成了更容易看的图形界面，并增加托盘监控和电量提醒。</p>
+<p>如果你只是想快速看看笔记本电池损耗了多少，Battery Health Checker 会比手动运行 powercfg 方便不少。打开软件就能直接看容量、健康度等数据，不用再自己找生成的 HTML 电池报告。</p>
+<p></p>
+<h2>Windows 电池健康检测工具能看到什么？</h2>
+<p>打开 Battery Health Checker 后，不需要额外配置，就能看到几项比较常用的电池数据：</p>
+<ul>
+<li><strong>设计容量（Design Capacity）：</strong>电池出厂时标定的容量。</li>
+<li><strong>当前满充容量（Full Charge Capacity）：</strong>电池目前充满后实际能够达到的容量。</li>
+<li><strong>电池健康度：</strong>软件会根据当前满充容量和设计容量计算健康度百分比，用来直观看电池已经衰减了多少。</li>
+<li><strong>循环次数（Cycle Count）：</strong>读取 Windows 电池报告中的循环次数。如果笔记本本身没有向系统提供这项数据，软件也无法显示。</li>
+</ul>
+<p>这些数据可以用来观察日常电池衰减，也可以作为二手笔记本验机时的参考，但不能单靠某一个数值判断电池是否需要更换。</p>
+<p></p>
+<h2>Battery Health Checker 和 powercfg 有什么区别？</h2>
+<p>Battery Health Checker 读取的并不是什么额外的硬件数据。它会调用 Windows 自带的 <code>powercfg /batteryreport</code> 生成电池报告，再把里面的容量、健康度等信息整理到软件界面中。和手动打开 HTML 报告相比，主要是看起来更直观，还能常驻托盘监控电量和发送提醒。</p>
+<h2>托盘监控和电量提醒有什么用？</h2>
+<p>Battery Health Checker 可以常驻 Windows 系统托盘，并允许自己设置高低电量提醒。比如低于 20% 时提醒充电，或者充到 80% 时弹出通知，不需要一直盯着任务栏里的电池图标。</p>
+<p></p>
+<p>这里要注意，<strong>它提供的是电量提醒，并不会自动限制充电</strong>。如果你平时习惯在某个电量区间充电或拔掉电源，可以把对应的百分比设成提醒阈值；如果只是偶尔查看一次电池损耗，这项功能的用处就没那么大。</p>
+<p>如果你用的是 Mac，而且除了电量提醒，还需要充电限制这类更主动的电池管理功能，可以参考这篇：Juicy：Mac 电池管理工具，支持自定义提醒与充电限制。</p>
+<h2>Setup 和 Portable 版怎么选？</h2>
+<p>Battery Health Checker 提供 Setup 安装版和 Portable 便携版，两者主要区别在安装方式，按自己的使用习惯选择即可。</p>
+<ul>
+<li><strong>Setup 安装版：</strong>适合长期放在自己的 Windows 电脑上使用，安装后日常打开会更方便。</li>
+<li><strong>Portable 便携版：</strong>不需要安装，解压后即可运行。如果经常帮别人验机、维护电脑，放在工具 U 盘里会更方便。</li>
+</ul>
+<p>软件本身不需要注册账号。按照官方说明，电池数据不会被收集或上传；不过程序启动时会连接 GitHub Releases API 检查新版本，所以它并不是完全不联网的本地软件。</p>
+<h2>Android 版和 Windows 开源版有什么区别？</h2>
+<p>Battery Health Checker 官网同时提供 Windows 和 Android 版本。当前 GitHub 仓库公开的是 Windows 客户端源码，并采用 GPL v3 协议；Android 版由同一开发者通过 Google Play 提供，目前在这个仓库中没有看到对应的 Android 源码。</p>
+<p></p>
+<p>如果你主要是查看 Windows 笔记本的电池健康和损耗，直接使用 GitHub 提供的 Windows 版本即可。Android 版属于单独分发的移动端版本，是否开源应以开发者后续公开的信息为准。</p>
+<h2>Battery Health Checker 能替代厂商电池诊断工具吗？</h2>
+<p>不能。Battery Health Checker 读取的是 Windows 电池报告里的容量、健康度等信息，用来日常查看电池衰减没有问题，但它不能判断具体的硬件故障，也不能代替品牌厂商的售后检测。</p>
+<p>如果笔记本出现电池鼓包、异常掉电或关机、无法正常充电，或者需要确认是否符合官方保修更换条件，建议使用 Dell、HP、联想等厂商提供的硬件诊断工具，必要时直接联系售后。</p>
+<hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+<h2>Battery Health Checker 官方入口与项目资料</h2>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px; margin-bottom: 36px;">
+<p><a style="display: block; padding: 14px 18px; border-radius: 10px; background: #e3f2fd; font-weight: bold; color: #0d47a1; text-decoration: none; border: 1px solid #bbdefb;" title="Battery Health Checker GitHub 项目主页" href="https://github.com/LotfiBoukhemerra/Battery-Health-Checker" target="_blank" rel="nofollow noopener"><br />
+🐙 Battery Health Checker GitHub 项目主页<br />
+<span style="display: block; font-size: 13px; color: #555; font-weight: 400; margin-top: 4px;">查看 Windows 端 GPL v3 开源源码，或在 Releases 下载便携版。</span><br />
+</a></p>
+<p><a style="display: block; padding: 14px 18px; border-radius: 8px; background: #f3f4f6; font-weight: 600; color: #111827; text-decoration: none;" title="Battery Health Checker 官方网站" href="https://batterychecker.org/" target="_blank" rel="nofollow noopener"><br />
+🌐 Battery Health Checker 官方网站<br />
+<span style="display: block; font-size: 13px; color: #6b7280; font-weight: 400; margin-top: 4px;">了解详细功能特性，或查看 Android 版本 Google Play 入口。</span><br />
+</a></p>
+</div>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="Content source">
+  <p class="mp-source-stamp-main">
+    Curated on <strong>Mopan</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">Feel free to share — please keep the source link</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">Share this page</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="Battery Health Checker：Windows 电池健康检测工具，图形化查看电池损耗"
+  data-share-page="https://www.mopan.lol/en/resource/19033.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share with AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>Related</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/en/resource/1.html" class="drama-card">VidServe：一键把电脑视频目录变成局域网视频服务器</a>
+    
+    <a href="/en/resource/3.html" class="drama-card">ImgZilla：Mac 图片压缩工具，原地压缩不改变文件路径</a>
+    
+    <a href="/en/resource/6.html" class="drama-card">Screen Studio 免费替代方案：Capptivo 开源录屏工具，支持 Windows、Linux 和 macOS</a>
+    
+    <a href="/en/resource/7.html" class="drama-card">HypoMux：Windows 多网卡带宽叠加工具，利用 Wi-Fi 与网线提升多连接下载速度</a>
+    
+    <a href="/en/resource/9.html" class="drama-card">FindDiskKiller：Mac磁盘监控工具，定位异常读写进程</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>Mopan · AI Tools · Learning Resources · Short Drama Index</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · Resource index — please credit the source</p>
+      <p class="mp-footer-promo"><a href="/en/promo/quark/" data-promo-entry="footer">Quark Drive free resources →</a></p>
+      <p class="mp-footer-games"><a href="/en/game/">Mopan Mini Games →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1786594549"></script>
+  
+</body>
+</html>
