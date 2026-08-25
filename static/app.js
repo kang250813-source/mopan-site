@@ -300,6 +300,106 @@
     });
   }
 
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function searchMessage(key, fallback, values) {
+    var value = msg(key, fallback);
+    return value.replace(/\{(\w+)\}/g, function (_, name) {
+      return values && values[name] !== undefined ? values[name] : _;
+    });
+  }
+
+  function initStaticSearchForms() {
+    document.querySelectorAll('form[data-static-search]').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var data = new FormData(form);
+        var query = String(data.get('q') || '').trim();
+        var channel = String(data.get('channel') || '').trim();
+        var url = new URL(form.action, window.location.origin);
+        if (query) url.searchParams.set('q', query);
+        if (channel) url.searchParams.set('channel', channel);
+        window.location.assign(url.pathname + url.search);
+      });
+    });
+  }
+
+  function initStaticSearchPage() {
+    var page = document.querySelector('[data-static-search-page]');
+    if (!page) return;
+
+    var params = new URLSearchParams(window.location.search);
+    var query = (params.get('q') || '').trim();
+    var channel = (params.get('channel') || '').trim();
+    var form = page.querySelector('form[data-static-search]');
+    var input = form && form.querySelector('input[name="q"]');
+    var channelInput = form && form.querySelector('[name="channel"]');
+    var status = document.getElementById('static-search-status');
+    var results = document.getElementById('static-search-results');
+    var base = page.getAttribute('data-search-base') || '';
+    var indexUrl = page.getAttribute('data-search-index');
+    var limit = 100;
+
+    if (input) input.value = query;
+    if (channelInput) channelInput.value = channel;
+    if (!query) {
+      if (status) status.textContent = msg('search_start', 'Enter a keyword to search.');
+      return;
+    }
+    if (status) status.textContent = msg('search_loading', 'Loading search index…');
+
+    fetch(indexUrl, { cache: 'force-cache' })
+      .then(function (response) {
+        if (!response.ok) throw new Error('search index unavailable');
+        return response.json();
+      })
+      .then(function (data) {
+        var terms = query.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+        var entries = Array.isArray(data.entries) ? data.entries : [];
+        var matches = entries.filter(function (entry) {
+          if (channel && entry.c !== channel) return false;
+          var haystack = (String(entry.t || '') + ' ' + String(entry.x || '')).toLocaleLowerCase();
+          return terms.every(function (term) { return haystack.indexOf(term) !== -1; });
+        }).sort(function (left, right) {
+          var leftTitle = String(left.t || '').toLocaleLowerCase();
+          var rightTitle = String(right.t || '').toLocaleLowerCase();
+          var leftScore = terms.reduce(function (score, term) { return score + (leftTitle.indexOf(term) === 0 ? 4 : leftTitle.indexOf(term) >= 0 ? 2 : 0); }, 0);
+          var rightScore = terms.reduce(function (score, term) { return score + (rightTitle.indexOf(term) === 0 ? 4 : rightTitle.indexOf(term) >= 0 ? 2 : 0); }, 0);
+          return rightScore - leftScore || leftTitle.localeCompare(rightTitle);
+        });
+        var visible = matches.slice(0, limit);
+        if (status) {
+          status.textContent = searchMessage('results', '{n} results', { n: matches.length });
+          if (matches.length > limit) status.textContent += ' ' + searchMessage('search_more_results', 'Showing the first {n} results.', { n: limit });
+        }
+        if (!visible.length) {
+          if (status) status.textContent = msg('search_no_results', 'No matching content found.');
+          return;
+        }
+        results.innerHTML = visible.map(function (entry) {
+          var href = base + (entry.k === 'd' ? '/drama/' : '/resource/') + encodeURIComponent(entry.id) + '.html';
+          var excerpt = String(entry.x || '').slice(0, 180);
+          return '<article class="mp-card mp-search-result">' +
+            '<a class="mp-card-link" href="' + escapeHtml(href) + '">' +
+            '<div class="mp-card-top"><span class="mp-tag">' + escapeHtml(entry.c || '') + '</span></div>' +
+            '<h2 class="mp-card-title">' + escapeHtml(entry.t || '') + '</h2>' +
+            (excerpt ? '<p class="mp-card-excerpt">' + escapeHtml(excerpt) + '</p>' : '') +
+            '<span class="mp-card-more">' + escapeHtml(msg('read_more', 'Read more →')) + '</span>' +
+            '</a></article>';
+        }).join('');
+      })
+      .catch(function () {
+        if (status) status.textContent = msg('search_load_error', 'The search index could not be loaded. Please try again later.');
+      });
+  }
+
+  initStaticSearchForms();
+  initStaticSearchPage();
+
   document.querySelectorAll('.article-body img').forEach(function (img) {
     if (img.closest('.mp-article-img-wrap')) return;
     var wrap = document.createElement('span');

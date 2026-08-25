@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import sys
 from dataclasses import dataclass
@@ -72,6 +73,8 @@ DISCOVER_JSON = ROOT / "data" / "discover.json"
 COVERS_DATA_DIR = ROOT / "data" / "jupan-covers"
 
 RESOURCE_CHANNELS = ("discover", "media", "other", "k12", "ai_video", "classics")
+SEARCH_INDEX_PATH = DOCS_DIR / "static" / "search-index.json"
+SEARCH_CONTENT_LIMIT = 360
 
 
 @dataclass
@@ -90,6 +93,7 @@ def _resource_from_dict(raw: dict) -> Resource:
         id=int(raw["id"]),
         title=raw["title"],
         pan_url=raw.get("pan_url", ""),
+        pan_password=raw.get("pan_password"),
         pan_type=raw.get("pan_type", "quark"),
         channel=raw.get("channel", "discover"),
         wp_id=raw.get("wp_id"),
@@ -229,6 +233,44 @@ def _dramas(payload: SitePayload) -> list[jupan_bridge.JupanDrama]:
     return out
 
 
+def _search_text(value: str | None, *, limit: int = SEARCH_CONTENT_LIMIT) -> str:
+    """Flatten rich resource content for the browser search index."""
+    plain = re.sub(r"<[^>]+>", " ", value or "")
+    plain = re.sub(r"\s+", " ", plain).strip()
+    return plain[:limit]
+
+
+def _write_search_index(payload: SitePayload) -> int:
+    """Write the compact data set consumed by the GitHub Pages search UI."""
+    entries: list[dict[str, object]] = []
+    for channel in RESOURCE_CHANNELS:
+        for resource in _resources_for_channel(payload, channel):
+            entries.append(
+                {
+                    "k": "r",
+                    "id": resource.id,
+                    "c": channel,
+                    "t": resource.title,
+                    "x": _search_text(" ".join(filter(None, [resource.category, resource.excerpt, resource.content_html]))),
+                }
+            )
+    for drama in _dramas(payload):
+        entries.append(
+            {
+                "k": "d",
+                "id": drama.id,
+                "c": "drama",
+                "t": drama.title,
+                "x": _search_text(" ".join(drama.tags)),
+            }
+        )
+    SEARCH_INDEX_PATH.write_text(
+        json.dumps({"version": 1, "entries": entries}, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    return len(entries)
+
+
 def _filter_dramas_by_tag(dramas: list[jupan_bridge.JupanDrama], tag: str) -> list[jupan_bridge.JupanDrama]:
     tag_name = tag.strip()
     if not tag_name:
@@ -348,6 +390,7 @@ def _make_env(i18n: I18n, base_path: str, channel_counts: dict[str, int]) -> Env
         drama_tag_href=lambda tag, page=1: drama_tag_href(base_path, tag, static_site=True, page=page),
         category_href=lambda ch, cat, page=1: category_href(base_path, ch, cat, static_site=True, page=page),
         channel_href=lambda ch, page=1: channel_href(base_path, ch, static_site=True, page=page),
+        search_href=lambda: f"{base_path.rstrip('/')}/search/" if base_path else "/search/",
         page_url=lambda page, q="", category="", channel="discover", tag="": (
             drama_tag_href(base_path, tag, static_site=True, page=page)
             if tag and channel == "drama"
@@ -540,6 +583,12 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
 
     _build_games(i18n, base_path, docs_root, payload, write)
     _build_quark_promo(i18n, base_path, docs_root, payload, write)
+    write(
+        "search.html",
+        docs_root / "search" / "index.html",
+        request=_fake_request("/search/"),
+        channel_counts=channel_counts,
+    )
     return stats
 
 
@@ -672,6 +721,7 @@ def build(base_path: str = "") -> None:
     shutil.copytree(STATIC_DIR, DOCS_DIR / "static", dirs_exist_ok=True)
     (DOCS_DIR / ".nojekyll").touch()
     _copy_covers()
+    search_entries = _write_search_index(payload)
 
     totals = {"resources": 0, "list_pages": 0, "dramas": 0}
     for locale in LOCALES:
@@ -687,6 +737,7 @@ def build(base_path: str = "") -> None:
     print(f"  resource pages: {totals['resources']}")
     print(f"  drama pages: {totals['dramas']}")
     print(f"  list pages: {totals['list_pages']}")
+    print(f"  search entries: {search_entries}")
     domain = os.getenv("CUSTOM_DOMAIN", "").strip()
     if not domain and (ROOT / "CNAME").exists():
         domain = (ROOT / "CNAME").read_text(encoding="utf-8").strip()

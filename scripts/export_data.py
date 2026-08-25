@@ -37,6 +37,7 @@ def _resource_dict(resource) -> dict:
         "published_at": resource.published_at,
         "link_status": resource.link_status,
         "pan_url": resource.pan_url,
+        "pan_password": resource.pan_password,
         "pan_type": resource.pan_type,
         "channel": resource.channel,
         "source_ref": resource.source_ref,

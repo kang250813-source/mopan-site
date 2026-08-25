@@ -25,7 +25,8 @@ def _manifest_total() -> int:
         return 0
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     counts = manifest.get("channel_counts") or {}
-    return sum(int(v) for v in counts.values())
+    # Dramas are read directly from duanjuku-site; site.db only contains resources.
+    return sum(int(counts.get(channel, 0)) for channel in RESOURCE_CHANNELS)
 
 
 def _db_total() -> int:

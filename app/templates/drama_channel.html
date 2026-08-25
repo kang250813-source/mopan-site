@@ -50,7 +50,7 @@
   {% endif %}
 
   <section class="mp-toolbar">
-    <form class="mp-search" action="{{ base_path }}/" method="get" role="search">
+    <form class="mp-search" action="{{ search_href() if static_site else base_path ~ '/' }}" method="get" role="search"{% if static_site %} data-static-search="1"{% endif %}>
       <input type="hidden" name="channel" value="drama">
       <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <input type="search" name="q" value="{{ q }}" placeholder="{{ t('ui.search_drama_placeholder') }}" autocomplete="off">

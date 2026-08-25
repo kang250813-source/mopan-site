@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('ui.search') }} - {{ site_title }}{% endblock %}
+
+{% block nav %}
+<a href="{{ channel_href('discover') }}" class="mp-nav-link">{{ t('nav.back_home') }}</a>
+<span class="mp-nav-current">{{ t('ui.search') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mp-container mp-search-page" data-static-search-page="1" data-search-index="{{ asset_base }}/static/search-index.json" data-search-base="{{ base_path }}">
+  <section class="mp-hero mp-hero--search">
+    <div class="mp-hero-copy">
+      <p class="mp-eyebrow">{{ site_title }}</p>
+      <h1>{{ t('ui.search') }}</h1>
+      <p class="mp-hero-desc">{{ t('ui.search_static_hint') }}</p>
+    </div>
+  </section>
+
+  <section class="mp-toolbar">
+    <form class="mp-search" action="{{ search_href() }}" method="get" role="search" data-static-search="1">
+      <svg class="mp-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" name="q" placeholder="{{ t('ui.search_placeholder') }}" autocomplete="off" autofocus>
+      <select name="channel" class="mp-search-channel" aria-label="{{ t('ui.channels') }}">
+        <option value="">{{ t('ui.all') }}</option>
+        {% for channel in channels %}<option value="{{ channel.id }}">{{ channel.label }}</option>{% endfor %}
+      </select>
+      <button type="submit">{{ t('ui.search') }}</button>
+    </form>
+  </section>
+
+  <p class="mp-result-hint" id="static-search-status" aria-live="polite"></p>
+  <section class="mp-feed" id="static-search-results"></section>
+</div>
+{% endblock %}
