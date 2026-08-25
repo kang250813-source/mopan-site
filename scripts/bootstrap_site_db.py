@@ -61,6 +61,7 @@ def bootstrap(force: bool = False) -> int:
                 title=row["title"],
                 content_html=row.get("content_html"),
                 pan_url=row.get("pan_url") or "",
+                pan_password=row.get("pan_password") or "",
                 pan_type=row.get("pan_type"),
                 category=row.get("category"),
                 excerpt=row.get("excerpt"),

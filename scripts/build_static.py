@@ -8,6 +8,9 @@ import os
 import re
 import shutil
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -75,6 +78,7 @@ COVERS_DATA_DIR = ROOT / "data" / "jupan-covers"
 RESOURCE_CHANNELS = ("discover", "media", "other", "k12", "ai_video", "classics")
 SEARCH_INDEX_PATH = DOCS_DIR / "static" / "search-index.json"
 SEARCH_CONTENT_LIMIT = 360
+_RAW_HTML_BLOCK_RE = re.compile(r"<(pre|script|style|textarea)\\b[^>]*>.*?</\\1\\s*>", re.IGNORECASE | re.DOTALL)
 
 
 @dataclass
@@ -93,7 +97,7 @@ def _resource_from_dict(raw: dict) -> Resource:
         id=int(raw["id"]),
         title=raw["title"],
         pan_url=raw.get("pan_url", ""),
-        pan_password=raw.get("pan_password"),
+        pan_password=raw.get("pan_password", ""),
         pan_type=raw.get("pan_type", "quark"),
         channel=raw.get("channel", "discover"),
         wp_id=raw.get("wp_id"),
@@ -221,7 +225,22 @@ def _resources_for_channel(payload: SitePayload, channel: str) -> list[Resource]
             out.append(item)
         else:
             out.append(_resource_from_dict(item))
-    return out
+    def published_timestamp(resource: Resource) -> float:
+        raw = (resource.published_at or "").strip()
+        if not raw:
+            return 0.0
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = parsedate_to_datetime(raw)
+            except (TypeError, ValueError):
+                return 0.0
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.timestamp()
+
+    return sorted(out, key=lambda resource: (published_timestamp(resource), resource.id), reverse=True)
 
 
 def _dramas(payload: SitePayload) -> list[jupan_bridge.JupanDrama]:
@@ -343,6 +362,12 @@ def _page_url_path(base_path: str, out_file: Path, docs_root: Path) -> str:
     return url.replace("//", "/")
 
 
+def _share_url(path: str) -> str:
+    if PUBLIC_SITE_URL:
+        return f"{PUBLIC_SITE_URL.rstrip('/')}{path}"
+    return path
+
+
 def _docs_root(locale: str) -> Path:
     return DOCS_DIR if locale == "zh" else DOCS_DIR / "en"
 
@@ -412,14 +437,27 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
     docs_root.mkdir(parents=True, exist_ok=True)
     env = _make_env(i18n, base_path, channel_counts)
     stats = {"resources": 0, "list_pages": 0, "dramas": 0}
+    minify_html = os.getenv("STATIC_MINIFY_HTML", "").strip() == "1"
+
+    def compact_html(html: str) -> str:
+        blocks: list[str] = []
+
+        def stash(match: re.Match[str]) -> str:
+            blocks.append(match.group(0))
+            return f"@@RAW_{len(blocks) - 1}@@"
+
+        compact = _RAW_HTML_BLOCK_RE.sub(stash, html)
+        compact = re.sub(r"\\s+", " ", compact)
+        compact = re.sub(r">\\s+<", "><", compact)
+        for index, block in enumerate(blocks):
+            compact = compact.replace(f"@@RAW_{index}@@", block)
+        return compact
 
     def write(name: str, path: Path, **ctx) -> None:
         tpl = env.get_template(name)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            tpl.render(locale_switch_href=i18n.locale_switch_href(_page_url_path(base_path, path, docs_root)), **ctx),
-            encoding="utf-8",
-        )
+        html = tpl.render(locale_switch_href=i18n.locale_switch_href(_page_url_path(base_path, path, docs_root)), **ctx)
+        path.write_text(compact_html(html) if minify_html else html, encoding="utf-8")
 
     for channel in RESOURCE_CHANNELS:
         resources = _resources_for_channel(payload, channel)
@@ -474,7 +512,7 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 request=_fake_request(f"/resource/{resource.id}"),
                 resource=resource,
                 related=related,
-                share_page_url=resource_href(base_path, resource.id, static_site=True),
+                share_page_url=_share_url(resource_href(base_path, resource.id, static_site=True)),
             )
             stats["resources"] += 1
 
@@ -547,7 +585,7 @@ def _build_locale(i18n: I18n, payload: SitePayload, channel_counts: dict[str, in
                 drama=drama_page,
                 drama_promo=drama_promo,
                 related=related,
-                share_page_url=drama_href(base_path, drama.id, static_site=True),
+                share_page_url=_share_url(drama_href(base_path, drama.id, static_site=True)),
             )
             stats["dramas"] += 1
 
@@ -687,23 +725,49 @@ def _related_resources(current: Resource, pool: list[Resource], limit: int = 5) 
 
 
 def _copy_covers() -> None:
+    if os.getenv("COVER_ASSET_BASE", "").strip():
+        return
     dst = DOCS_DIR / "jupan-covers"
     dst.mkdir(parents=True, exist_ok=True)
     # Merge both sources; later src overwrites same filename (duanjuku is fresher).
+    covers: dict[str, Path] = {}
     for src in (COVERS_DATA_DIR, JUPAN_COVERS_DIR):
         if not src.is_dir():
             continue
         for file in src.iterdir():
             if file.is_file():
-                shutil.copy2(file, dst / file.name)
+                covers[file.name] = file
+
+    optimize_bytes = max(0, int(os.getenv("COVER_OPTIMIZE_KB", "0"))) * 1024
+
+    def publish(item: tuple[str, Path]) -> None:
+        name, src = item
+        output = dst / name
+        if not optimize_bytes or src.stat().st_size <= optimize_bytes:
+            shutil.copy2(src, output)
+            return
+        try:
+            from PIL import Image
+
+            with Image.open(src) as image:
+                image.thumbnail((480, 686), Image.Resampling.LANCZOS)
+                image.convert("RGB").save(output, "WEBP", quality=74, method=2)
+        except Exception as exc:
+            print(f"  cover optimize failed ({name}): {exc}", file=sys.stderr)
+            shutil.copy2(src, output)
+
+    workers = min(8, os.cpu_count() or 1) if optimize_bytes else 1
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(publish, covers.items()))
 
 
-def _deploy_wukong_games() -> None:
+def _deploy_wukong_games(locales: tuple[str, ...]) -> None:
     if not wukong_games_available():
         return
     for slug in WUKONG_SLUGS:
         src = WUKONG_DIR / slug / "index.html"
-        for root in (DOCS_DIR, DOCS_DIR / "en"):
+        for locale in locales:
+            root = DOCS_DIR if locale == "zh" else DOCS_DIR / locale
             dst = root / "game" / slug / "index.html"
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
@@ -714,6 +778,8 @@ def build(base_path: str = "") -> None:
     _ = base_path.rstrip("/")
     payload = load_payload()
     channel_counts = dict(payload.channel_counts)
+    if payload.dramas:
+        channel_counts["drama"] = len(payload.dramas)
 
     if DOCS_DIR.exists():
         shutil.rmtree(DOCS_DIR)
@@ -723,14 +789,19 @@ def build(base_path: str = "") -> None:
     _copy_covers()
     search_entries = _write_search_index(payload)
 
+    requested_locales = tuple(
+        locale.strip()
+        for locale in os.getenv("STATIC_LOCALES", ",".join(LOCALES)).split(",")
+        if locale.strip() in LOCALES
+    ) or ("zh",)
     totals = {"resources": 0, "list_pages": 0, "dramas": 0}
-    for locale in LOCALES:
+    for locale in requested_locales:
         stats = _build_locale(get_i18n(locale), payload, channel_counts)
         for key in totals:
             totals[key] += stats[key]
         print(f"  locale {locale}: resources={stats['resources']}, dramas={stats['dramas']}, lists={stats['list_pages']}")
 
-    _deploy_wukong_games()
+    _deploy_wukong_games(requested_locales)
 
     print(f"Built static site -> {DOCS_DIR}")
     print(f"  channels: {', '.join(f'{k}={v}' for k, v in channel_counts.items())}")
