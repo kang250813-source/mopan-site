@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="Mopan">
+  <title>MediaGo：支持 Docker、API 的开源 M3U8 下载器 - Mopan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1793086398">
+  
+</head>
+<body class="" data-locale="en" data-i18n="{&#34;collapse&#34;: &#34;Show less&#34;, &#34;copied&#34;: &#34;Copied&#34;, &#34;copied_paste&#34;: &#34;Copied \u2014 paste to send&#34;, &#34;copy_prompt&#34;: &#34;Copy the text from the dialog and paste it into AI&#34;, &#34;expand_more&#34;: &#34;Show more ({n})&#34;, &#34;games_bobing_award_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_award_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;Five of a Kind&#34;, &#34;games_bobing_award_five_red&#34;: &#34;Five Reds&#34;, &#34;games_bobing_award_four_red&#34;: &#34;Four Reds&#34;, &#34;games_bobing_award_golden&#34;: &#34;Golden Zhuangyuan&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_award_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_award_six_black&#34;: &#34;Six Black&#34;, &#34;games_bobing_award_six_red&#34;: &#34;Six Reds&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_miss&#34;: &#34;No prize&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 no prize&#34;, &#34;games_bobing_name_label&#34;: &#34;Player {n}&#34;, &#34;games_bobing_over&#34;: &#34;All prizes claimed \u2014 game over&#34;, &#34;games_bobing_player_default&#34;: &#34;Player {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;Straight&#34;, &#34;games_bobing_prize_erju&#34;: &#34;Two Raises&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;Three Reds&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;Four Advance&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;One Show&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;Zhuangyuan&#34;, &#34;games_bobing_roll&#34;: &#34;Roll&#34;, &#34;games_bobing_rolling&#34;: &#34;Rolling six dice\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} is gone&#34;, &#34;games_bobing_start&#34;: &#34;Pick players, then take turns rolling&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}!&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award} (pending)&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} wins Zhuangyuan \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;Keep guessing \u2014 narrow the range&#34;, &#34;games_bomb_boom&#34;: &#34;Boom! The bomb was {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;Boom!&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u2014 too high&#34;, &#34;games_bomb_invalid&#34;: &#34;Enter a number in range&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u2014 too low&#34;, &#34;games_bomb_out&#34;: &#34;Stay between {low} and {high}&#34;, &#34;games_bomb_start&#34;: &#34;Guess a number \u2014 hit the bomb and you lose&#34;, &#34;games_chore_done&#34;: &#34;{who} \u2192 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;Already added&#34;, &#34;games_chore_max&#34;: &#34;Max 10 items&#34;, &#34;games_chore_min_people&#34;: &#34;Keep at least 2 people&#34;, &#34;games_chore_min_tasks&#34;: &#34;Keep at least 2 chores&#34;, &#34;games_cleared&#34;: &#34;Out of moves&#34;, &#34;games_croc_lose&#34;: &#34;Player {n} got bitten!&#34;, &#34;games_croc_safe&#34;: &#34;Lucky round \u2014 no one got bitten&#34;, &#34;games_croc_turn&#34;: &#34;Player {n} \u2014 pick a tooth&#34;, &#34;games_dice_rolling&#34;: &#34;Rolling\u2026&#34;, &#34;games_dice_total&#34;: &#34;Total: {n}&#34;, &#34;games_finger_pick&#34;: &#34;Player {n} \u2014 your turn!&#34;, &#34;games_game_over&#34;: &#34;Game over&#34;, &#34;games_no_match&#34;: &#34;No match&#34;, &#34;games_open_pick&#34;: &#34;Open pick&#34;, &#34;games_perfect&#34;: &#34;Perfect!&#34;, &#34;games_site_open&#34;: &#34;Visit site&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;A handy site worth bookmarking.&#34;, &#34;games_stack_start&#34;: &#34;Tap to start&#34;, &#34;games_stack_start_sub&#34;: &#34;Tap the board or button to drop&#34;, &#34;games_tictactoe_draw&#34;: &#34;Draw&#34;, &#34;games_tictactoe_start&#34;: &#34;X goes first&#34;, &#34;games_tictactoe_turn&#34;: &#34;{mark} to play&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} wins!&#34;, &#34;games_topic_ready&#34;: &#34;Tap to draw a topic card&#34;, &#34;games_who_default_task&#34;: &#34;do chores&#34;, &#34;no_share_url&#34;: &#34;Cannot get share link&#34;, &#34;prompt_copy&#34;: &#34;Select and copy the text below, then paste it into AI:&#34;, &#34;read_more&#34;: &#34;Read more \u2192&#34;, &#34;results&#34;: &#34;{n} results&#34;, &#34;search_load_error&#34;: &#34;The search index could not be loaded. Please try again later.&#34;, &#34;search_loading&#34;: &#34;Loading search index\u2026&#34;, &#34;search_more_results&#34;: &#34;Showing the first {n} results.&#34;, &#34;search_no_results&#34;: &#34;No matching content found.&#34;, &#34;search_start&#34;: &#34;Enter a keyword to search.&#34;, &#34;share&#34;: &#34;Share&#34;, &#34;share_copied_wechat&#34;: &#34;Page details copied. Paste them into AI.&#34;, &#34;share_failed&#34;: &#34;Copy failed \u2014 copy the page link manually&#34;, &#34;share_invoked&#34;: &#34;Page details copied&#34;, &#34;share_page&#34;: &#34;Page link&#34;, &#34;share_password&#34;: &#34;Access code&#34;, &#34;share_quark&#34;: &#34;Quark Drive&#34;, &#34;site_drama&#34;: &#34;Quark Drama&#34;, &#34;site_resource&#34;: &#34;Site Resource&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/en/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>Mopan</strong>
+          <small>AI Tools · Learning Resources · Short Drama Index</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="Color theme">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="Purple" aria-label="Purple"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="Forest" aria-label="Forest"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="Amber" aria-label="Amber"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/resource/21226.html" class="mp-lang-link" hreflang="zh" lang="zh">中文</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/en/index.html" class="mp-nav-link">← Discover</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">Software &amp; Apps</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="MediaGo：支持 Docker、API 的开源 M3U8 下载器"
+  data-share-page="https://www.mopan.lol/en/resource/21226.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="Copy page details for AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Copy for AI</span>
+</button>
+    </div>
+    <h1>MediaGo：支持 Docker、API 的开源 M3U8 下载器</h1>
+    
+    <p class="detail-meta">Published 2026-10-26</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p>如果只是处理一个 M3U8 地址，能用的工具其实不少。MediaGo 比较特别的是它把 M3U8/HLS、网页资源提取、yt-dlp 等下载能力放进了一套统一界面里，又补上了 Docker、Web UI 和 HTTP API。</p>
+<p><strong><a href="https://downloader.caorushizi.cn/" target="_blank" rel="noopener">MediaGo</a></strong> 是一款跨平台开源 <strong>M3U8 下载器</strong>，支持 Windows、macOS、Linux 和 Docker。项目还整合了 yt-dlp、N_m3u8DL-RE、BBDown、aria2 等工具，所以它更像是一套带图形界面和任务管理的下载前端，而不是重新做了一套下载协议。项目源码、Issue 和更新记录可以在 <a href="https://github.com/mediago-dev/mediago" target="_blank" rel="noopener">MediaGo GitHub 仓库</a> 查看。</p>
+<p></p>
+<p>MediaGo 主要用于处理 M3U8/HLS 等流媒体资源。实际使用时，建议只处理自己拥有、已经获得授权或明确允许下载的内容。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定位</td>
+<td>跨平台 M3U8 / HLS 视频下载工具</td>
+</tr>
+<tr>
+<td>支持平台</td>
+<td>Windows、macOS、Linux</td>
+</tr>
+<tr>
+<td>核心功能</td>
+<td>M3U8 / HLS 下载、网页资源提取、格式转换</td>
+</tr>
+<tr>
+<td>浏览器扩展</td>
+<td>支持 Chrome、Edge，可将检测到的资源发送到 MediaGo</td>
+</tr>
+<tr>
+<td>自托管</td>
+<td>支持 Docker，提供 amd64 / arm64 镜像和 Web 界面</td>
+</tr>
+<tr>
+<td>自动化</td>
+<td>提供 HTTP API，并支持 OpenClaw Skill</td>
+</tr>
+<tr>
+<td>当前稳定版</td>
+<td>v3.5.0</td>
+</tr>
+<tr>
+<td>开源许可</td>
+<td>MIT License，README 另有非商业用途说明</td>
+</tr>
+</tbody>
+</table>
+<h2>MediaGo 和普通 M3U8 下载器有什么区别</h2>
+<p>普通 M3U8 下载工具通常很直接：输入一个 <code>.m3u8</code> 地址，把 HLS 分片下载下来并合并。</p>
+<p></p>
+<p>MediaGo 做得更宽一些。</p>
+<p>已经知道 M3U8/HLS 地址时，可以直接创建任务；不知道真实媒体地址，也可以用内置的资源提取功能，让 MediaGo 检测网页加载出来的媒体资源。</p>
+<p>Chrome / Edge 浏览器扩展则省掉了手动找地址这一步。检测到媒体资源后，可以直接把任务发送到 MediaGo，不用自己去开发者工具里翻网络请求。</p>
+<p>项目还接入了 yt-dlp，所以处理范围并不限于 HLS，也可以利用 yt-dlp 的站点解析能力。</p>
+<p>真正把 MediaGo 和普通桌面下载器拉开差距的，还是 Docker、Web UI 和 HTTP API。它既可以装在电脑上直接用，也可以放在 NAS、小主机或者服务器里长期运行。</p>
+<h2>MediaGo 怎么处理 M3U8 / HLS</h2>
+<p>已经有 M3U8 地址时，最简单的方式就是在 MediaGo 里新建任务并填入地址。</p>
+<p></p>
+<p> </p>
+<p>不知道真实地址时，可以进入资源提取页面，再打开对应网页。MediaGo 会检测页面加载过程中出现的媒体资源，找到需要的内容后直接创建任务。</p>
+<p>浏览器扩展又多了一种入口。安装后，可以把浏览器检测到的媒体资源直接发送给已经运行的 MediaGo，对不想频繁复制链接的人会方便很多。</p>
+<p>这里有一点需要分清：</p>
+<p><strong>工具能识别资源，不代表内容提供方允许下载。</strong></p>
+<p>如果平台明确禁止保存某类内容，或者媒体受到 DRM、访问权限等保护，就不应该把 MediaGo 当作绕过限制的工具。</p>
+<h2>Windows、macOS 和 Linux 怎么安装</h2>
+<p>MediaGo 支持 Windows、macOS 和 Linux。Windows 有安装版和便携版，macOS 同时提供 Apple Silicon 和 Intel 版本，Linux 目前主要提供 DEB 安装包。</p>
+<p></p>
+<p>安装包建议直接从 <a href="https://github.com/mediago-dev/mediago/releases" target="_blank" rel="noopener">MediaGo GitHub Releases</a> 获取，Windows、macOS 和 Linux 版本都可以在这里找到。</p>
+<p>Windows 基本下载安装就能用，不过当前发布包可能仍会触发系统安全提醒，建议直接从项目官方 Release 页面获取。</p>
+<p>macOS 会稍微麻烦一点。Apple Silicon 用户如果安装后提示应用无法打开，可以在终端执行：</p>
+<pre><code>sudo xattr -dr com.apple.quarantine /Applications/mediago-community.app</code></pre>
+<p>这一步主要是移除 macOS 给应用加上的 quarantine 标记。Intel Mac 使用对应的 x64 版本，遇到系统拦截时也可以到“隐私与安全性”里手动放行。</p>
+<p>如果还在用比较老的 Windows 设备要留意，MediaGo 已经不再支持 Windows 7，32 位系统目前也不是主要支持范围。</p>
+<h2>MediaGo Docker 部署：放到 NAS 或服务器上更方便</h2>
+<p>如果家里有 NAS、小主机或者常开的服务器，MediaGo 用 Docker 跑会比装在主力电脑上更方便。下载任务可以一直放在服务器里处理，手机、平板和电脑也能通过 Web 界面访问。</p>
+<p></p>
+<p>MediaGo 提供 amd64 和 arm64 镜像，普通 x86 小主机和不少 ARM 设备都能用。最简单的部署方式是：</p>
+<pre><code>docker run -d \
+  --name mediago \
+  -p 8899:8899 \
+  -v /path/to/mediago:/app/mediago \
+  caorushizi/mediago:3.5.0</code></pre>
+<p>把 <code>/path/to/mediago</code> 换成自己的数据目录即可。如果更习惯 GHCR，也可以使用 <code>ghcr.io/caorushizi/mediago:3.5.0</code>。</p>
+<p>第一次打开时，部分版本会要求输入初始化 Token，可以通过下面的命令查看：</p>
+<pre><code>docker exec mediago cat /app/mediago/data/setup-token</code></pre>
+<p>完成初始化后，后面正常登录使用就行。</p>
+<h3>MediaGo Docker 为什么同时出现 8899 和 9900？</h3>
+<p>MediaGo 的 Docker 示例主要使用 <code>8899</code>，但 HTTP API 文档里还能看到 <code>9900</code> 的示例。</p>
+<p>如果只是部署 Web 界面，按上面的 <code>8899:8899</code> 配置即可。后面要接 HTTP API 时，再看实际容器端口映射和 MediaGo 当前设置，不要把文档里的 <code>9900</code> 当成所有环境的固定端口。</p>
+<h2>MediaGo 还能接进自动化和 AI 工作流</h2>
+<p>MediaGo 不只是一个需要手动点按钮的下载器。它提供了 <a href="https://downloader.caorushizi.cn/api.html" target="_blank" rel="noopener">HTTP API</a>，所以部署在 NAS 或服务器上之后，其他脚本和应用也可以直接给它提交任务、查看进度。</p>
+<p>比如把一个媒体地址交给 MediaGo，任务完成后再由后面的脚本自动整理、移动或者归档文件。对已经在折腾 NAS 和自动化的人来说，这比每次打开网页手动操作方便不少。</p>
+<p></p>
+<p>MediaGo 还提供了 OpenClaw Skill，可以让 Claude Code、Cursor 等 AI 编程工具调用它：</p>
+<pre><code>npx clawhub@latest install mediago</code></pre>
+<p>配置好 MediaGo 地址和需要的 API Key 后，就可以让 Agent 把任务交给 MediaGo 处理。</p>
+<p>这里比较有意思的不是“AI 帮你下载视频”，而是 MediaGo 已经把下载能力开放成了一个可以被脚本和 Agent 调用的服务。后面想接自己的自动化流程，不用再围着 GUI 做操作。</p>
+<p>如果想接 Claude Code、Cursor 等 Agent 工作流，可以查看 <a href="https://downloader.caorushizi.cn/skills.html" target="_blank" rel="noopener">MediaGo OpenClaw Skill 文档</a>。</p>
+<h2>MediaGo 和 yt-dlp、N_m3u8DL-RE 有什么区别</h2>
+<p>MediaGo 并不是要替代 yt-dlp 或 N_m3u8DL-RE，它更像是把这些工具的能力装进一个更容易操作的界面里。</p>
+<p>yt-dlp 更适合熟悉命令行的人，参数多、可控性强，拿来写脚本也很方便。N_m3u8DL-RE 则更偏 HLS、DASH、MSS 这类流媒体处理，想细调轨道、分片和下载参数时更合适。</p>
+<p>MediaGo 走的是另一条路线：少记命令，把资源提取、任务管理、Web 界面、Docker 和 API 放到一起。</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>主要特点</th>
+<th>更适合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MediaGo</td>
+<td>GUI、资源提取、Docker、Web、API</td>
+<td>想少折腾命令，或者有 NAS / 自托管需求的人</td>
+</tr>
+<tr>
+<td>yt-dlp</td>
+<td>站点支持广、参数丰富、脚本化能力强</td>
+<td>命令行用户、开发者、自动化脚本</td>
+</tr>
+<tr>
+<td>N_m3u8DL-RE</td>
+<td>更专注 HLS、DASH、MSS 等流媒体</td>
+<td>需要精细控制流媒体下载参数的人</td>
+</tr>
+</tbody>
+</table>
+<p>如果本来就很熟悉 yt-dlp 或 N_m3u8DL-RE，继续用命令行往往更直接；如果更在意图形界面、跨设备访问，或者想把下载服务放到 NAS 上长期运行，MediaGo 会省事很多。</p>
+<h2>MediaGo 安装和 Docker 使用时会遇到什么问题</h2>
+<h3>macOS 安装还要多一步</h3>
+<p>Apple Silicon 版本目前还需要处理 quarantine 属性，Intel Mac 也可能遇到系统安全拦截。相比下载安装后直接双击就能用的软件，MediaGo 在 macOS 上还是多了一点折腾。</p>
+<h3>Windows 可能会弹安全提示</h3>
+<p>目前的 Windows Release 还存在未签名的情况，所以第一次运行时可能碰到 SmartScreen 等系统提醒。遇到这种情况，先确认安装包来自官方 Release。</p>
+<h3>直播资源有时得自己挑</h3>
+<p>MediaGo 可以处理直播流，但碰到一个页面同时加载多个媒体资源时，目前还不能保证自动判断哪个才是直播源，部分场景需要自己看一下检测结果。</p>
+<h3>Docker 版别直接暴露到公网</h3>
+<p>MediaGo 的 Web 界面很适合放在 NAS 或服务器上给家里的设备一起用，但局域网能访问，不等于适合直接开放到公网。</p>
+<p>真有远程访问需求，可以配合 Tailscale、VPN、反向代理、HTTPS 或访问控制来做，不建议直接把端口暴露出去。</p>
+<h2>常见问题</h2>
+<h3>MediaGo 免费吗？</h3>
+<p>MediaGo 的 GitHub 仓库公开，目前可以直接获取 Windows、macOS、Linux 和 Docker 版本。</p>
+<h3>MediaGo 可以商用吗？</h3>
+<p>MediaGo 的 LICENSE 是标准 <strong>MIT License</strong>，单看许可证文本，代码本身允许商业使用。</p>
+<p>但项目 README 又明确写了“仅用于教育和研究，不要用于商业用途”。这和 MIT License 的授权范围存在直接冲突，而且项目目前没有在文档里进一步解释两者该如何理解。</p>
+<p>因此更准确的说法是：<strong>MediaGo 不能简单归类为“明确允许商用”的项目。</strong></p>
+<p>如果只是个人使用、学习和测试没有太大争议；涉及商业产品、收费服务、企业集成或二次分发时，这个许可冲突就需要单独考虑。</p>
+<p>另外，MediaGo 的软件许可和通过它下载的内容版权是两件事，前者即使允许使用，也不会自动获得后者的传播或商业使用权。</p>
+<h3>MediaGo 支持 Apple Silicon 吗？</h3>
+<p>支持。MediaGo 提供 macOS arm64 版本，也有单独的 Intel x64 版本。Apple Silicon 当前安装后可能还需要处理应用的 quarantine 属性。</p>
+<h3>MediaGo 能部署到 NAS 或 ARM 服务器吗？</h3>
+<p>可以。MediaGo 的 Docker 镜像支持 amd64 和 arm64，所以不少 NAS、x86 小主机和 ARM 服务器都能运行。</p>
+<p>具体能不能直接部署，主要看设备本身是否提供兼容的 Docker 环境。</p>
+<h3>MediaGo v3.6.0 Beta 可以直接替代 v3.5.0 吗？</h3>
+<p>目前 v3.6.0-beta.1 仍然属于测试版本，v3.5.0 才是稳定版。</p>
+<p>日常使用更看重稳定性的话，继续用 v3.5.0 更合适；想体验新版本功能，再考虑 v3.6.0 Beta。</p>
+<h2>MediaGo 官网与 GitHub</h2>
+<ul>
+<li><a href="https://downloader.caorushizi.cn/" target="_blank" rel="noopener">MediaGo 官网</a></li>
+<li><a href="https://github.com/mediago-dev/mediago" target="_blank" rel="noopener">MediaGo GitHub 仓库</a></li>
+<li><a href="https://github.com/mediago-dev/mediago/releases" target="_blank" rel="noopener">MediaGo Releases</a></li>
+</ul>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="Content source">
+  <p class="mp-source-stamp-main">
+    Curated on <strong>Mopan</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">Feel free to share — please keep the source link</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">Share this page</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="MediaGo：支持 Docker、API 的开源 M3U8 下载器"
+  data-share-page="https://www.mopan.lol/en/resource/21226.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">Share with AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>Related</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/en/resource/1.html" class="drama-card">Caplo Mac 录屏软件：自动聚焦、原生剪辑与本地工作流</a>
+    
+    <a href="/en/resource/3.html" class="drama-card">不用装 Mac 安卓模拟器，Mac.apk 也能直接运行 Android App</a>
+    
+    <a href="/en/resource/4.html" class="drama-card">Status Trio：受 iPhone Duo 启发的 Mac 菜单栏三合一状态图标</a>
+    
+    <a href="/en/resource/7.html" class="drama-card">Filee 文件转换器：不上传文件的开源本地转换工具</a>
+    
+    <a href="/en/resource/8.html" class="drama-card">默读 Modu Reader：支持 OCR、AI 阅读的开源电子书阅读器</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>Mopan · AI Tools · Learning Resources · Short Drama Index</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · Resource index — please credit the source</p>
+      <p class="mp-footer-promo"><a href="/en/promo/quark/" data-promo-entry="footer">Quark Drive free resources →</a></p>
+      <p class="mp-footer-games"><a href="/en/game/">Mopan Mini Games →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1793086398"></script>
+  
+</body>
+</html>
