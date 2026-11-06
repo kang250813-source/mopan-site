@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="魔盘">
+  <title>SSHYard：开源 SSH 客户端，集成 SFTP 与 AI 远程操作 - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1793955882">
+  
+</head>
+<body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;read_more&#34;: &#34;\u9605\u8bfb\u5168\u6587 \u2192&#34;, &#34;results&#34;: &#34;\u5171 {n} \u6761\u7ed3\u679c&#34;, &#34;search_load_error&#34;: &#34;\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002&#34;, &#34;search_loading&#34;: &#34;\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15\u2026&#34;, &#34;search_more_results&#34;: &#34;\u4ec5\u663e\u793a\u524d {n} \u6761\u7ed3\u679c\u3002&#34;, &#34;search_no_results&#34;: &#34;\u6ca1\u6709\u627e\u5230\u76f8\u5173\u5185\u5bb9\u3002&#34;, &#34;search_start&#34;: &#34;\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22\u3002&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="颜色主题">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="紫色" aria-label="紫色"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="海洋" aria-label="海洋"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="玫红" aria-label="玫红"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="森绿" aria-label="森绿"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="琥珀" aria-label="琥珀"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="靛蓝" aria-label="靛蓝"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/en/resource/21303.html" class="mp-lang-link" hreflang="en" lang="en">EN</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/index.html" class="mp-nav-link">← 发现</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">其他</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="SSHYard：开源 SSH 客户端，集成 SFTP 与 AI 远程操作"
+  data-share-page="https://www.mopan.lol/resource/21303.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="复制页面信息给 AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">复制给 AI</span>
+</button>
+    </div>
+    <h1>SSHYard：开源 SSH 客户端，集成 SFTP 与 AI 远程操作</h1>
+    
+    <p class="detail-meta">发布于 2026-11-05</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p>SSHYard 是一款面向 VPS、Linux 服务器和家庭实验室用户的开源 SSH 客户端，支持 macOS、Windows 和 Linux。它把 SSH 终端、SFTP 文件管理和 AI 助手放进同一个桌面应用，可以连接远程服务器、传输和编辑文件，也能让 AI 读取终端上下文，在授权后执行命令或修改远程文件。</p>
+<p></p>
+<p>与传统 SSH 客户端相比，SSHYard 的一个明显区别是 AI 不只是提供命令建议，还可以通过现有 SSH 连接参与实际操作。用户可以选择 Ask、Review 或 Full access 模式，控制 AI 执行命令和修改文件时的权限。此外，它还支持 MCP 和 Skill，让 Claude Code、Codex 等本地 AI Agent 接入已经配置的服务器。</p>
+<p>SSHYard 使用 Go 开发，采用 MyGo UI 构建桌面界面，不依赖 WebView。项目目前仍处于 0.0.x 早期阶段。本文结合官网、GitHub 仓库、版本记录和公开问题介绍它的功能与限制。</p>
+<h2>SSHYard 是什么：集成 SFTP 与 AI 远程操作的开源 SSH 客户端</h2>
+<p>SSHYard 是一款运行在本机的桌面 SSH / SFTP 客户端，不需要在远程服务器上额外部署管理面板。安装后添加 SSH 主机，就可以在客户端中连接服务器、执行命令、浏览远程文件和使用 AI 助手。</p>
+<table>
+<thead>
+<tr>
+<th>核心功能</th>
+<th>主要用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSH 终端</td>
+<td>连接 Linux 服务器，执行远程命令，支持多标签和分屏。</td>
+</tr>
+<tr>
+<td>SFTP 文件管理</td>
+<td>浏览、上传、下载和编辑服务器上的文件。</td>
+</tr>
+<tr>
+<td>AI 助手</td>
+<td>分析终端上下文，根据授权执行命令和修改远程文件。</td>
+</tr>
+<tr>
+<td>MCP / Skill</td>
+<td>让本地 AI Agent 调用已配置的 SSH 主机和远程操作能力。</td>
+</tr>
+<tr>
+<td>凭据管理</td>
+<td>通过系统钥匙串和本地加密机制保存连接凭据。</td>
+</tr>
+</tbody>
+</table>
+<p>项目使用 Go 开发，界面基于 MyGo UI，不依赖 WebView、HTML 或 xterm.js。它不是浏览器里的远程管理平台，而是直接运行在 macOS、Windows 和 Linux 上的桌面软件。</p>
+<p>SSHYard 采用 <a href="https://github.com/Licoy/sshyard/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GNU AGPL-3.0</a> 开源许可证，官网提供客户端下载，无需注册账号。客户端本身可以免费下载使用，但调用外部 AI 模型时，仍可能产生模型服务商的 API 费用。</p>
+<h2>SSH 连接管理与 SFTP 文件操作</h2>
+<h3>多标签终端、分屏与 SSH Config 导入</h3>
+<p>管理多台 VPS 时，经常需要同时打开几个终端：一边查看日志，一边检查服务状态，还要修改配置文件。SSHYard 支持多标签和分屏，可以在同一个窗口中处理这些任务。</p>
+<p>它支持 tmux、vim、htop 等终端应用所需的鼠标操作和字符显示，也提供终端搜索、断线自动重连等功能。</p>
+<p></p>
+<p>连接方式包括密码、SSH 密钥和 SSH Agent。如果原来通过 OpenSSH Config 管理服务器，可以直接导入 <code>~/.ssh/config</code>，不必重新逐台填写连接信息。多级跳板机、HTTP / SOCKS5 代理以及本地、远程和动态端口转发也都在支持范围内。</p>
+<p>已经管理多台服务器的用户，导入 SSH Config 可以省去不少重复配置工作。不过，迁移后仍建议检查主机地址、端口、密钥路径和跳板机设置，确认连接正常后再替换原来的客户端。</p>
+<h3>终端与 SFTP 文件管理</h3>
+<p>SSHYard 可以将 SFTP 文件管理器和 SSH 终端并排显示。通过终端进入某个目录后，文件管理面板也能跟随定位，不用再切换到其他软件查找远程文件。</p>
+<p>例如，修改 Nginx 配置时，可以先在终端找到配置文件所在目录，再从 SFTP 面板打开文件编辑。保存后回到终端执行 <code>nginx -t</code> 检查配置是否正确。文件传输支持拖放操作，文件夹可以加入传输队列，遇到中断时还能暂停、继续或重试。</p>
+<p>这种布局适合日常维护 VPS 和 Linux 服务器，尤其是经常需要查看日志、修改配置文件和上传网站文件的场景。它减少了终端与文件管理工具之间的切换，至于能否完全替代独立的 SFTP 软件，还要看实际文件传输和编辑体验。</p>
+<h2>AI 远程命令执行：Ask、Review 和 Full access</h2>
+<p>SSHYard 的 AI 助手不只是回答问题。它可以读取当前主机的终端上下文，并通过已经建立的 SSH 连接执行命令或编辑远程文件。</p>
+<p></p>
+<p>用户可以为 AI 操作设置三种权限模式：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>执行方式</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ask</strong></td>
+<td>执行命令或修改文件前，需要用户批准。</td>
+<td>初次使用、日常辅助、测试服务器。</td>
+</tr>
+<tr>
+<td><strong>Review</strong></td>
+<td>由配置的审核模型检查操作；未获得明确批准时交还用户。</td>
+<td>希望增加一道 AI 操作审核流程。</td>
+</tr>
+<tr>
+<td><strong>Full access</strong></td>
+<td>无需逐条确认即可执行，开启时会显示风险警告。</td>
+<td>仅适合明确了解风险的受控环境。</td>
+</tr>
+</tbody>
+</table>
+<p>Review 模式会先让审核模型检查 AI 准备执行的操作，但审核结果也可能出现偏差，不能完全依赖它来判断命令是否安全。Full access 则不需要逐条等待用户确认，AI 可以直接使用当前 SSH 账户的权限执行命令和修改文件。</p>
+<p>如果 SSH 账户拥有 Root 或广泛 sudo 权限，AI 执行错误命令可能影响整个服务器。初次使用建议选择 Ask，并使用权限受限的测试账号，不要直接将拥有生产环境管理权限的账户交给 AI。</p>
+<h3>AI 辅助排查服务器故障</h3>
+<p>以网站出现 Nginx 502 错误为例，可以让 SSHYard 的 AI 助手协助检查服务器状态，而不必先把终端输出复制到另一个聊天窗口。</p>
+<ol>
+<li><strong>检查服务状态：</strong>查看 Nginx 和上游服务是否正常运行。</li>
+<li><strong>分析错误日志：</strong>检查近期日志，寻找服务未启动、端口不通或配置错误等线索。</li>
+<li><strong>提出排查命令：</strong>根据已有信息给出下一步检查方法，并说明命令用途。</li>
+<li><strong>人工确认：</strong>在 Ask 模式下检查命令内容，确认后再执行。</li>
+<li><strong>继续排查：</strong>根据命令返回结果调整分析方向，必要时再提出修改建议。</li>
+</ol>
+<p>例如，可以先从这些只读检查命令开始：</p>
+<pre><code>systemctl status nginx --no-pager
+journalctl -u nginx -n 50 --no-pager
+nginx -t</code></pre>
+<p>查看状态和日志适合先交给 AI 辅助分析。涉及修改配置、重启服务、删除文件或数据库操作时，应该单独确认影响范围，不能因为 AI 给出了命令就直接执行。</p>
+<h3>支持哪些 AI 模型？</h3>
+<p>SSHYard 支持 OpenAI 兼容的 Chat Completions、OpenAI Responses 和 Anthropic Messages API，也支持兼容接口的自部署模型服务。</p>
+<p>另外，项目还提供通过 ACP 使用本机检测到的 Claude Code、Codex 等 Agent 的能力。具体支持情况与模型兼容性，需要结合安装版本和官方文档确认。</p>
+<h2>MCP 和 Agent Skill：让 Claude Code、Codex 连接 SSH 主机</h2>
+<p>除了在 SSHYard 内使用 AI，用户也可以让本机的 Claude Code、Codex 等 Agent 通过 MCP 或开放 API 调用已经配置的 SSH 主机。项目还提供相应的 Agent Skill，方便将服务器连接能力接入现有的 Agent 工作流。</p>
+<p></p>
+<p>整个过程可以理解为：SSHYard 管理服务器连接和凭据，本地 Agent 通过授权令牌向 SSHYard 发起请求，再由 SSHYard 使用已有的 SSH 配置建立连接并执行远程操作。</p>
+<ul>
+<li>服务器地址和 SSH 连接凭据由 SSHYard 保存。</li>
+<li>本地 Agent 通过 MCP 或开放 API 请求 SSHYard。</li>
+<li>SSHYard 使用已保存的凭据建立 SSH 连接。</li>
+<li>Agent 通过获得的会话执行远程命令。</li>
+<li>用户可以管理 MCP 接入，并通过重新生成令牌撤销旧访问权限。</li>
+</ul>
+<p>这样一来，Agent 不必直接保存每台服务器的 SSH 私钥，也可以通过 SSHYard 使用已经配置的主机。</p>
+<h3>MCP 接入的权限边界</h3>
+<p>Agent 接入默认关闭，启用后需要使用 Bearer Token 进行身份验证。用户可以重新生成 Token，使旧令牌失效。</p>
+<p>如果某台主机需要用户现场输入密码或私钥口令，MCP 会拒绝建立连接，不会让 Agent 直接获取这些现场输入的秘密信息。</p>
+<p>不过，不向 Agent 暴露 SSH 私钥，不代表 Agent 没有服务器操作权限。只要授权成功，它仍然可以通过 SSHYard 执行远程命令。实际风险取决于 SSH 账户权限和 Agent 的操作行为。</p>
+<p>建议只在可信的本机环境启用 MCP，使用独立的低权限 SSH 账号，并在不需要时关闭接入。不要让通用 AI Agent 无限制访问拥有 Root 权限的生产服务器。</p>
+<h3>本地 AI 操作审计日志</h3>
+<p>SSHYard 提供本地 AI 操作日志，可以查看 Agent 曾经连接哪些主机、执行过什么命令，以及操作是否经过批准、最终是否执行成功。</p>
+<p>日志还会记录使用的权限模式、命令退出码和执行耗时，默认保留 90 天。它不会保存命令输出、文件内容和凭据，但会记录命令文本，因此不要把密码、API Token 等敏感信息直接写在命令参数中。</p>
+<p>如果 AI 执行操作后出现异常，可以通过日志回看操作过程。不过，这些记录主要用于追踪 AI 的操作，不能代替服务器自身的系统日志和账户权限管理。</p>
+<h2>如何安装 SSHYard 并连接第一台服务器？</h2>
+<p>GitHub 最新发布版本为 v0.0.13（2026 年 11 月 5 日），提供 macOS、Windows 和 Linux 安装包。可以从 <a href="https://github.com/Licoy/sshyard/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a> 下载对应版本。</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th>支持情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td>macOS 12 或更高版本，提供 Apple Silicon 和 Intel 安装包。</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>支持 x64 和 Arm64，提供安装包及便携版本。</td>
+</tr>
+<tr>
+<td>Linux</td>
+<td>提供对应架构的 DEB 和 tar.gz 安装包。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1、下载并安装。</strong></p>
+<p>打开 <a href="https://sshyard.com/" target="_blank" rel="noopener noreferrer">SSHYard 官网</a>，根据操作系统和处理器架构选择安装包。macOS 用户需要区分 Apple Silicon 和 Intel 版本，下载后可以核对官方提供的 SHA256 校验信息。</p>
+<p><strong>2、添加 SSH 主机。</strong></p>
+<p>在主机管理界面填写服务器 IP 或域名、SSH 端口、用户名和验证方式。如果已经使用 OpenSSH Config 管理服务器，可以先尝试导入 <code>~/.ssh/config</code>，再检查主机地址、密钥路径和跳板机设置。</p>
+<p>首次连接时，应核对服务器的 SSH 主机密钥指纹，不要因为出现确认提示就直接接受未知指纹。</p>
+<p></p>
+<p><strong>3、检查连接和文件管理。</strong></p>
+<p>连接成功后，可以先在终端执行几条基本命令，确认登录用户和服务器信息：</p>
+<pre><code>whoami
+hostname
+pwd</code></pre>
+<p>随后打开 SFTP 面板，选择一个非关键测试目录，尝试上传、下载和编辑普通文本文件。不要直接拿网站配置、数据库文件或生产密钥做初次测试。</p>
+<p></p>
+<p><strong>4、按需配置 AI。</strong></p>
+<p>如果需要使用 AI 助手，进入模型设置，配置对应的服务商、接口地址和 API 凭据。</p>
+<p>初次使用建议选择 Ask 模式，先让 AI 执行 <code>whoami</code> 或 <code>uname -s</code> 这类简单命令，检查审批流程是否正常，再逐步测试文件编辑和其他操作。</p>
+<p></p>
+<h2>SSHYard 的凭据安全与 AI 数据隐私</h2>
+<h3>SSH 凭据如何加密和备份？</h3>
+<p>SSHYard 会对服务器密码、SSH 私钥、私钥口令和 API Key 等敏感信息进行加密，再保存在本地，而不是直接以明文形式存放在配置文件中。</p>
+<p>它使用系统钥匙串保存一个随机生成的 256 位主密钥，再通过这个密钥加密本地凭据文件。这样，保存的 SSH 连接信息不需要以明文形式留在电脑上。</p>
+<p>如果需要备份主机配置和连接信息，SSHYard 也提供了加密备份功能。备份时使用 Argon2id 根据用户设置的密码派生加密密钥，再通过 XChaCha20-Poly1305 加密备份内容。</p>
+<p>备份可以保存在本地，也可以选择 WebDAV、S3 兼容存储或私有 GitHub Gist。根据项目公开的设计，备份内容会在上传前经过加密处理。</p>
+<p>备份密码需要自己妥善保管，建议使用独立且足够强的密码，不要与备份文件放在同一个位置。对于保存生产服务器密钥的环境，也应保留另一份独立备份。</p>
+<h3>使用云端 AI 时，哪些数据可能离开本机？</h3>
+<p>SSH 凭据保存在本地并经过加密，不代表 AI 交互完全离线。</p>
+<p>启用 AI 后，当助手读取终端上下文或分析相关文件时，这些内容可能发送到用户选择的模型服务商，以便模型理解问题并生成操作建议。</p>
+<p>即使 SSHYard 不直接把 SSH 私钥交给模型，日志和配置文件本身仍可能包含数据库地址、访问令牌、账号或其他业务信息。</p>
+<p>如果希望减少外部数据传输，可以考虑接入本地兼容模型。但还需要确认模型服务实际运行位置、客户端网络请求去向以及日志保存方式，不能仅凭本地桌面客户端就认定 AI 数据不会离开设备。</p>
+<p>另外，SSHYard 免费不代表云端模型调用免费，具体费用由所选模型服务商决定。</p>
+<h2>SSHYard 与其他 SSH 客户端怎么选？</h2>
+<p>Termius、Tabby、WindTerm、Xshell 和 NextSSH 都可以作为 SSH 工作流的候选工具，但它们并不是完全相同的产品定位。选择时，除了看终端功能，还要考虑文件管理、AI 操作和现有服务器配置能否顺利迁移。</p>
+<table>
+<thead>
+<tr>
+<th>比较维度</th>
+<th>选择时需要确认的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连接管理</td>
+<td>是否支持 SSH Config、密钥、SSH Agent、跳板机和代理？</td>
+</tr>
+<tr>
+<td>终端体验</td>
+<td>是否支持多标签、分屏、tmux、vim 和断线恢复？</td>
+</tr>
+<tr>
+<td>文件管理</td>
+<td>是否集成 SFTP，能否直接编辑远程文件？</td>
+</tr>
+<tr>
+<td>AI 能力</td>
+<td>能否读取终端上下文、执行命令，并在执行前进行审批？</td>
+</tr>
+<tr>
+<td>Agent 接入</td>
+<td>是否提供 MCP、API 或 Skill 等接入方式？</td>
+</tr>
+<tr>
+<td>安全与授权</td>
+<td>凭据如何保存，Agent 如何认证，能否撤销访问权限？</td>
+</tr>
+<tr>
+<td>长期使用</td>
+<td>版本更新、系统兼容性、许可证和维护情况如何？</td>
+</tr>
+</tbody>
+</table>
+<p>SSHYard 目前比较突出的地方，是把 SSH、SFTP、AI 命令执行审批和 Agent 接入放在同一个客户端中。如果希望让 AI 参与服务器排查和日常维护，可以重点考察这部分能力。</p>
+<p>如果目前使用的 Termius、Tabby、WindTerm 或 Xshell 已经能够满足连接、文件管理和日常运维需求，则没有必要仅仅为了 AI 功能立即迁移。尤其是管理关键生产服务器时，稳定性和成熟的工作流程应该优先于新功能。</p>
+<p>本站此前也介绍过 NextSSH，可以结合原有使用习惯参考。该旧文的版本和功能信息建议在正式发布前一并复核。</p>
+<h2>从现有 SSH 客户端迁移到 SSHYard，要注意什么？</h2>
+<p>SSHYard 目前仍处于 0.0.x 早期阶段。基本的 SSH、SFTP 和 AI 功能已经具备，但如果准备长期用它管理多台服务器，稳定性、模型兼容性和复杂环境下的表现可以下载安装体验一下先。</p>
+<p>GitHub 上曾有用户反馈过一些具体问题。例如，<a href="https://github.com/Licoy/sshyard/issues/5" target="_blank" rel="noopener noreferrer">Issue #5</a> 提到了自建模型接口返回 HTTP 400 的情况；<a href="https://github.com/Licoy/sshyard/issues/7" target="_blank" rel="noopener noreferrer">Issue #7</a> 则涉及 macOS 关闭窗口后，后台 MCP 连接受到影响的问题。这些是特定用户的反馈，不代表所有设备和版本都会遇到。是否影响当前版本，需要结合后续讨论和更新记录判断。</p>
+<p>从迁移角度看，还有几个地方值得提前确认：</p>
+<ul>
+<li><strong>Xshell 会话：</strong>目前明确支持的是导入 OpenSSH Config，不能默认 Xshell 的 <code>.xts</code> 会话文件可以直接导入。如果已经积累了大量连接配置，迁移前需要先确认转换方式。</li>
+<li><strong>远程桌面：</strong>SSHYard 主要用于 SSH 和 SFTP，官网目前没有将 RDP 或 VNC 列为支持的核心协议。需要远程操作 Windows 桌面或图形界面的用户，仍然需要其他工具。</li>
+<li><strong>AI 操作权限：</strong>AI 能执行的操作取决于 SSH 账户本身的权限。管理生产服务器时，建议使用独立的低权限账号，不要直接开放 Root 或不受限制的 sudo 权限。</li>
+</ul>
+<p>如果现在使用的 SSH 客户端已经很稳定，不必急着全部迁移。可以先选一台测试 VPS，检查 SSH Config 导入、SFTP 文件编辑、AI 命令审批和 MCP 接入，再决定是否把其他服务器迁移过来。</p>
+<h2>常见问题</h2>
+<h3>SSHYard 能直接导入 Xshell 的 .xts 会话文件吗？</h3>
+<p>目前官方明确说明支持导入 OpenSSH Config，即 <code>~/.ssh/config</code>，尚未确认可以直接导入 Xshell 的 <code>.xts</code> 会话文件。如果已有大量 Xshell 会话，建议先测试迁移方式，不要默认两种格式兼容。</p>
+<h3>SSHYard 可以完全离线使用 AI 吗？</h3>
+<p>普通 SSH / SFTP 操作不要求连接云端 AI 服务。AI 功能可以接入兼容的自部署模型，但是否完全离线取决于模型运行位置、客户端配置和实际网络请求。使用云端模型时，相关终端上下文可能发送到模型服务商。</p>
+<h3>SSHYard 可以用于商业环境吗？</h3>
+<p>SSHYard 使用 GNU AGPL-3.0 开源许可证，该许可证并不禁止商业使用，也不意味着单纯使用软件就必须购买授权。但修改、分发软件，或以修改版向用户提供网络服务时，可能涉及相应的源码提供义务。企业使用前应结合实际部署和分发方式阅读完整许可证条款。</p>
+<h2>SSHYard 适合先在测试服务器上试用</h2>
+<p>SSHYard 的主要特点，是让 AI 直接参与 SSH 远程操作，而不只是根据用户复制的日志提供命令建议。Ask、Review 权限模式以及 MCP 和 Skill 接入，也让本地 AI Agent 多了一种连接服务器的方式。</p>
+<p>如果平时主要使用 SSH 连接服务器、通过 SFTP 上传文件，现有工具已经够用的话，不必为了 AI 功能急着迁移。SSHYard 更适合有服务器管理经验、希望把 AI 纳入日常排查流程的开发者和自托管用户。</p>
+<p>考虑到项目目前仍处于早期版本，建议先拿一台非生产 VPS 测试 SSH 连接、SFTP 文件编辑和 AI 命令审批。再检查 MCP 是否符合自己的权限管理要求。确认这些功能和稳定性符合预期后，再考虑是否将其他服务器迁移过来。</p>
+<h2>官网、下载与 GitHub 源码</h2>
+<ul>
+<li>官方网站：<a href="https://sshyard.com/" target="_blank" rel="noopener noreferrer">SSHYard</a></li>
+<li>GitHub 仓库：<a href="https://github.com/Licoy/sshyard" target="_blank" rel="noopener noreferrer">Licoy/sshyard</a></li>
+<li>版本更新：<a href="https://github.com/Licoy/sshyard/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a></li>
+<li>开源许可证：<a href="https://github.com/Licoy/sshyard/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GNU AGPL-3.0</a></li>
+<li>项目开发说明：<a href="https://github.com/Licoy/sshyard/blob/main/AGENTS.md" target="_blank" rel="noopener noreferrer">AGENTS.md</a></li>
+</ul>
+<p><small>资料核查时间：2026 年 11 月 5 日。本文涉及的产品功能和技术实现依据官网、GitHub 仓库、版本记录及公开 Issue 整理。</small></p>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="内容来源">
+  <p class="mp-source-stamp-main">
+    整理收录于 <strong>魔盘</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">欢迎转载分享，保留出处即可</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="SSHYard：开源 SSH 客户端，集成 SFTP 与 AI 远程操作"
+  data-share-page="https://www.mopan.lol/resource/21303.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给 AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/resource/452.html" class="drama-card">L ミ獵鑫·遊戲のōベ</a>
+    
+    <a href="/resource/1.html" class="drama-card">Text-to-CAD：AI 生成 CAD 模型，可改尺寸并导出 STEP/STL</a>
+    
+    <a href="/resource/2.html" class="drama-card">OmniDiff：代码、PDF、图片和压缩包都能比的文件对比工具</a>
+    
+    <a href="/resource/3.html" class="drama-card">Google Flights MCP：Fli 让 Claude、CLI 和 Python 都能查航班</a>
+    
+    <a href="/resource/4.html" class="drama-card">虚拟资源赛道项目</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · 资源索引站，转载请注明来源</p>
+      <p class="mp-footer-promo"><a href="/promo/quark/" data-promo-entry="footer">夸克网盘资料领取 →</a></p>
+      <p class="mp-footer-games"><a href="/game/">魔盘小游戏 →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1793955882"></script>
+  
+</body>
+</html>
