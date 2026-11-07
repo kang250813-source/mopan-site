@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="魔盘">
+  <title>PDF 打码工具 AnyRedact：AI 识别敏感信息，导出后还能恢复吗？ - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1794040366">
+  
+</head>
+<body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;read_more&#34;: &#34;\u9605\u8bfb\u5168\u6587 \u2192&#34;, &#34;results&#34;: &#34;\u5171 {n} \u6761\u7ed3\u679c&#34;, &#34;search_load_error&#34;: &#34;\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002&#34;, &#34;search_loading&#34;: &#34;\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15\u2026&#34;, &#34;search_more_results&#34;: &#34;\u4ec5\u663e\u793a\u524d {n} \u6761\u7ed3\u679c\u3002&#34;, &#34;search_no_results&#34;: &#34;\u6ca1\u6709\u627e\u5230\u76f8\u5173\u5185\u5bb9\u3002&#34;, &#34;search_start&#34;: &#34;\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22\u3002&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="颜色主题">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="紫色" aria-label="紫色"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="海洋" aria-label="海洋"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="玫红" aria-label="玫红"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="森绿" aria-label="森绿"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="琥珀" aria-label="琥珀"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="靛蓝" aria-label="靛蓝"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/en/resource/21304.html" class="mp-lang-link" hreflang="en" lang="en">EN</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/index.html" class="mp-nav-link">← 发现</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">在线工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="PDF 打码工具 AnyRedact：AI 识别敏感信息，导出后还能恢复吗？"
+  data-share-page="https://www.mopan.lol/resource/21304.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="复制页面信息给 AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">复制给 AI</span>
+</button>
+    </div>
+    <h1>PDF 打码工具 AnyRedact：AI 识别敏感信息，导出后还能恢复吗？</h1>
+    
+    <p class="detail-meta">发布于 2026-11-06</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p>用 PDF 打码工具处理合同、银行流水或简历中的敏感信息时，最怕的是看起来已经遮住，原始文字却还能被复制出来。有些 PDF 上的黑框只是一个覆盖层，并没有真正删除下面的内容。</p>
+<p><strong>AnyRedact</strong> 是一款在线 PDF 打码工具，能借助 AI 查找姓名、证件号码、银行账号、电话号码等敏感信息，再由用户逐项确认并导出处理后的文件。它也支持手动框选，不需要安装桌面软件。</p>
+<p>不过，AnyRedact 并不是完全离线的工具。手动打码可以在浏览器中完成，但启用 AI 自动识别时，提取的文本会发送到云端。对于合同、客户资料等文件，这一点需要提前了解。</p>
+<p></p>
+<p> </p>
+<h2>PDF 盖上黑框，就真的把信息删除了吗？</h2>
+<p>不一定。有些 PDF 编辑器的黑框只是覆盖在文字上方的图形对象，原始文字并没有被删除。别人可能通过选择、复制文字或编辑覆盖对象，读取被遮住的信息。</p>
+<p>AnyRedact 官方采用的是另一种方式：导出时将页面重新生成图片，把已经遮盖的区域写入像素中，不再保留原始文字层。这样可以避免普通覆盖层留下文字的问题，但前提是需要处理的信息已经被正确遮盖。</p>
+<p>如果漏掉一个账号、签名或者二维码，它仍然可能出现在导出的文件里。因此，即使使用自动识别，最后也要自己检查。</p>
+<p></p>
+<h2>AnyRedact 这款 PDF 打码工具能做什么？</h2>
+<p>比如一份准备发给客户的合同，里面有联系人姓名、手机号和银行账号，自己逐页找容易遗漏。AnyRedact 可以先用 AI 把这些信息找出来，标记在文档中，再由你决定哪些需要遮盖、哪些应该保留。</p>
+<p>它能识别的不只是个人资料。邮箱、地址、证件号码之外，官方还列出了 IP 地址、API Key、密码和 Token 等技术信息。如果要分享日志、配置文件或其他技术资料，也可以用它辅助查找可能泄露的信息。</p>
+<p></p>
+<p>当然，AI 不一定能找全。像签名、二维码、照片，或者只有自己才知道需要保密的内部编号，可以直接在页面上拖动框选。遇到反复出现的客户名称、项目代号，还能添加自定义敏感词，不用每次都手动查找。</p>
+<p>处理完之后，AnyRedact 还提供一次可选的 AI 遗漏检查。不过这只能作为辅助，最终哪些内容该遮盖，还是需要自己确认。</p>
+<p>除了 PDF，它也支持图片、Word、Excel、PowerPoint、文本文件和音频。例如给截图隐藏联系方式，或者分享表格前处理客户信息。不同格式的处理方式有所区别，不能认为它们都和 PDF 一样通过图片化导出。</p>
+<p><!-- 配图位置：AnyRedact 编辑器，展示敏感信息检测结果和手动遮盖区域。 --></p>
+<h2>如何使用 AnyRedact 给 PDF 敏感信息打码？</h2>
+<p>AnyRedact 可以直接在浏览器中使用。官方 PDF 指南操作主要分为四步，非常简单。</p>
+<h3>第一步：打开需要处理的 PDF</h3>
+<p>进入 <a href="https://anyredact.app/redact-pdf" target="_blank" rel="nofollow noopener noreferrer">AnyRedact PDF 打码页面</a>，选择文件，或者直接拖入编辑区域。PDF 会在浏览器中打开并显示页面预览。</p>
+<p>如果文件是扫描版 PDF，工具会使用浏览器端的 Tesseract OCR 识别文字。不过，低对比度扫描件、模糊印章和手写内容可能不容易准确识别，后面仍需手动检查。</p>
+<p>中文用户也可以使用。经过实际测试，AnyRedact 支持中文内容识别，不只是处理英文 PDF。如果文件是扫描件，建议检查识别结果，特别是身份证号码、手写文字和模糊区域，避免有敏感信息漏掉。</p>
+<p></p>
+<h3>第二步：选择 AI 自动检测或手动打码</h3>
+<p>如果希望 AI 查找姓名、账号、电话等信息，可以按照编辑器提示点击 Upload，确认将提取的文本发送到服务端进行检测。</p>
+<p></p>
+<p>不想发送文档内容到云端的用户，可以跳过 Upload，直接在浏览器中手动框选需要遮盖的区域。</p>
+<p>两种方式适合不同需求：AI 检测可以减少查找工作量，手动处理则更适合不希望使用外部 AI 服务的场景。</p>
+<h3>第三步：审核识别结果，补充遗漏信息</h3>
+<p>检测完成后，编辑器会在 Found 列表中显示识别到的敏感信息，并标出它们在文档中的位置。</p>
+<p>可以取消不需要删除的内容，也可以手动补充。比如一份银行流水需要证明收入，姓名、银行名称和某些交易记录可能必须保留，就不能把 AI 找到的全部项目直接删除。</p>
+<p>签名、照片、二维码、页面边缘和模糊的扫描内容，也值得单独检查。如果一个客户名称或内部编号反复出现，可以使用 Always redact 自定义词条功能辅助查找。</p>
+<p></p>
+<h3>第四步：导出 PDF，再检查一遍</h3>
+<p>确认需要遮盖的内容后，就可以下载处理好的 PDF 了。AnyRedact 会把页面重新生成图片，避免原来的敏感文字继续留在文字层里。</p>
+<p>下载后最好重新打开看看，特别是姓名、账号、签名和二维码这些容易漏掉的地方。也可以试着搜索或复制之前打码的文字，检查有没有残留。确认没问题，再把文件发给别人。</p>
+<p></p>
+<h2>AnyRedact 会上传 PDF 吗？</h2>
+<p>只想遮盖 PDF 里的几处文字，可以直接在浏览器中手动框选，不用上传整份文件。但如果使用 AI 自动识别，AnyRedact 就会把提取出的文字发送到 Cloudflare Workers AI，用来查找姓名、电话、银行账号等敏感信息。</p>
+<p>扫描版 PDF 的 OCR 识别在浏览器本地运行。开启导出前的 AI 查漏功能，还会再次调用云端服务。车牌、路牌识别以及音频处理，则可能涉及图片或音频数据的传输。</p>
+<p>如果只是给文件打几个黑框，手动处理就够了。想让 AI 帮忙找出遗漏的姓名、账号，就需要接受文本发送到云端。客户合同、财务资料或者公司内部文件，最好先确认是否允许交给第三方 AI 服务处理。</p>
+<p><a href="https://anyredact.app/privacy" target="_blank" rel="nofollow noopener noreferrer">AnyRedact 隐私政策</a></p>
+<h2>导出后的 PDF，还能恢复被打码的文字吗？</h2>
+<p>正常完成打码后，别人无法再通过复制文字或移开黑框找回被遮盖的内容。AnyRedact 会把 PDF 每一页重新生成图片，打码区域也合并进图片里，原来的文字层、附件和文档元数据都不会保留。</p>
+<p>不过，导出的 PDF 也变成了图片型文件，原有文字不能直接搜索或复制，超链接、表单和电子签名等功能也会受到影响。如果后面还要编辑内容、填写表单或验证电子签名，就得留着原文件。</p>
+<p>还有一点别忽略：工具只能处理已经标记出来的内容。如果漏掉了姓名、账号或者其他敏感信息，它们还是会出现在导出的 PDF 里。文件发出去之前，最好重新打开检查一遍。</p>
+<h2>AnyRedact 免费吗？价格和使用限制</h2>
+<p>AnyRedact 不用注册就能使用，每天有 10 Credits 免费额度。如果只是偶尔给简历、账单或几页合同打码，先用免费版就行。</p>
+<p>需要处理更多文件，可以按月订阅，也能单独购买积分，不一定非得开会员。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>价格</th>
+<th>额度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free</td>
+<td>免费</td>
+<td>每天 10 Credits</td>
+</tr>
+<tr>
+<td>Plus</td>
+<td>$9/月</td>
+<td>每月 600 Credits</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>$24/月</td>
+<td>每月 3,000 Credits</td>
+</tr>
+<tr>
+<td>按量购买</td>
+<td>$5 起</td>
+<td>100 Credits 起</td>
+</tr>
+</tbody>
+</table>
+<p>这里的 Credits 可以理解为处理额度。普通文档大约每 3,000 个字符消耗 1 Credit，所以每天免费的 10 Credits 大致能处理 10 页普通文字，但不是固定只能处理 10 页。文件里的文字越多，消耗也可能越高，部分图像识别功能还会额外扣积分。</p>
+<p>PDF 单份最多支持 60 页，更长的文件需要拆开处理。中文内容已经可以识别，不过 AI 仍有漏掉敏感信息的可能，尤其是模糊扫描件、手写文字或特殊格式的编号，处理完最好自己看一遍。</p>
+<p>如果只是偶尔用一次，免费额度基本可以满足简单需求。经常处理大批量文件，就要算算积分够不够。AnyRedact 目前也没有公开的开源或自托管版本，需要在自己服务器上部署的话，可以考虑其他工具。</p>
+<p>价格可能调整，最新套餐可以查看 <a href="https://anyredact.app/pricing" target="_blank" rel="nofollow noopener noreferrer">AnyRedact 价格页面</a>。</p>
+<h2>AnyRedact 和 Secure PDF Editor 怎么选？</h2>
+<p>如果一份 PDF 有十几页，姓名、电话、银行账号散落在不同位置，自己逐页查找确实麻烦。AnyRedact 可以先用 AI 找出这些信息，再由你决定哪些需要遮盖，比较适合处理内容较多的合同、账单或其他资料。</p>
+<p>但如果只是给 PDF 遮住一两个名字、签名，没必要专门用 AI 检测。本站之前介绍过的 Secure PDF Editor：本地处理不上传的 PDF 涂黑工具 就可以手动框选，而且支持自行部署。</p>
+<p>简单说，敏感信息多、懒得逐页找，可以考虑 AnyRedact；只需要修改几处，或者希望整个过程都在本地完成，Secure PDF Editor 更合适。</p>
+<h2>AnyRedact 官方网站</h2>
+<p>AnyRedact 把 AI 敏感信息检测、人工确认和 PDF 导出整合在浏览器里。对于偶尔需要给文件脱敏、不想安装大型 PDF 软件的用户，可以先用免费额度和模拟文件试试。</p>
+<p>如果文件不允许发送给第三方 AI 服务，就应使用手动模式，或者选择经过批准的本地工具。无论采用哪种方式，正式外发前都应检查最终文件，避免敏感内容遗漏。</p>
+<p><a href="https://anyredact.app/" target="_blank" rel="nofollow noopener noreferrer"><strong>AnyRedact 官方网站</strong></a></p>
+<p>官方教程：<a href="https://anyredact.app/guides/how-to-redact-a-pdf" target="_blank" rel="nofollow noopener noreferrer">How to Redact a PDF</a></p>
+<p><small>本文根据 AnyRedact 官方网站、PDF 使用指南、价格页及隐私政策整理，信息核对时间为 2026 年 11 月。实际处理敏感资料前，请先使用模拟文件验证输出效果，并遵守适用的数据处理要求。</small></p>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="内容来源">
+  <p class="mp-source-stamp-main">
+    整理收录于 <strong>魔盘</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">欢迎转载分享，保留出处即可</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="PDF 打码工具 AnyRedact：AI 识别敏感信息，导出后还能恢复吗？"
+  data-share-page="https://www.mopan.lol/resource/21304.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给 AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/resource/19.html" class="drama-card">直播源格式转换：TXT转M3U、M3U转TXT在线工具</a>
+    
+    <a href="/resource/23.html" class="drama-card">EasyPick 易切：把一张商品海报拆成多个独立 PNG</a>
+    
+    <a href="/resource/25.html" class="drama-card">凹凸工坊：手写字体生成器，支持 Word、PDF 和图片转手写</a>
+    
+    <a href="/resource/26.html" class="drama-card">萝卜工坊：Word 文档转手写，支持 PDF、照片和专属字体</a>
+    
+    <a href="/resource/29.html" class="drama-card">Magic Eraser：在线 AI 图片消除工具，可移除人物、杂物和文字</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · 资源索引站，转载请注明来源</p>
+      <p class="mp-footer-promo"><a href="/promo/quark/" data-promo-entry="footer">夸克网盘资料领取 →</a></p>
+      <p class="mp-footer-games"><a href="/game/">魔盘小游戏 →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1794040366"></script>
+  
+</body>
+</html>
