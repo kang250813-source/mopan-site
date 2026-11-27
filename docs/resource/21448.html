@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6" id="meta-theme-color">
+  <script>
+    (function () {
+      var themes = ['purple', 'ocean', 'rose', 'forest', 'amber', 'indigo'];
+      var saved = localStorage.getItem('mopan-theme');
+      if (saved && themes.indexOf(saved) >= 0) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-N19F2GQR5S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-N19F2GQR5S');
+  </script>
+  <meta name="public-site-url" content="https://www.mopan.lol">
+  <meta name="site-title" content="魔盘">
+  <title>Scrubshot：开源截图自动打码工具，本地识别手机号、身份证和 API Key - 魔盘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/mopan.css?v=1795776018">
+  
+</head>
+<body class="" data-locale="zh" data-i18n="{&#34;collapse&#34;: &#34;\u6536\u8d77&#34;, &#34;copied&#34;: &#34;\u5df2\u590d\u5236&#34;, &#34;copied_paste&#34;: &#34;\u5df2\u590d\u5236\uff0c\u53bb\u7c98\u8d34\u53d1\u9001&#34;, &#34;copy_prompt&#34;: &#34;\u8bf7\u590d\u5236\u5f39\u7a97\u4e2d\u7684\u5185\u5bb9\u5e76\u7c98\u8d34\u7ed9 AI&#34;, &#34;expand_more&#34;: &#34;\u5c55\u5f00\u66f4\u591a\uff08{n}\uff09&#34;, &#34;games_bobing_award_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_award_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_award_five_kind&#34;: &#34;\u4e94\u5b50\u767b\u79d1&#34;, &#34;games_bobing_award_five_red&#34;: &#34;\u4e94\u7ea2&#34;, &#34;games_bobing_award_four_red&#34;: &#34;\u56db\u7ea2&#34;, &#34;games_bobing_award_golden&#34;: &#34;\u72b6\u5143\u63d2\u91d1\u82b1&#34;, &#34;games_bobing_award_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_award_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_award_six_black&#34;: &#34;\u516d\u52c3\u9ed1&#34;, &#34;games_bobing_award_six_red&#34;: &#34;\u516d\u52c3\u7ea2&#34;, &#34;games_bobing_award_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_miss&#34;: &#34;\u672a\u4e2d&#34;, &#34;games_bobing_miss_turn&#34;: &#34;{name} \u2014 \u672a\u4e2d&#34;, &#34;games_bobing_name_label&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_over&#34;: &#34;\u5956\u54c1\u5df2\u5206\u5b8c\uff0c\u535a\u997c\u7ed3\u675f&#34;, &#34;games_bobing_player_default&#34;: &#34;\u73a9\u5bb6 {n}&#34;, &#34;games_bobing_prize_duitang&#34;: &#34;\u5bf9\u5802&#34;, &#34;games_bobing_prize_erju&#34;: &#34;\u4e8c\u4e3e&#34;, &#34;games_bobing_prize_sanhong&#34;: &#34;\u4e09\u7ea2&#34;, &#34;games_bobing_prize_sijin&#34;: &#34;\u56db\u8fdb&#34;, &#34;games_bobing_prize_yixiu&#34;: &#34;\u4e00\u79c0&#34;, &#34;games_bobing_prize_zhuangyuan&#34;: &#34;\u72b6\u5143&#34;, &#34;games_bobing_roll&#34;: &#34;\u63b7\u9ab0&#34;, &#34;games_bobing_rolling&#34;: &#34;\u63b7\u9ab0\u4e2d\u2026&#34;, &#34;games_bobing_sold_out&#34;: &#34;{award} \u5df2\u62ff\u5b8c&#34;, &#34;games_bobing_start&#34;: &#34;\u9009\u4eba\u6570\u540e\u8f6e\u6d41\u63b7\u9ab0&#34;, &#34;games_bobing_win&#34;: &#34;{name} \u2014 {award}\uff01&#34;, &#34;games_bobing_zhuangyuan_hold&#34;: &#34;{name} \u2014 {award}\uff08\u5f85\u4e89\u72b6\u5143\uff09&#34;, &#34;games_bobing_zhuangyuan_win&#34;: &#34;{name} \u593a\u5f97\u72b6\u5143 \u2014 {award}&#34;, &#34;games_bomb_again&#34;: &#34;\u7ee7\u7eed\u731c\uff0c\u7f29\u5c0f\u8303\u56f4&#34;, &#34;games_bomb_boom&#34;: &#34;\u7830\uff01\u70b8\u5f39\u662f {n}&#34;, &#34;games_bomb_boom_short&#34;: &#34;\u7830\uff01\u8e29\u96f7\u4e86&#34;, &#34;games_bomb_high&#34;: &#34;{n} \u592a\u5927\u4e86&#34;, &#34;games_bomb_invalid&#34;: &#34;\u8bf7\u8f93\u5165\u8303\u56f4\u5185\u7684\u6570\u5b57&#34;, &#34;games_bomb_low&#34;: &#34;{n} \u592a\u5c0f\u4e86&#34;, &#34;games_bomb_out&#34;: &#34;\u8bf7\u5728 {low}\u2013{high} \u4e4b\u95f4\u731c&#34;, &#34;games_bomb_start&#34;: &#34;\u731c\u6570\u5b57\uff0c\u8e29\u5230\u70b8\u5f39\u5c31\u8f93\u4e86&#34;, &#34;games_chore_done&#34;: &#34;{who} \u8d1f\u8d23 {chore}&#34;, &#34;games_chore_dup&#34;: &#34;\u5df2\u7ecf\u6709\u4e86&#34;, &#34;games_chore_max&#34;: &#34;\u6700\u591a 10 \u9879&#34;, &#34;games_chore_min_people&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u4eba&#34;, &#34;games_chore_min_tasks&#34;: &#34;\u81f3\u5c11\u4fdd\u7559 2 \u9879\u5bb6\u52a1&#34;, &#34;games_cleared&#34;: &#34;\u6b65\u6570\u7528\u5c3d&#34;, &#34;games_croc_lose&#34;: &#34;\u73a9\u5bb6 {n} \u88ab\u54ac\u4e86\uff01&#34;, &#34;games_croc_safe&#34;: &#34;\u672c\u8f6e\u5e73\u5b89\u2014\u2014\u6ca1\u4eba\u88ab\u54ac&#34;, &#34;games_croc_turn&#34;: &#34;\u73a9\u5bb6 {n}\uff0c\u8bf7\u6309\u4e00\u9897\u7259&#34;, &#34;games_dice_rolling&#34;: &#34;\u6447\u9ab0\u5b50\u4e2d\u2026&#34;, &#34;games_dice_total&#34;: &#34;\u5408\u8ba1\uff1a{n} \u70b9&#34;, &#34;games_finger_pick&#34;: &#34;\u8f6e\u5230\u73a9\u5bb6 {n}\uff01&#34;, &#34;games_game_over&#34;: &#34;\u6e38\u620f\u7ed3\u675f&#34;, &#34;games_no_match&#34;: &#34;\u6ca1\u80fd\u6d88\u9664&#34;, &#34;games_open_pick&#34;: &#34;\u53bb\u770b\u770b&#34;, &#34;games_perfect&#34;: &#34;\u5b8c\u7f8e\uff01&#34;, &#34;games_site_open&#34;: &#34;\u8bbf\u95ee\u7f51\u7ad9&#34;, &#34;games_site_wheel_result_hint&#34;: &#34;\u503c\u5f97\u6536\u85cf\u7684\u597d\u7ad9\uff0c\u70b9\u5f00\u5373\u7528\u3002&#34;, &#34;games_stack_start&#34;: &#34;\u70b9\u51fb\u5f00\u59cb&#34;, &#34;games_stack_start_sub&#34;: &#34;\u70b9\u753b\u9762\u6216\u4e0b\u65b9\u6309\u94ae\u843d\u76d8&#34;, &#34;games_tictactoe_draw&#34;: &#34;\u5e73\u5c40&#34;, &#34;games_tictactoe_start&#34;: &#34;X \u5148\u624b&#34;, &#34;games_tictactoe_turn&#34;: &#34;\u8f6e\u5230 {mark}&#34;, &#34;games_tictactoe_win&#34;: &#34;{mark} \u83b7\u80dc\uff01&#34;, &#34;games_topic_ready&#34;: &#34;\u70b9\u6309\u94ae\u62bd\u4e00\u5f20\u8bdd\u9898\u5361&#34;, &#34;games_who_default_task&#34;: &#34;\u505a\u5bb6\u52a1&#34;, &#34;no_share_url&#34;: &#34;\u65e0\u6cd5\u83b7\u53d6\u5206\u4eab\u94fe\u63a5&#34;, &#34;prompt_copy&#34;: &#34;\u8bf7\u5168\u9009\u590d\u5236\u4ee5\u4e0b\u5185\u5bb9\uff0c\u7c98\u8d34\u7ed9 AI\uff1a&#34;, &#34;read_more&#34;: &#34;\u9605\u8bfb\u5168\u6587 \u2192&#34;, &#34;results&#34;: &#34;\u5171 {n} \u6761\u7ed3\u679c&#34;, &#34;search_load_error&#34;: &#34;\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002&#34;, &#34;search_loading&#34;: &#34;\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15\u2026&#34;, &#34;search_more_results&#34;: &#34;\u4ec5\u663e\u793a\u524d {n} \u6761\u7ed3\u679c\u3002&#34;, &#34;search_no_results&#34;: &#34;\u6ca1\u6709\u627e\u5230\u76f8\u5173\u5185\u5bb9\u3002&#34;, &#34;search_start&#34;: &#34;\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22\u3002&#34;, &#34;share&#34;: &#34;\u5206\u4eab&#34;, &#34;share_copied_wechat&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236\uff0c\u7c98\u8d34\u7ed9 AI \u5373\u53ef&#34;, &#34;share_failed&#34;: &#34;\u590d\u5236\u5931\u8d25\uff0c\u8bf7\u624b\u52a8\u590d\u5236\u9875\u9762\u94fe\u63a5&#34;, &#34;share_invoked&#34;: &#34;\u9875\u9762\u4fe1\u606f\u5df2\u590d\u5236&#34;, &#34;share_page&#34;: &#34;\u672c\u9875\u94fe\u63a5&#34;, &#34;share_password&#34;: &#34;\u7f51\u76d8\u5bc6\u7801&#34;, &#34;share_quark&#34;: &#34;\u5938\u514b\u7f51\u76d8&#34;, &#34;site_drama&#34;: &#34;\u5938\u514b\u77ed\u5267&#34;, &#34;site_resource&#34;: &#34;\u7ad9\u5185\u8d44\u6e90&#34;}">
+  <header class="mp-header">
+    <div class="mp-container mp-header-inner">
+      <a href="/" class="mp-brand">
+        <span class="mp-brand-mark" aria-hidden="true">魔</span>
+        <span class="mp-brand-text">
+          <strong>魔盘</strong>
+          <small>AI 工具 · 学习资源 · 短剧索引</small>
+        </span>
+      </a>
+      <div class="mp-header-actions">
+        <nav class="mp-theme" aria-label="颜色主题">
+          <button type="button" class="mp-theme-btn" data-theme="purple" title="紫色" aria-label="紫色"></button>
+          <button type="button" class="mp-theme-btn" data-theme="ocean" title="海洋" aria-label="海洋"></button>
+          <button type="button" class="mp-theme-btn" data-theme="rose" title="玫红" aria-label="玫红"></button>
+          <button type="button" class="mp-theme-btn" data-theme="forest" title="森绿" aria-label="森绿"></button>
+          <button type="button" class="mp-theme-btn" data-theme="amber" title="琥珀" aria-label="琥珀"></button>
+          <button type="button" class="mp-theme-btn" data-theme="indigo" title="靛蓝" aria-label="靛蓝"></button>
+        </nav>
+        <nav class="mp-lang" aria-label="Language">
+          
+          <a href="/en/resource/21448.html" class="mp-lang-link" hreflang="en" lang="en">EN</a>
+          
+        </nav>
+        <nav class="mp-nav">
+
+
+<a href="/index.html" class="mp-nav-link">← 发现</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="mp-main">
+    
+
+
+
+
+
+<article class="detail-page">
+  <div class="detail-info">
+    <div class="detail-resource-tags">
+      
+      
+      <span class="pill">在线工具</span>
+      
+      
+
+<button
+  type="button"
+  class="pill pill-share js-share-page"
+  data-share-title="Scrubshot：开源截图自动打码工具，本地识别手机号、身份证和 API Key"
+  data-share-page="https://www.mopan.lol/resource/21448.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+  aria-label="复制页面信息给 AI"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">复制给 AI</span>
+</button>
+    </div>
+    <h1>Scrubshot：开源截图自动打码工具，本地识别手机号、身份证和 API Key</h1>
+    
+    <p class="detail-meta">发布于 2026-11-26</p>
+    
+  </div>
+
+  
+  <div class="article-body-wrap">
+    <div class="article-body">
+      
+      <p>写教程、提工单或者发聊天记录时，截图里难免会带上一些不该公开的信息：一个手机号、一串 Token、一行内网 IP。手动一个个找容易漏，有些在线打码工具还需要先把原图上传到服务器。</p>
+<p><strong>Scrubshot</strong> 是一款开源的<strong>截图自动打码工具</strong>。把截图粘贴到网页中，它会在浏览器本地通过 OCR 识别手机号、身份证、银行卡、API Key 等敏感信息，自动标记或遮盖对应区域。</p>
+<p>和普通的图片马赛克工具不同，Scrubshot 默认使用不透明的黑色色块覆盖敏感文字，支持批量处理，也可以部署在自己的电脑或服务器上。</p>
+<figure class="wp-block-image size-full"><img decoding="async" style="max-width: 100%; height: auto;" src="https://raw.githubusercontent.com/strugglesky/scrubshot/main/docs/demo.gif" alt="Scrubshot 截图自动打码工具识别敏感信息与图片脱敏操作演示" title=""><figcaption>Scrubshot 截图自动打码操作演示（来源：<a href="https://github.com/strugglesky/scrubshot" target="_blank" rel="noopener noreferrer">GitHub 官方仓库</a>）</figcaption></figure>
+<h2>Scrubshot 能自动识别哪些敏感信息？</h2>
+<p>Scrubshot 默认使用 RapidOCR（PP-OCRv5）识别截图中的文字，并以 Tesseract 作为备用识别引擎，再通过 14 条正则规则、校验位算法和上下文判断，找出可能涉及隐私或安全风险的内容。</p>
+<table>
+<thead>
+<tr>
+<th>信息类型</th>
+<th>支持识别的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>个人信息</td>
+<td>手机号、身份证、邮箱、地址、座机号码</td>
+</tr>
+<tr>
+<td>金融信息</td>
+<td>银行卡号码</td>
+</tr>
+<tr>
+<td>开发者凭据</td>
+<td>API Key、JWT、私钥</td>
+</tr>
+<tr>
+<td>网络信息</td>
+<td>内网 IP、包含 Token 的 URL</td>
+</tr>
+<tr>
+<td>业务信息</td>
+<td>部分长订单编号</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+<p>比较实用的是，Scrubshot 不会把所有识别结果一律涂黑，而是根据风险和检测结果分级处理：</p>
+<ul>
+<li><strong>红色：</strong>高风险信息，自动添加遮挡。</li>
+<li><strong>黄色：</strong>中风险信息，标记出来等待核对。</li>
+<li><strong>白色：</strong>低风险信息，仅提供提示。</li>
+</ul>
+<p>即使疑似银行卡或身份证号码没有通过校验位检查，也不会被直接丢弃，而是降级为疑似信息。对于脱敏工具来说，多提醒一次通常比漏掉一串敏感号码更容易接受。</p>
+<p>Scrubshot 还支持部分长号码的跨行拼接识别，以及低置信度截图的水平镜像识别。比如聊天记录中的身份证号码被折成两行时，跨行拼接可以减少只遮住一半的情况。</p>
+<h2>如何使用 Scrubshot 给截图自动打码？</h2>
+<p>打开 Scrubshot 网页，直接粘贴剪贴板中的截图，也可以把图片拖进去。识别完成后，右侧会列出检测到的敏感信息及原文片段，确认哪些需要遮挡，补上遗漏的地方，就可以导出图片了。</p>
+<p></p>
+<p>如果平时需要处理大量订单截图、聊天记录或者后台操作截图，也不用一张张上传和下载。Scrubshot 支持批量导入图片，每张图的编辑和撤销记录相互独立，处理完可以直接打包成 ZIP 下载。</p>
+<p>不过，Scrubshot 主要针对截图里的文字信息。如果想自动遮挡照片或视频中的人脸、车牌，可以试试之前介绍过的武松打码。</p>
+<h2>为什么截图打码不建议只用马赛克或模糊？</h2>
+<p>高斯模糊和马赛克虽然能降低文字的可读性，但在特定条件下，仍可能保留足够的信息供识别或推断。如果遮挡的是密码、身份证号码或者 API Key，更适合使用完全不透明的色块。</p>
+<p>Scrubshot 默认使用黑色色块，也提供模糊和像素化选项，选择模糊处理时会弹出风险提示。</p>
+<p></p>
+<p>查看项目的<a href="https://github.com/strugglesky/scrubshot/blob/main/src/core/export.ts" target="_blank" rel="noopener noreferrer">图片导出源码</a>可以发现，它会通过 Canvas 按原图尺寸重新绘制图片，将遮挡效果直接写入导出的位图，而不是仅在原图上添加一个可移除的遮挡图层，支持 PNG、JPEG 和 WebP 格式。</p>
+<p>重新编码后的图片也不会直接携带原始文件的 EXIF、GPS 信息及 EXIF 缩略图，不过原始 ICC 色彩配置同样不会保留。</p>
+<p>当然，黑框只有完整覆盖敏感区域才有效。如果边缘还露出几个字符，或者某段文字根本没有被识别出来，仍然存在泄露风险。</p>
+<p>如果需要处理的不是截图，而是合同、账单等 PDF 文件，可以参考AnyRedact PDF 自动脱敏工具。PDF 脱敏还需要考虑原始文字层是否被真正移除，不能只在页面上覆盖一个黑框。</p>
+<h2>Scrubshot 会上传图片吗？有哪些限制？</h2>
+<p>Scrubshot 比较吸引人的地方，是它不需要把截图上传到服务器再进行识别。<a href="https://github.com/strugglesky/scrubshot#readme" target="_blank" rel="noopener noreferrer">项目</a>从 OCR 文字识别、敏感信息检测到图片导出，整个过程都在浏览器本地完成。</p>
+<p>不过，第一次使用可能会慢一些，需要加载约 58MB 的 OCR 模型和运行资源（gzip 压缩后约 21MB，实际大小随版本而异），加载完成后，即使断开网络也能继续处理截图。</p>
+<p></p>
+<p>这里有个细节需要注意，作者提供的在线演示使用的是 IP 地址加 HTTP 端口，并没有 HTTPS 加密。体验功能没什么问题，但如果要处理真实的身份证、客户资料或者服务器密钥，还是建议自己在本地运行一份。</p>
+<h3>自动打码的识别效果怎么样？</h3>
+<p>作者公开了一组<a href="https://github.com/strugglesky/scrubshot/tree/main/test-data" target="_blank" rel="noopener noreferrer">测试数据</a>，在 30 张合成截图的 157 个敏感信息标注项中，RapidOCR 成功识别了 155 项，文本检测召回率为 98.7%。这个成绩仅代表作者的测试集，并不意味着所有截图都能达到同样的效果。</p>
+<p></p>
+<p>比如一些没有明显特征的订单编号、病历号，就可能被漏掉；横着拍或者倒过来的图片，目前也不支持自动旋转纠正。如果同一行有多个敏感词，还可能被合并到一个遮挡框里。</p>
+<p>另外，识别到敏感文字和完整遮住文字是两回事。像二维码、签名、人脸，以及只有自己才知道需要保密的内部信息，还是得手动检查一下。</p>
+<p>所以，即使使用了自动打码工具，图片发出去之前也值得再看一眼。如果 API Key 或 Token 已经泄露，记得及时撤销或更换，而不是仅仅把原来的截图重新打码。</p>
+<p>如果需要脱敏的不是截图，而是准备发给 ChatGPT、Claude 的日志、配置文件或其他文本内容，还可以看看之前介绍的Privacy Filter 本地隐私脱敏工具。</p>
+<h2>Scrubshot 本地运行与自托管部署</h2>
+<p>如果不想使用作者提供的在线演示，也可以自己部署一份 Scrubshot。项目采用 MIT 开源许可证，整个应用构建后就是一套静态网页，不需要搭建后端服务，也不用额外维护数据库。</p>
+<p>想在自己的电脑上运行，按照项目要求准备好 Node.js 和 pnpm（项目文档要求 Node.js 20+、pnpm 11+，同时需要满足 pnpm 的运行环境要求），拉取源码即可：</p>
+<pre><code>git clone https://github.com/strugglesky/scrubshot.git
+cd scrubshot
+pnpm install
+pnpm dev</code></pre>
+<p>启动后访问 <code>http://localhost:5173</code>，就可以在本地使用。</p>
+<p>如果手里有闲置的 VPS 或 NAS，也可以通过下面的命令生成静态网页文件：</p>
+<pre><code>pnpm build</code></pre>
+<p>将生成的 <code>dist/</code> 目录部署到 Nginx、Vercel 或 Netlify 上即可。对于使用宝塔面板的用户，创建一个静态网站、上传构建好的文件，再配置 HTTPS 就行，不需要单独运行 Node.js 服务。</p>
+<p>不过，如果打算部署到 Cloudflare Pages，需要留意一下文件大小。项目目前使用的 ONNX Runtime 中，部分 WASM 文件约为 28MB，超过了 Cloudflare Pages 单文件 25MiB 的限制，直接部署可能会失败。</p>
+<p>这也是 Scrubshot 比较适合自托管的地方：OCR 识别主要消耗的是用户设备的计算资源，而不是服务器算力，服务器主要负责提供网页和模型文件，没有必要专门为它准备一台高配置机器。</p>
+<p>更多安装细节及常见构建问题，可以参考<a href="https://github.com/strugglesky/scrubshot/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">项目开发文档</a>。</p>
+<h2>Scrubshot 项目地址</h2>
+<p>Scrubshot 采用 MIT 开源许可证，经常需要给截图打码的朋友可以试试。如果涉及真实的个人隐私或公司内部资料，建议在本地运行。</p>
+<ul>
+<li>GitHub：<a href="https://github.com/strugglesky/scrubshot" target="_blank" rel="noopener noreferrer">strugglesky/scrubshot</a></li>
+<li>在线演示：<a href="http://121.40.98.30:8080" target="_blank" rel="noopener noreferrer">Scrubshot Demo</a>（HTTP 连接，仅建议使用非敏感图片体验）</li>
+<li>开源许可证：<a href="https://github.com/strugglesky/scrubshot/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+</ul>
+<p><small>资料来源：Scrubshot 官方文档、公开测试数据及项目源码。核查于 2026 年 11 月，文中识别率来自开发者测试，非本站独立实测。</small></p>
+    </div>
+    
+<aside class="mp-source-stamp" aria-label="内容来源">
+  <p class="mp-source-stamp-main">
+    整理收录于 <strong>魔盘</strong> · mopan.lol
+    <a href="https://www.mopan.lol/" class="mp-source-stamp-link" rel="home">www.mopan.lol</a>
+  </p>
+  <p class="mp-source-stamp-note">欢迎转载分享，保留出处即可</p>
+</aside>
+  </div>
+  
+
+  
+
+  
+
+  
+  <div class="cta-panel cta-panel--share-only">
+    <h2 class="cta-heading">分享本文</h2>
+    <div class="cta-actions">
+      <button
+  type="button"
+  class="btn btn-share btn-xl js-share-page"
+  data-share-title="Scrubshot：开源截图自动打码工具，本地识别手机号、身份证和 API Key"
+  data-share-page="https://www.mopan.lol/resource/21448.html"
+  data-share-quark=""
+  data-share-password=""
+  data-share-github=""
+  data-share-kind="resource"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"><path d="M12 3v10M12 3 8.5 6.5M12 3l3.5 3.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="js-share-label">分享给 AI</span>
+</button>
+    </div>
+  </div>
+  
+</article>
+
+
+<section class="related-section">
+  <h2>同类资源</h2>
+  <div class="drama-grid drama-grid--compact">
+    
+    <a href="/resource/13.html" class="drama-card">PDF 打码工具 AnyRedact：AI 识别敏感信息，导出后还能恢复吗？</a>
+    
+    <a href="/resource/32.html" class="drama-card">直播源格式转换：TXT转M3U、M3U转TXT在线工具</a>
+    
+    <a href="/resource/36.html" class="drama-card">EasyPick 易切：把一张商品海报拆成多个独立 PNG</a>
+    
+    <a href="/resource/38.html" class="drama-card">凹凸工坊：手写字体生成器，支持 Word、PDF 和图片转手写</a>
+    
+    <a href="/resource/39.html" class="drama-card">萝卜工坊：Word 文档转手写，支持 PDF、照片和专属字体</a>
+    
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer class="mp-footer">
+    <div class="mp-container">
+      <p>魔盘 · AI 工具 · 学习资源 · 短剧索引</p>
+      <p class="mp-footer-site"><a href="https://www.mopan.lol/" rel="home">www.mopan.lol</a> · 资源索引站，转载请注明来源</p>
+      <p class="mp-footer-promo"><a href="/promo/quark/" data-promo-entry="footer">夸克网盘资料领取 →</a></p>
+      <p class="mp-footer-games"><a href="/game/">魔盘小游戏 →</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="mp-toast" hidden role="status" aria-live="polite"></div>
+  <script src="/static/app.js?v=1795776018"></script>
+  
+</body>
+</html>
